@@ -299,7 +299,7 @@ The design of a Venturi nozzle must consider the following restrictions due to t
 Given the previously reported assumptions of the Bernoulli equation, since the fluid is non-conductive, the Venturi nozzle cannot be used in a heat exchanger.
 
 
-\section{Task 1.7: Asymptotic Suction Boundary Layer}
+\section{Asymptotic Suction Boundary Layer}
 
 \subsection{Assumptions, Initial Conditions, and Boundary Conditions}
 
@@ -349,47 +349,27 @@ u \frac{\partial u}{\partial y} = v \frac{\partial^2 u}{\partial y^2}
 \]
 
 \subsection{Solution of Simplified PDEs}
-We can solve the simplified PDEs, as Blasius did with the Similarity Ansatz, to obtain ODEs.
-The system of equations becomes:
+We can solve the simplified PDEs, and get to the general solution of the form:
 \[
-\begin{cases}
-f''' + 0.5 f f'' = 0 \\
-f(0) = 0 \\
-f'(0) = 0 \\
-f'(\infty) = 1
-\end{cases}
+u(y) = U_\infty \left(1 - e^{-\frac{V_w}{\nu} y}\right)
 \]
-
-We can solve the Blasius equation numerically to obtain the velocity profile. We give as u''(0)=1.5399 from the link in the \cite{NumericalMethods} citation.
-Below is the solution of the Blasius equation, obtained through a python:
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{output_plot.png}
-    \caption{Numerical solution of the Blasius equation showing the velocity profile.}
-    \label{fig:blasius_solution}
-\end{figure}
-
-In addition, we have implemented in our script the calculation of the friction coefficient and the displacement thickness, which result in:
-\textbf{Results:}
-\begin{itemize}
-    \item \textbf{Wall Shear Stress (\(\tau_{\text{wall}}\)):} 1.5399
-    \item \textbf{Friction Coefficient (\(c_f\)):} 3.0798
-    \item \textbf{Pressure Coefficient (\(c_p\)):} 0.0
-\end{itemize}
 
 \subsection{Calculation of the boundary layer displacement thickness}
-\section*{Boundary Layer Displacement Thickness Calculation}
-The boundary layer displacement thickness (\(\delta^*\)) can be calculated using the following formula:
+The boundary layer displacement thickness (\(\delta^*\)) can be calculated by exploiting the definition of the velocity distribution into the formula provided by the excercise.
+We start with the integral:
+
 \[
-\delta^* = \frac{1.7208 \cdot x}{\sqrt{Re_x}} = 1.7208
+\delta^* = \int_0^\infty e^{-\frac{V_w}{\nu} y} \, dy
+\]
+The integral of the exponential function is:
+\[
+\int e^{-\frac{V_w}{\nu} y} \, dy = -\frac{\nu}{V_w} e^{-\frac{V_w}{\nu} y} + C
 \]
 
-The displacement thickness represents the distance by which the outer potential flow is displaced due to the boundary layer. It accounts for the reduction in flow rate caused by the presence of the boundary layer.
-
-In this setup, \(\delta^*\) depends on the free-stream velocity (\(U_\infty\)), the kinematic viscosity (\(\nu\)), and the distance from the leading edge (\(x\)). As \(U_\infty\) increases, \(\delta^*\) decreases, indicating a thinner boundary layer. Conversely, as \(\nu\) or \(x\) increases, \(\delta^*\) increases, indicating a thicker boundary layer.
-\subsection{Applications of the Blasius Equation}
-The Blasius equation finds applications in various engineering problems where boundary layer theory is relevant. One notable example is the flow over a long train, where the flow is parallel to the length of the train and the length is significantly greater than the width. 
-
+Now, we evaluate the definite integral from \(0\) to \(\infty\) and we get:
+\[
+u(y) = U_\infty \left(1 - e^{-\frac{V_w}{\nu} y}\right) = \frac{\nu}{V_w} = 0.000150 m
+\]
 
 \begin{thebibliography}{9}
 
