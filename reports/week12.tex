@@ -4,23 +4,46 @@
 \usepackage{graphicx}
 \usepackage[margin=1in]{geometry}
 
+% Title, date, and author
+\title{Exercise 1}
+\author{Your Name, Collaborator's Name}
+\date{\today}
+
 \titleformat{\section}
-  {\normalfont\small\bfseries} % Format: font style, size, and weight
+  {\normalfont\normalsize\bfseries} % Format: font style, size, and weight
   {\thesection}{1em} % Label format and spacing
   {}
+  \renewcommand{\thesubsection}{\thesection.\alph{subsection}}
+
 \titleformat{\subsection}
   {\normalfont\small\bfseries} % Format: font style, size, and weight
-  {\thesection}{1em} % Label format and spacing
+  {\thesubsection}{1em} % Label format and spacing
   {}
 \titleformat{\subsubsection}
   {\normalfont\small\bfseries} % Format: font style, size, and weight
-  {\thesection}{1em} % Label format and spacing
+  {\thesubsubsection}{1em} % Label format and spacing
   {}
 
 \begin{document}
+\begin{titlepage}
+    \centering
+    \vspace*{1in}
+    
+    {\Huge\bfseries Exercise 1\par}
+    \vspace{1.5cm}
+    {\Large \today\par}
+    \vspace{1.5cm}
+    {\Large\itshape Antonio Pampalone\\ Giuseppe Pisante\\ Martina Raffaelli\par}
+    
+    \vfill
+    \includegraphics[width=0.3\textwidth]{FAU-Logo.png}\par\vspace{1cm} % Adjust the width as needed
+   
+\end{titlepage}
+
+\newpage
 \small
 
-\section{Task 1: Elementary Vector Calculus}
+\section{Elementary Vector Calculus}
  
 \subsection{Gradient of a scalar $\phi$:}
     \begin{equation}
@@ -75,11 +98,10 @@
         \end{equation}
 
 
-\newpage
-\section{Task 2: Global versus local rotation}
+\section{Global versus local rotation}
 
 \subsection{Sketch of the flows:}
-\subsubsection*{Line vortex flow: \textnormal{$\vec{u} = [u_r, u_\theta, u_z] = \left[0, -\frac{\alpha}{r}, 0\right]$ }}
+\subsubsection{Line vortex flow: \textnormal{$\vec{u} = [u_r, u_\theta, u_z] = \left[0, -\frac{\alpha}{r}, 0\right]$ }}
 \begin{figure}[h!]
     \centering
     \begin{tabular}{cc}
@@ -89,7 +111,7 @@
     \caption{Line vortex flow}
     \label{fig:mie_immagini}
 \end{figure}
-\subsubsection*{Plane shear flow: \textnormal{$\vec{u} = [u, v, w] = \left[\beta y, -0, 0\right]$}} 
+\subsubsection{Plane shear flow: \textnormal{$\vec{u} = [u, v, w] = \left[\beta y, -0, 0\right]$}} 
 \begin{figure}[h!]
     \centering
     \begin{tabular}{cc}
@@ -99,7 +121,7 @@
     \caption{Plane shear flow}
     \label{fig:mie_immagini}
 \end{figure}
-\subsubsection*{Flow between rotating cylinders: \textnormal{$\vec{u} = [u_r, u_\theta, u_z] = \left[0, Ar + \frac{B}{r}, 0\right]$}} 
+\subsubsection{Flow between rotating cylinders: \textnormal{$\vec{u} = [u_r, u_\theta, u_z] = \left[0, Ar + \frac{B}{r}, 0\right]$}} 
 \begin{figure}[h!]
     \centering
     \begin{tabular}{cc}
@@ -113,18 +135,17 @@
 
 \subsection{Local and global rotations:}
 To verify wheter a flow features a local/global rotation we need to compute its vorticity, which is a vector quantity defined as $\vec{\omega} = \nabla \times \mathbf{u}$.
-\subsubsection*{Line vortex flow:}
+\subsubsection{Line vortex flow:}
 For this specific flow we have that the vorticity vector is $\vec{\omega} = [0, 0, 0]$, so this flow does not show a local nor a global rotation since the vorticity is the null vector.
-\subsubsection*{Plane shear flow:}
+\subsubsection{Plane shear flow:}
 Making usage of the previously delined formula for the vorticity, we find that $\vec{\omega}  = \left[0, 0, -\beta\right]$ which indicates that we have a shear-induced rotation around the $z$-axis. Also this flow does not feature a global rotation because it is characterized by a velocity gradient in the $y$-direction (shear) rather than a circular motion and this causes fluid elements to rotate locally due to the velocity differences at different $y$-positions, but there is no coordinated or structured rotation of the entire flow field. The flow is linear, not circular, so it doesn't exhibit global rotation. 
-\subsubsection*{Flow between rotating cylinders:}
+\subsubsection{Flow between rotating cylinders:}
 As in the former cases we compute the vorticity: $\vec{\omega} = [0, 0, 2A]$. Also the third flow exibits a local rotation due to the non-zero vorticiy, but unlike the previous cases the rotating cylinders create a structured and circular flow with a consistent rotational effect through the domain. 
 
 In all three cases, we could have reached similar conclusions by observing the graphs shown above.
 
-\newpage
 
-\section*{Task 1.3: Mass Conservation}
+\section{Mass Conservation}
 
 The continuity equation (mass conservation) states that the change of mass per unit time in an infinitesimal control volume (CV) is equal to the difference between the mass inflow and outflow rate of the CV. Assume an infinitesimally small fluid element fixed in space (Eulerian) with velocity vector $\mathbf{u}$ and density $\rho$ the net outflow in x-direction is given by:
 
@@ -176,7 +197,7 @@ Written for a Cartesian coordinate system $(x, y, z)$ becomes:
 
 This means that the divergence of the velocity field is zero indicating that fluid volume is conserved.
 
-\section*{Task 1.4: Non-dimensional Navier–Stokes Equations}
+\section{Non-dimensional Navier–Stokes Equations}
 
 The Navier–Stokes equations of an incompressible isothermal Newtonian fluid are:
 
@@ -240,10 +261,6 @@ To solve the Navier-Stokes equations, we need to supply boundary conditions for 
 
 
 
-
-
-
-
 \subsection{Relationship between Flow Rate and Delta Pressure}
 Given the Bernoulli equation:
 \begin{equation}
@@ -303,7 +320,7 @@ Given the previously reported assumptions of the Bernoulli equation, since the f
 
 \subsection{Assumptions, Initial Conditions, and Boundary Conditions}
 
-\section*{Assumptions:}
+\subsection{Assumptions:}
 \begin{itemize}
     \item \textbf{Flat 2D plate parallel to the flow:} The flow is two-dimensional and the plate is infinite in the \(x\) direction.
     \item \textbf{\(\frac{d}{dx} \ll \frac{d}{dy}\), \(\frac{d^2}{dx^2} \ll \frac{d^2}{dy^2}\):} Rate of change across the boundary layer is much greater than the rate of change in the flow direction.
@@ -313,12 +330,12 @@ Given the previously reported assumptions of the Bernoulli equation, since the f
     \item \textbf{No streamwise pressure gradient \(\frac{dp}{dx}\):} The flow is time-independent.
 \end{itemize}
 
-\section*{Initial Conditions:}
+\subsection{Initial Conditions:}
 \begin{itemize}
     \item \textbf{At \(t = 0\):} The velocity field is established and steady.
 \end{itemize}
 
-\section*{Boundary Conditions:}
+\subsection{Boundary Conditions:}
 \begin{itemize}
     \item \textbf{At the wall \((y = 0)\):} \(u = 0\), \(v = -V_w\) (steady suction velocity).
     \item \textbf{Far from the wall \((y \rightarrow \infty)\):} \(u = U_\infty\), \(v = 0\) (free-stream conditions).
@@ -326,12 +343,12 @@ Given the previously reported assumptions of the Bernoulli equation, since the f
 
 \subsection{Simplified Continuity and Navier–Stokes Equations on a 2D domain}
 
-\section*{Continuity Equation:}
+\subsection{Continuity Equation:}
 \[
 \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} = 0
 \]
 
-\section*{Navier–Stokes Equations:}
+\subsection{Navier–Stokes Equations:}
 \begin{align*}
     \text{x-momentum:} & \quad u \frac{\partial u}{\partial x} + v \frac{\partial u}{\partial y} = -\frac{1}{\rho} \frac{\partial p}{\partial x} + \nu (\frac{\partial^2 v}{\partial x^2}+\frac{\partial^2 v}{\partial y^2}) \\
     \text{y-momentum:} & \quad u \frac{\partial v}{\partial x} + v \frac{\partial v}{\partial y} = -\frac{1}{\rho} \frac{\partial p}{\partial y} + \nu (\frac{\partial^2 v}{\partial x^2}+\frac{\partial^2 v}{\partial y^2})
@@ -353,6 +370,19 @@ We can solve the simplified PDEs, and get to the general solution of the form:
 \[
 u(y) = U_\infty \left(1 - e^{-\frac{V_w}{\nu} y}\right)
 \]
+\begin{figure}[]
+    \centering
+    \includegraphics[width=0.4\textwidth]{output_plot.png}
+    \caption{Numerical solution of suction boundary layer scenario showing the velocity profile.}
+    \label{fig:suction boundary layer_solution}
+\end{figure}
+
+In addition, we have implemented in our script the calculation of the friction coefficient and wall shear stresses, which result in:
+\begin{itemize}
+    \item \textbf{Wall Shear Stress (\(\tau_{\text{wall}}\)):} \(0.122500 \, \mathrm{N/m^2}\)
+    \item \textbf{Friction Coefficient (\(c_f\)):} \(0.2\)
+\end{itemize}
+
 
 \subsection{Calculation of the boundary layer displacement thickness}
 The boundary layer displacement thickness (\(\delta^*\)) can be calculated by exploiting the definition of the velocity distribution into the formula provided by the excercise.
@@ -370,6 +400,9 @@ Now, we evaluate the definite integral from \(0\) to \(\infty\) and we get:
 \[
 u(y) = U_\infty \left(1 - e^{-\frac{V_w}{\nu} y}\right) = \frac{\nu}{V_w} = 0.000150 m
 \]
+
+\subsection{Applications of the suction boundary layer}
+The suction boundary layer scenario finds applications in various engineering problems where boundary layer theory is relevant. One notable example is the flow over a long train, where the flow is parallel to the length of the train and the length is significantly greater than the width. 
 
 \begin{thebibliography}{9}
 
