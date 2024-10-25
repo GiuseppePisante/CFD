@@ -147,11 +147,12 @@ In all three cases, we could have reached similar conclusions by observing the g
 
 \section{Mass Conservation}
 
+\subsection{Continuity equation}
 The continuity equation (mass conservation) states that the change of mass per unit time in an infinitesimal control volume (CV) is equal to the difference between the mass inflow and outflow rate of the CV. Assume an infinitesimally small fluid element fixed in space (Eulerian) with velocity vector $\mathbf{u}$ and density $\rho$ the net outflow in x-direction is given by:
 
-\begin{equation}
+\[
 \rho u_1 + \frac{\partial \rho u_1}{\partial x} dx \, dy \, dz - \rho u_1 dy \, dz = \frac{\partial \rho u_1}{\partial x} dx \, dy \, dz
-\end{equation}
+\]
 
 Similarly the net outflow in y-direction and the net outflow in z-direction are given by:
 
@@ -161,15 +162,15 @@ Similarly the net outflow in y-direction and the net outflow in z-direction are 
 
 Therefore the net mass flow out of the element is given by:
 
-\[
+\begin{equation}
 \frac{\partial \rho u_1}{\partial x} dx \, dy \, dz + \frac{\partial \rho u_2}{\partial y} dx \, dy \, dz + \frac{\partial \rho u_3}{\partial z} dx \, dy \, dz
-\]
+\end{equation}
 
 The rate of change of mass within the control volume is given by:
 
-\[
+\begin{equation}
 \frac{\partial \rho}{\partial t} dx \, dy \, dz
-\]
+\end{equation}
 
 Combining the previous equations we can obtain the continuity equation:
 
@@ -179,15 +180,16 @@ Combining the previous equations we can obtain the continuity equation:
 
 Leading to the final notation:
 
-\[
+\begin{equation}
 \frac{\partial \rho}{\partial t} + \frac{\partial \rho u_i}{\partial x_i} = \frac{\partial \rho}{\partial t} + \nabla \cdot (\rho \mathbf{u}) = 0
-\]
+\end{equation}
 
+\subsection{Incompressible Flow}
 For an incompressible flow (constant density $\rho$) the continuity equation simplifies to:
 
-\[
+\begin{equation}
 \frac{\partial u_i}{\partial x_i} = \nabla \cdot \mathbf{u} = 0
-\]
+\end{equation}
 
 Written for a Cartesian coordinate system $(x, y, z)$ becomes:
 
@@ -199,23 +201,25 @@ This means that the divergence of the velocity field is zero indicating that flu
 
 \section{Non-dimensional Navier–Stokes Equations}
 
+\subsection{Physical meaning of each term in the Navier–Stokes Equations}
 The Navier–Stokes equations of an incompressible isothermal Newtonian fluid are:
 
-\[
+\begin{equation}
 \frac{\partial u_i}{\partial x_i} = 0
-\]
+\end{equation}
 
-\[
+\begin{equation}
 \rho \frac{\partial u_i}{\partial t} + u_j \frac{\partial u_i}{\partial x_j} = - \frac{\partial p}{\partial x_i} + \frac{\partial \tau_{ij}}{\partial x_j}
-\]
+\end{equation}
 
 The mass conservation means the fluid density remains constant and there is no volume change at any point in the fluid. The conservation of momentum means that changing the momentum is equivalent to a force. In particular, the first term is the local acceleration which represents the rate of change of velocity with time, while the second term is the convective acceleration, which represents the rate of change of velocity due to spatial variations in the velocity field. On the right-hand side, there are the pressure gradient force that shows how the fluid accelerates due to pressure differences and the term representing the viscous forces in the fluid which resist deformation due to viscosity.
 
+\subsection{Expand the molecuar transport term}
 For a Newtonian fluid, the shear-stress tensor $\tau_{ij}$ is given by:
 
-\[
+\begin{equation}
 \tau_{ij} = 2 \mu S_{ij}
-\]
+\end{equation}
 
 where $S_{ij}$ is the rate of strain tensor defined as:
 
@@ -225,10 +229,11 @@ S_{ij} = \frac{1}{2} \left( \frac{\partial u_i}{\partial x_j} + \frac{\partial u
 
 Substituting $\tau_{ij}$ in the momentum equation for an incompressible fluid this reduces to:
 
-\[
+\begin{equation}
 \frac{\partial \tau_{ij}}{\partial x_j} = \mu \frac{\partial}{\partial x_j} \left( \frac{\partial u_i}{\partial x_j} + \frac{\partial u_j}{\partial x_i} \right) = \mu \frac{\partial^2 u_i}{\partial x_j \partial x_j}
-\]
+\end{equation}
 
+\subsection{Dimensionless form of the Navier–Stokes Equations}
 To obtain the dimensionless form, we introduce appropriate reference quantities and corresponding non-dimensional quantities (with *). In the example of pipe flow, it is natural to scale lengths with the pipe diameter $D$, velocities with the mean speed $U$, time with the ratio of length to mean velocity, while the natural scale for pressure is given by the product of density and the mean speed squared.
 
 \[
@@ -237,29 +242,37 @@ x_i = D x_i^*, \quad u_i = U u_i^*, \quad t_i = \frac{L}{U} t_i^*, \quad p_i = \
 
 Substitute these into the Navier-Stokes equations, we obtain:
 
-\[
+\begin{equation}
 \frac{\partial u_i^*}{\partial x_i^*} = 0
-\]
+\end{equation}
 
-\[
+\begin{equation}
 \frac{\partial u_i^*}{\partial t^*} + u_j^* \frac{\partial u_i^*}{\partial x_j^*} = - \frac{\partial p^*}{\partial x_i^*} + \frac{1}{Re} \frac{\partial^2 u_i^*}{\partial x_j^{*2}}
-\]
+\end{equation}
 
+\subsection{Nondimensional Numbers}
 The most important dimensionless parameter is Reynolds number, defined as the ratio of inertial forces to viscous forces in the fluid, and characterizes the flow regime. A low Reynolds number indicates a laminar flow in which inertial forces may be neglected, while a high Reynolds number indicates a turbulent flow in which viscosity may be neglected.
 
 \[
 Re = \frac{UL}{\nu}
 \]
 
-To solve the Navier-Stokes equations, we need to supply boundary conditions for the velocity field. The Blasius solution provides the velocity profile in the boundary layer that develops along the flat plate. In particular, the boundary conditions are:
+\subsection{Boundary conditions.}
+To solve the Navier-Stokes equations, we need to supply boundary conditions for the velocity field. Boundary conditions on pressure are less commonly prescribed directly because pressure is often determined indirectly via the velocity field from the continuity and momentum equations.
 
-\textbf{No penetration condition:} The wall-normal velocity $v$ at the wall must also be zero since there is no flow through the solid boundary.
+There are different types of boundary conditions that can be applied to the velocity fields:
 
-\textbf{No-slip condition:} The velocity of the fluid at the wall is equal to the velocity of the wall. Since the wall is stationary, the streamwise velocity at the wall must be zero.
+\begin{itemize}
+    \item \textbf{Dirichlet Boundary Conditions}, specify the velocity of the fluid at the boundary:
+    \[
+    \mathbf{u} = \mathbf{u}_{\text{boundary}}.
+    \]
 
-\textbf{Free-stream velocity condition:} As we move far away from the wall, the effect of the boundary layer diminishes and the velocity approaches the free-stream velocity.
-
-
+    \item \textbf{Neumann Boundary Conditions}, specify the derivative of the velocity at the boundary, often corresponding to shear stress or flux:
+    \[
+    \frac{\partial \mathbf{u}}{\partial n} = \text{shear stress}.
+    \]
+\end{itemize}
 
 \subsection{Relationship between Flow Rate and Delta Pressure}
 Given the Bernoulli equation:
