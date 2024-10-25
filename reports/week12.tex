@@ -3,6 +3,7 @@
 \usepackage{titlesec}
 \usepackage{graphicx}
 \usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
 
 % Title, date, and author
 \title{Exercise 1}
@@ -363,7 +364,7 @@ If we consider the pressure boundary conditions, we may need in both cases to se
 
 \subsection{Assumptions, Initial Conditions, and Boundary Conditions}
 
-\subsection{Assumptions:}
+\subsubsection{Assumptions:}
 \begin{itemize}
     \item \textbf{Flat 2D plate parallel to the flow:} The flow is two-dimensional and the plate is infinite in the \(x\) direction.
     \item \textbf{\(\frac{d}{dx} \ll \frac{d}{dy}\), \(\frac{d^2}{dx^2} \ll \frac{d^2}{dy^2}\):} Rate of change across the boundary layer is much greater than the rate of change in the flow direction.
@@ -373,12 +374,12 @@ If we consider the pressure boundary conditions, we may need in both cases to se
     \item \textbf{No streamwise pressure gradient \(\frac{dp}{dx}\):} The flow is time-independent.
 \end{itemize}
 
-\subsection{Initial Conditions:}
+\subsubsection{Initial Conditions:}
 \begin{itemize}
     \item \textbf{At \(t = 0\):} The velocity field is established and steady.
 \end{itemize}
 
-\subsection{Boundary Conditions:}
+\subsubsection{Boundary Conditions:}
 \begin{itemize}
     \item \textbf{At the wall \((y = 0)\):} \(u = 0\), \(v = -V_w\) (steady suction velocity).
     \item \textbf{Far from the wall \((y \rightarrow \infty)\):} \(u = U_\infty\), \(v = 0\) (free-stream conditions).
@@ -386,26 +387,22 @@ If we consider the pressure boundary conditions, we may need in both cases to se
 
 \subsection{Simplified Continuity and Navier–Stokes Equations on a 2D domain}
 
-\subsection{Continuity Equation:}
+\subsection{Continuity and Navier–Stokes Equations:}
 \[
-\frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} = 0
+\begin{cases}
+    \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} = 0 & \text{(Continuity Equation)} \\
+    u \frac{\partial u}{\partial x} + v \frac{\partial u}{\partial y} = -\frac{1}{\rho} \frac{\partial p}{\partial x} + \nu \left(\frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial y^2}\right) & \text{(x-momentum)} \\
+    u \frac{\partial v}{\partial x} + v \frac{\partial v}{\partial y} = -\frac{1}{\rho} \frac{\partial p}{\partial y} + \nu \left(\frac{\partial^2 v}{\partial x^2} + \frac{\partial^2 v}{\partial y^2}\right) & \text{(y-momentum)}
+\end{cases}
 \]
 
-\subsection{Navier–Stokes Equations:}
-\begin{align*}
-    \text{x-momentum:} & \quad u \frac{\partial u}{\partial x} + v \frac{\partial u}{\partial y} = -\frac{1}{\rho} \frac{\partial p}{\partial x} + \nu (\frac{\partial^2 v}{\partial x^2}+\frac{\partial^2 v}{\partial y^2}) \\
-    \text{y-momentum:} & \quad u \frac{\partial v}{\partial x} + v \frac{\partial v}{\partial y} = -\frac{1}{\rho} \frac{\partial p}{\partial y} + \nu (\frac{\partial^2 v}{\partial x^2}+\frac{\partial^2 v}{\partial y^2})
-\end{align*}
-
-Given the assumptions, the equations simplify to the so called Prandtl's boundary layer equations:
+Given the assumptions, the equations simplify as follows:
 \[
-\frac{\partial v}{\partial y} = 0
-\]
-\[
-u \frac{\partial u}{\partial y} = v \frac{\partial^2 u}{\partial y^2}
-\]
-\[
-\frac{\partial p}{\partial y} = 0
+\begin{cases}
+    \frac{\partial v}{\partial y} = 0 \\
+    u \frac{\partial u}{\partial y} = v \frac{\partial^2 u}{\partial y^2} \\
+    \frac{\partial p}{\partial y} = 0
+\end{cases}
 \]
 
 \subsection{Solution of Simplified PDEs}
@@ -420,7 +417,7 @@ u(y) = U_\infty \left(1 - e^{-\frac{V_w}{\nu} y}\right)
     \label{fig:suction boundary layer_solution}
 \end{figure}
 
-In addition, we have implemented in our script the calculation of the friction coefficient and wall shear stresses, which result in:
+In addition, we have implemented in our script visible in the GitHub repository \cite{GitHubRepo} the calculation of the friction coefficient and wall shear stresses, which result in:
 \begin{itemize}
     \item \textbf{Wall Shear Stress (\(\tau_{\text{wall}}\)):} \(0.122500 \, \mathrm{N/m^2}\)
     \item \textbf{Friction Coefficient (\(c_f\)):} \(0.2\)
@@ -445,12 +442,16 @@ u(y) = U_\infty \left(1 - e^{-\frac{V_w}{\nu} y}\right) = \frac{\nu}{V_w} = 0.00
 \]
 
 \subsection{Applications of the suction boundary layer}
-The suction boundary layer scenario finds applications in various engineering problems where boundary layer theory is relevant. One notable example is the flow over a long train, where the flow is parallel to the length of the train and the length is significantly greater than the width. 
+The suction boundary layer scenario finds applications in various engineering problems where boundary layer theory is relevant. One notable example for our team could be the flow over a long train, where the flow is parallel to the length of the train and the length is significantly greater than the width. 
 
 \begin{thebibliography}{9}
+    \bibitem{GitHubRepo}
+    \textit{CFD Repository},\\
+    Available at: \url{https://github.com/GiuseppePisante/CFD.git}
+    
+    \bibitem{GitHubCopilot}
+    \textit{GitHub Copilot},\\
+    GitHub. Available at: \url{https://github.com/features/copilot}
+    \end{thebibliography}
 
-\bibitem{NumericalMethods}
-  \textit{Numerical and analytical solutions of new Blasius equation for turbulent flow},
-  Mizanur Rahman, Shahansha Khan, M Ali Akbar.
-\end{thebibliography}
 \end{document}
