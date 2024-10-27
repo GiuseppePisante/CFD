@@ -305,7 +305,9 @@ which leads to the dimensional form:
 Stokes equation \eqref{Stokes} is elliptic and requires boundary conditions (of Dirichlet or Neumann types) for velocity and pressure in some cases.
 The main difference in the velocity boundary conditions for Euler and Stokes is that for the first one we tipically set a slip conditions at walls, while for the second one we often apply the no-slip condition at solid boundaries.
 If we consider the pressure boundary conditions, we may need in both cases to set an inlet or outlet pressure to apply specific values, but pressure boundary conditions are not always set.
-\section{Relationship between Flow Rate and Delta Pressure for the Bernoulli equation}
+
+\section{The Bernoulli equation}
+\subsection{Relationship between Flow Rate and Delta Pressure for the Bernoulli equation}
 Given the Bernoulli equation:
 \begin{equation}
 P_1 + \frac{1}{2} \rho v_1^2 + \rho gh_1 = P_2 + \frac{1}{2} \rho v_2^2 + \rho gh_2
@@ -386,8 +388,6 @@ Given the previously reported assumptions of the Bernoulli equation, since the f
 \end{itemize}
 
 \subsection{Simplified Continuity and Navier–Stokes Equations on a 2D domain}
-
-\subsection{Continuity and Navier–Stokes Equations:}
 \[
 \begin{cases}
     \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} = 0 & \text{(Continuity Equation)} \\
@@ -410,6 +410,8 @@ We can solve the simplified PDEs, and get to the general solution of the form:
 \[
 u(y) = U_\infty \left(1 - e^{-\frac{V_w}{\nu} y}\right)
 \]
+
+The velocity profile is shown in Figure \ref{fig:suction boundary layer_solution}.
 \begin{figure}[]
     \centering
     \includegraphics[width=0.4\textwidth]{output_plot.png}
@@ -417,12 +419,14 @@ u(y) = U_\infty \left(1 - e^{-\frac{V_w}{\nu} y}\right)
     \label{fig:suction boundary layer_solution}
 \end{figure}
 
-In addition, we have implemented in our script visible in the GitHub repository \cite{GitHubRepo} the calculation of the friction coefficient and wall shear stresses, which result in:
+\subsection{Calculation of the friction coefficient and pressure coefficient}
+The results obtained from our main script are the following:
 \begin{itemize}
-    \item \textbf{Wall Shear Stress (\(\tau_{\text{wall}}\)):} \(0.122500 \, \mathrm{N/m^2}\)
-    \item \textbf{Friction Coefficient (\(c_f\)):} \(0.2\)
+    \item \textbf{Wall shear stress} (\(\tau_{\text{wall}}\)): 0.122500 N/m\(^2\)
+    \item \textbf{Friction coefficient} (\(c_f\)): 0.2
+    \item \textbf{Pressure coefficient} (\(c_p\)): 0.0
 \end{itemize}
-
+These results are consistent with the expected values, since the pressure coefficient is zero due to the absence of a pressure gradient in the flow.
 
 \subsection{Calculation of the boundary layer displacement thickness}
 The boundary layer displacement thickness (\(\delta^*\)) can be calculated by exploiting the definition of the velocity distribution into the formula provided by the excercise.
