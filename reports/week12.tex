@@ -275,6 +275,36 @@ There are different types of boundary conditions that can be applied to the velo
     \]
 \end{itemize}
 
+
+\section{Simplification of the Navier-Stokes Equations}
+\subsection{Euler equation:}
+Euler equation can be obtained by simplifying the Navier-Stokes equation using the non-dimensional numbers, in particular this equation describes fluids with high Reyenolds numbers, meaning that the viscosity may be neglected, under the assumption that the fluid is far from solid walls.
+Starting from \eqref{N-S} we obtain the dimensionless form of the Euler equation:
+\[
+    \frac{\partial u_i^*}{\partial t^*} + u_j^* \frac{\partial u_i^*}{\partial x_j^*} = - \frac{\partial p^*}{\partial x_i^*}
+\]
+which we can convert to the dimensional form as follow:
+\begin{equation}
+    \frac{\partial u_i}{\partial t} + u_j \frac{\partial u_i}{\partial x_j} = -\frac{1}{\rho} \frac{\partial p}{\partial x_i} \label{Euler}
+\end{equation}
+
+Since \eqref{Euler} represents a hyperbolic system of equations we need to set proper boundary conditions for the velocity such as the Dirichlet boundary conditions, which allow us to set specific values for the different components of the velocity, or the Neumann boundary conditions, which allow us to describe how the flow velocity changes across a boundary.
+Sometimes, depending on the flow configuration, we may need to set also Dirichlet boundary conditions for the pressure, for example to set a constant outlet pressure.
+
+\subsection{Stokes equation:}
+Stokes equation is a simplification of the Navier-Stokes equation suitable for describing fluids with low Reyenolds numbers, for which the viscous forces are much larger than inertia.
+Starting from \eqref{N-S} we obtain the dimensionless form of the Stokes equation by neglecting the non-linear term:
+\[
+    \frac{\partial p^*}{\partial x_i^*} = \frac{1}{Re} \frac{\partial^2 u_i^*}{\partial x_j^{*2}}
+\]
+which leads to the dimensional form:
+\begin{equation}
+    \frac{\partial p}{\partial x_i} = \mu \frac{\partial^2 u_i}{\partial x_j^2} \label{Stokes}
+\end{equation}
+
+Stokes equation \eqref{Stokes} is elliptic and requires boundary conditions (of Dirichlet or Neumann types) for velocity and pressure in some cases.
+The main difference in the velocity boundary conditions for Euler and Stokes is that for the first one we tipically set a slip conditions at walls, while for the second one we often apply the no-slip condition at solid boundaries.
+If we consider the pressure boundary conditions, we may need in both cases to set an inlet or outlet pressure to apply specific values, but pressure boundary conditions are not always set.
 \section{Relationship between Flow Rate and Delta Pressure for the Bernoulli equation}
 Given the Bernoulli equation:
 \begin{equation}
@@ -329,36 +359,6 @@ The design of a Venturi nozzle must consider the following restrictions due to t
 \subsection{Considerations for Using a Venturi Nozzle in a Heat Exchanger}
 
 Given the previously reported assumptions of the Bernoulli equation, since the fluid is non-conductive, the Venturi nozzle cannot be used in a heat exchanger.
-
-\section{Simplification of the Navier-Stokes Equations}
-\subsection{Euler equation:}
-Euler equation can be obtained by simplifying the Navier-Stokes equation using the non-dimensional numbers, in particular this equation describes fluids with high Reyenolds numbers, meaning that the viscosity may be neglected, under the assumption that the fluid is far from solid walls.
-Starting from \eqref{N-S} we obtain the dimensionless form of the Euler equation:
-\[
-    \frac{\partial u_i^*}{\partial t^*} + u_j^* \frac{\partial u_i^*}{\partial x_j^*} = - \frac{\partial p^*}{\partial x_i^*}
-\]
-which we can convert to the dimensional form as follow:
-\begin{equation}
-    \frac{\partial u_i}{\partial t} + u_j \frac{\partial u_i}{\partial x_j} = -\frac{1}{\rho} \frac{\partial p}{\partial x_i} \label{Euler}
-\end{equation}
-
-Since \eqref{Euler} represents a hyperbolic system of equations we need to set proper boundary conditions for the velocity such as the Dirichlet boundary conditions, which allow us to set specific values for the different components of the velocity, or the Neumann boundary conditions, which allow us to describe how the flow velocity changes across a boundary.
-Sometimes, depending on the flow configuration, we may need to set also Dirichlet boundary conditions for the pressure, for example to set a constant outlet pressure.
-
-\subsection{Stokes equation:}
-Stokes equation is a simplification of the Navier-Stokes equation suitable for describing fluids with low Reyenolds numbers, for which the viscous forces are much larger than inertia.
-Starting from \eqref{N-S} we obtain the dimensionless form of the Stokes equation by neglecting the non-linear term:
-\[
-    \frac{\partial p^*}{\partial x_i^*} = \frac{1}{Re} \frac{\partial^2 u_i^*}{\partial x_j^{*2}}
-\]
-which leads to the dimensional form:
-\begin{equation}
-    \frac{\partial p}{\partial x_i} = \mu \frac{\partial^2 u_i}{\partial x_j^2} \label{Stokes}
-\end{equation}
-
-Stokes equation \eqref{Stokes} is elliptic and requires boundary conditions (of Dirichlet or Neumann types) for velocity and pressure in some cases.
-The main difference in the velocity boundary conditions for Euler and Stokes is that for the first one we tipically set a slip conditions at walls, while for the second one we often apply the no-slip condition at solid boundaries.
-If we consider the pressure boundary conditions, we may need in both cases to set an inlet or outlet pressure to apply specific values, but pressure boundary conditions are not always set.
 
 \section{Asymptotic Suction Boundary Layer}
 
