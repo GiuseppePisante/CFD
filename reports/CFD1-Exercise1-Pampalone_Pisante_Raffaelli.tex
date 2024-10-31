@@ -419,12 +419,19 @@ The velocity profile is shown in Figure \ref{fig:suction boundary layer_solution
     \label{fig:suction boundary layer_solution}
 \end{figure}
 
+The pressure was found from the Bernoulli equation as an approximation. The distribution of the pressure is shown in Figure \ref{fig:pressure_solution}.
+\begin{figure}[]
+    \centering
+    \includegraphics[width=0.4\textwidth]{asymptotic_suction_boundary_layer_pressure.png}
+    \caption{Numerical solution of suction boundary layer scenario showing the pressure profile.}
+    \label{fig:pressure_solution}
+\end{figure}
 \subsection{Calculation of the friction coefficient and pressure coefficient}
 The results obtained from our main script are the following:
 \begin{itemize}
     \item \textbf{Wall shear stress} (\(\tau_{\text{wall}}\)): 0.122500 N/m\(^2\)
     \item \textbf{Friction coefficient} (\(c_f\)): 0.2
-    \item \textbf{Pressure coefficient} (\(c_p\)): 0.0
+    \item \textbf{Pressure coefficient at the wall} (\(c_p\)): 0.99
 \end{itemize}
 These results are consistent with the expected values, since the pressure coefficient is zero due to the absence of a pressure gradient in the flow.
 
