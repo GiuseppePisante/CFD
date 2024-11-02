@@ -1,33 +1,10 @@
 import numpy as np
 
 def second_derivative(u, coord, axis):
-    """
-    Compute the second derivative of u with respect to coord along the given axis.
-    """
     return np.gradient(np.gradient(u, coord, axis=axis), coord, axis=axis)
 
 def explicit_euler(pde_func, u_initial, x, y, t_start, t_end, num_time_steps):
-    """
-    Solve the PDE using the explicit Euler method.
-    
-    Parameters:
-    pde_func: function
-        The PDE function to solve.
-    u_initial: ndarray
-        The initial condition of the PDE.
-    x, y: ndarray
-        The spatial coordinates.
-    t_start: float
-        The start time.
-    t_end: float
-        The end time.
-    num_time_steps: int
-        The number of time steps.
-    
-    Returns:
-    u: ndarray
-        The solution of the PDE at the final time step.
-    """
+
     dt = (t_end - t_start) / num_time_steps
     u = u_initial.copy()
     t = t_start
@@ -39,27 +16,7 @@ def explicit_euler(pde_func, u_initial, x, y, t_start, t_end, num_time_steps):
     return u
 
 def Crank_Nicolson(u_initial, x, y, t_start, t_end, num_time_steps, alpha=0.01):
-    """
-    Solve the PDE using the Crank-Nicolson method.
-    
-    Parameters:
-    u_initial: ndarray
-        The initial condition of the PDE.
-    x, y: ndarray
-        The spatial coordinates.
-    t_start: float
-        The start time.
-    t_end: float
-        The end time.
-    num_time_steps: int
-        The number of time steps.
-    alpha: float
-        Thermal diffusivity.
-    
-    Returns:
-    u: ndarray
-        The solution of the PDE at the final time step.
-    """
+
     dt = (t_end - t_start) / num_time_steps
     dx = x[0, 1] - x[0, 0]
     dy = y[1, 0] - y[0, 0]
