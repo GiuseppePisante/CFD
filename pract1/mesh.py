@@ -26,8 +26,3 @@ class Mesh:
         plt.ylabel('Y')
         plt.title('2D Mesh')
         plt.show()
-
-# Example usage:
-# mesh = Mesh(0, 10, 0, 10, 11, 11)
-# mesh.mesh_generator()
-# mesh.show()
