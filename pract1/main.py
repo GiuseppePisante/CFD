@@ -5,13 +5,7 @@ import solver
 from matplotlib.animation import FuncAnimation
 
 def heat_transfer_pde(T, t, x, y):
-    """
-    T: temperature
-    t: time
-    x, y: spatial coordinates
-    alpha: thermal diffusivity
-    """
-    # Assuming 2D heat equation: dT/dt = (d^2T/dx^2 + d^2T/dy^2)
+    # 2D heat equation: dT/dt = (d^2T/dx^2 + d^2T/dy^2)
     dTdx2 = solver.second_derivative(T, x[0, :], axis=1)
     dTdy2 = solver.second_derivative(T, y[:, 0], axis=0)
     dTdt = dTdx2 + dTdy2
@@ -35,9 +29,9 @@ T_initial[:, -1] = 0
 # Time parameters
 t_start = 0
 t_end = 0.16
-num_time_steps = 100  # Increase the number of time steps for better stability
+num_time_steps = 100
 
-# Solve the PDE and store all time steps using Crank-Nicolson method
+# Solve the PDE and store all time steps using Explicit-Euler method
 dt = (t_end - t_start) / num_time_steps
 T = T_initial.copy()
 t = t_start
