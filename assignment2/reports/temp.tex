@@ -6,7 +6,7 @@
 \usepackage{hyperref}
 
 % Title, date, and author
-\title{Exercise 2}
+\title{Exercise 1}
 \author{Your Name, Collaborator's Name}
 \date{\today}
 
@@ -44,50 +44,7 @@
 \newpage
 \small
 
-
-\section{Fundamentals of Differential Equations}
-
-\subsection{Difference between ordinary derivative, partial derivative, and material (total) derivative}
-\begin{itemize}
-    \item \textbf{Ordinary derivative} \( \left( \frac{d}{dt} \right) \): Describes the rate of change of a function with respect to one variable. It is used for functions depending on a single variable, such as \( f(t) \).
-    \item \textbf{Partial derivative} \( \left( \frac{\partial}{\partial t} \right) \): Describes the rate of change of a multivariable function with respect to one of its variables, while holding other variables constant. This is often used in multivariable functions such as \( f(x, t) \), where we can find \( \frac{\partial f}{\partial t} \) while \( x \) remains fixed.
-    \item \textbf{Material (total) derivative} \( \left( \frac{D}{Dt} \right) \): is a measure of the rate of change of a physical quantity (like velocity or temperature) experienced by an observer moving with the fluid. It combines both local and convective rates of change as, for example, in a function \( f(x, t) \), \( \frac{D}{Dt} = \frac{\partial}{\partial t} + u \frac{\partial}{\partial x} \) for some velocity field \( u \).
-\end{itemize}
-
-\subsection{Ordinary and partial differential equations}
-\begin{itemize}
-    \item \textbf{Ordinary Differential Equations (ODEs)}: These involve derivatives with respect to a single variable. For example, \( \frac{dy}{dt} = y \) is an ODE.
-    \item \textbf{Partial Differential Equations (PDEs)}: These involve partial derivatives with respect to multiple variables. For instance, the heat equation \( \frac{\partial u}{\partial t} = \alpha \frac{\partial^2 u}{\partial x^2} \) is a PDE.
-\end{itemize}
-
-\subsection{Order of a differential equation}
-The order of a differential equation is the highest order of derivative present in the equation.
-\begin{itemize}
-    \item \textbf{First-order ODE}: \( \frac{dy}{dt} = ky \).
-    \item \textbf{Second-order PDE}: The wave equation \( \frac{\partial^2 u}{\partial t^2} = c^2 \frac{\partial^2 u}{\partial x^2} \).
-    \item \textbf{Third-order ODE}: \( \frac{d^3 y}{dt^3} + \frac{d^2 y}{dt^2} + y = 0 \).
-\end{itemize}
-
-\subsection{Linear and non-linear differential equations}
-\begin{itemize}
-    \item \textbf{Linear Differential Equations}: These have terms that are linear in the unknown function and its derivatives. For example, \( \frac{dy}{dt} + 3y = 0 \) is linear.
-    \item \textbf{Non-linear Differential Equations}: These have terms that are non-linear in the unknown function or its derivatives. For instance, the Navier-Stokes equation \( \rho \left( \frac{\partial \mathbf{u}}{\partial t} + \mathbf{u} \cdot \nabla \mathbf{u} \right) = -\nabla p + \mu \nabla^2 \mathbf{u} + \mathbf{f} \) is non-linear. This non-linearity arises due to the convective term \( \mathbf{u} \cdot \nabla \mathbf{u} \), which represents the interaction of the velocity field with itself. Specifically, \( \mathbf{u} \cdot \nabla \mathbf{u} \) is non-linear because it involves the product of the velocity field \( \mathbf{u} \) with its own gradient \( \nabla \mathbf{u} \).
-\end{itemize}
-
-\subsection{Initial value problem (IVP) and boundary value problem (BVP)}
-\begin{itemize}
-    \item \textbf{Initial Value Problem (IVP)}: A problem that requires solving a differential equation with specified initial conditions, such as \( y(0) = y_0 \), in time.
-    \item \textbf{Boundary Value Problem (BVP)}: A problem where the solution to a differential equation is sought within a specified range, with conditions, usually Dirichlet or Neumann, given at the boundaries of the range, like \( u(0) = 0 \) and \( u(1) = 1 \).
-\end{itemize}
-
-\subsection{Parabolic and elliptic PDE examples and their conditions}
-The difference between parabolic and elliptic PDEs can be defined through the computation of a discriminant \( \Delta = b^2 - 4ac \), where \( a \), \( b \), and \( c \) are coefficients from the second-order PDE of the form \( a \frac{\partial^2 u}{\partial x^2} + b \frac{\partial^2 u}{\partial x \partial y} + c \frac{\partial^2 u}{\partial y^2} + \ldots = 0 \). If \( \Delta = 0 \), the PDE is parabolic, and if \( \Delta < 0 \), the PDE is elliptic.
-\begin{itemize}
-    \item \textbf{Parabolic PDE}: The heat equation \( \frac{\partial u}{\partial t} = \alpha \frac{\partial^2 u}{\partial x^2} \) is parabolic and typically requires both initial and boundary conditions.
-    \item \textbf{Elliptic PDE}: Laplace's equation \( \nabla^2 u = 0 \) is elliptic and usually requires boundary conditions but not initial conditions, since it does not depend on time.
-\end{itemize}
-
-\section{Order Reduction}
+\section*{Task 2.2: Order Reduction}
 
 The governing equation of the damped oscillator is given by:
 \begin{equation}
@@ -132,7 +89,16 @@ However, we also need to rewrite the initial conditions for \( y(t) \) and \( \f
 
 This approach allows us to solve the system using methods suited for first-order differential equations, enabling easier numerical or analytical analysis.
 
-\section{Blasius Equation}
+
+
+
+
+
+
+
+
+
+\section*{Task 2.3: Blasius Equation}
 
 \subsection*{Part (a): Convert the Blasius Equation to a System of First-Order ODEs}
 
@@ -216,15 +182,5 @@ specified at infinity, making it impractical to impose this condition directly a
 \end{enumerate}
 
 This iterative approach allows us to find an appropriate initial condition for \( y_3(0) = f''(0) \) that satisfies the boundary condition at infinity.
-
-\begin{thebibliography}{9}
-    \bibitem{GitHubRepo}
-    \textit{CFD Repository},\\
-    Available at: \url{https://github.com/GiuseppePisante/CFD.git}
-    
-    \bibitem{GitHubCopilot}
-    \textit{GitHub Copilot},\\
-    GitHub. Available at: \url{https://github.com/features/copilot}
-    \end{thebibliography}
 
 \end{document}
