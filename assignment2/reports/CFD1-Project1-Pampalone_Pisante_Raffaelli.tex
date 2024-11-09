@@ -132,6 +132,11 @@ However, we also need to rewrite the initial conditions for \( y(t) \) and \( \f
 
 This approach allows us to solve the system using methods suited for first-order differential equations, enabling easier numerical or analytical analysis.
 
+
+
+
+
+
 \section{Blasius Equation}
 
 \subsection*{Part (a): Convert the Blasius Equation to a System of First-Order ODEs}
@@ -217,6 +222,31 @@ specified at infinity, making it impractical to impose this condition directly a
 
 This iterative approach allows us to find an appropriate initial condition for \( y_3(0) = f''(0) \) that satisfies the boundary condition at infinity.
 
+
+
+
+
+\section{ Solving Blasius Equation numerically}
+
+\subsection*{Part (a): Euler and RK-4 methods}
+The attached file contains the Python code named Blasius.py, which should be executed to obtain the numerical solution to the Blasius equation."
+
+\subsection*{Part (b): Recommendations for solving the Blausius equations}
+For solving the Blasius equation, I recommend using the Runge-Kutta 4 (RK4) method with a a step size of \( \Delta \eta = 0.05 \).
+The RK4 method provides greater accuracy compared to the Euler method, especially for nonlinear differential equations like the Blasius equation. 
+If computational resources are limited, a slightly larger step size, such as can still provide acceptable results.
+
+\subsection*{Part (c): Recommendations for solving the Blausius equations}
+The velocity profile of the Blasius boundary layer consists of two main components: the streamwise velocity \( u^* = f'(\eta) \) and the wall-normal velocity \( v^* \), 
+both non-dimensionalized with respect to the freestream velocity \( u_\infty \). The streamwise velocity starts at zero at the wall (due to the no-slip condition) and increases 
+smoothly with \( \eta \), approaching the freestream value of 1 as \( \eta \) reaches around 5. This behavior represents the transition from the boundary layer to the freestream. 
+The wall-normal velocity starts at zero at the wall and remains small throughout the boundary layer reflecting the slight upward movement of fluid near the wall due to the boundary layer growth, but it does not show a large peak
+
+\subsection*{Part (d): Significance of f''(0)}
+The quantity \( f''(0) \), which is the second derivative of \( f \) with respect to \( \eta \) at \( \eta = 0 \), is significant
+because it is directly related to the shear stress at the wall as it represents the velocity gradient at the wall
+This velocity gradient determines how much shear is exerted by the fluid on the wall. 
+
 \begin{thebibliography}{9}
     \bibitem{GitHubRepo}
     \textit{CFD Repository},\\
@@ -225,6 +255,10 @@ This iterative approach allows us to find an appropriate initial condition for \
     \bibitem{GitHubCopilot}
     \textit{GitHub Copilot},\\
     GitHub. Available at: \url{https://github.com/features/copilot}
-    \end{thebibliography}
 
+    \bibitem{clarkrichards2022} Clark Richards, 
+    \textit{Solving the Blasius Equation},\\
+    Avaible at: \url{https://www.clarkrichards.org/2022/06/22/solving-the-blasius-equation/}.
+    \end{thebibliography}
+       
 \end{document}
