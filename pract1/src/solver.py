@@ -17,7 +17,6 @@ def explicit_euler(pde_func, u_initial, x, y, t, dt):
     u[-1, :] = 1 - np.sin(np.pi * y[:,0] / 2)
     u[:, 0] = 1
     u[:, -1] = 0
-
     u += dt * pde_func(u, t, x, y)
 
     return u
@@ -62,3 +61,4 @@ def crank_nicolson(pde_func, u_initial, x, y, t, dt):
     u_new = u_new_flat.reshape((nx, ny))
     
     return u_new
+

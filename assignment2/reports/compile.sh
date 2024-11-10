@@ -1,4 +1,4 @@
 #!/bin/bash
 mkdir -p aux_files
-pdflatex -output-directory=aux_files CFD1-Project1-Pampalone_Pisante_Raffaelli.tex
-mv aux_files/CFD1-Project1-Pampalone_Pisante_Raffaelli.pdf .
+pdflatex -output-directory=aux_files temp_marti.tex
+mv aux_files/temp_marti.pdf .
