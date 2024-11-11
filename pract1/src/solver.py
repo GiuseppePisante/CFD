@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.linalg import lu, solve_triangular
 
 def second_derivative(u, coord, axis):
     du2 = np.zeros_like(u)
@@ -21,29 +22,15 @@ def explicit_euler(pde_func, u_initial, x, y, t, dt):
 
     return u
 
-def crank_nicolson(pde_func, u_initial, x, y, t, dt):
-    u = u_initial.copy()
-    nx, ny = u.shape
-    dx = x[0, 1] - x[0, 0]
-    dy = y[1, 0] - y[0, 0]
-    
-    # Boundary conditions
-    u[0, :] = 1 - y[:,0]**3
-    u[-1, :] = 1 - np.sin(np.pi * y[:,0] / 2)
-    u[:, 0] = 1
-    u[:, -1] = 0
-    
-    # Construct the pentadiagonal matrix
+def FactorizeA(u_initial, dt, dx, dy):
+    nx, ny = u_initial.shape
     A = np.zeros((nx * ny, nx * ny))
-    b = np.zeros(nx * ny)
-    
     for i in range(nx):
         for j in range(ny):
             idx = i * ny + j
             if i == 0 or i == nx - 1 or j == 0 or j == ny - 1:
                 # Boundary points
                 A[idx, idx] = 1
-                b[idx] = u[i, j]
             else:
                 A[idx, idx] = 1 + dt * (1 / dx**2 + 1 / dy**2)
                 if i > 0:
@@ -54,10 +41,34 @@ def crank_nicolson(pde_func, u_initial, x, y, t, dt):
                     A[idx, idx - 1] = -dt / (2 * dy**2)
                 if j < ny - 1:
                     A[idx, idx + 1] = -dt / (2 * dy**2)
-                b[idx] = u[i, j] + dt * pde_func(u, t, x, y)[i, j]
     
+    # LU factorization of matrix A
+    P, L, U = lu(A)
+    return P, L, U
+
+def crank_nicolson(pde_func, u_initial, x, y, t, dt, P, L, U):
+    u = u_initial.copy()
+    nx, ny = u.shape
+    
+    # Boundary conditions
+    u[0, :] = 1 - y[:,0]**3
+    u[-1, :] = 1 - np.sin(np.pi * y[:,0] / 2)
+    u[:, 0] = 1
+    u[:, -1] = 0
+    
+    b = np.zeros(nx * ny)
+                
+    b = u.flatten() + dt * pde_func(u, t, x, y).flatten()
+    # Boundary points
+    b[0:ny] = u[0, :]
+    b[ny * (nx - 1):] = u[-1, :]
+    b[::ny] = u[:, 0]
+    b[ny - 1::ny] = u[:, -1]
+    
+    Pb = P @ b
+    y = solve_triangular(L, Pb, lower=True)
     # Time-stepping loop
-    u_new_flat = np.linalg.solve(A, b)
+    u_new_flat = solve_triangular(U, y)
     u_new = u_new_flat.reshape((nx, ny))
     
     return u_new

@@ -36,9 +36,11 @@ t = t_start
 T_explicit_all_steps = [T_explicit.copy().T]
 T_crank_all_steps = [T_crank.copy().T]
 
+P, L, U = solver.FactorizeA(T_initial, dt, x[0, 1] - x[0, 0], y[1, 0] - y[0, 0])
+
 for _ in range(num_time_steps):
     T_explicit = solver.explicit_euler(heat_transfer_pde, T_explicit, x, y, t, dt)
-    T_crank = solver.crank_nicolson(heat_transfer_pde, T_crank, x, y, t, dt)
+    T_crank = solver.crank_nicolson(heat_transfer_pde, T_crank, x, y, t, dt, P, L, U)
     t += dt
     T_explicit_all_steps.append(T_explicit.copy().T)
     T_crank_all_steps.append(T_crank.copy().T)
@@ -72,12 +74,13 @@ def update(frame):
         c.remove()
     
     # Update contours with the current frame and keep color scaling consistent
-    ax1.contourf(x, y, T_explicit_all_steps[frame], cmap='hot', levels=levels, origin='lower', norm=norm)
-    ax2.contourf(x, y, T_crank_all_steps[frame], cmap='hot', levels=levels, origin='lower', norm=norm)
+    ax1.contourf(x, y, T_explicit_all_steps[frame], cmap='hot', origin='lower', norm=norm)
+    ax2.contourf(x, y, T_crank_all_steps[frame], cmap='hot', origin='lower', norm=norm)
     
     # Update titles with time information
     ax1.set_title(f'Explicit Euler Solution at t={frame*dt:.4f}')
     ax2.set_title(f'Crank-Nicolson Solution at t={frame*dt:.4f}')
 
 ani = FuncAnimation(fig, update, frames=num_time_steps, blit=False)
-ani.save('heat_transfer_animation.mp4', writer='ffmpeg', fps=30)
+plt.show()
+#ani.save('heat_transfer_animation.mp4', writer='ffmpeg', fps=30)
