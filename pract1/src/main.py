@@ -5,15 +5,12 @@ import solver
 from matplotlib.animation import FuncAnimation
 from matplotlib.colors import Normalize
 
-
-
 def heat_transfer_pde(T, t, x, y):
     # 2D heat equation: dT/dt = (d^2T/dx^2 + d^2T/dy^2)
     dTdx2 = solver.second_derivative(T, x[0, :], axis=1)
     dTdy2 = solver.second_derivative(T, y[:, 0], axis=0)
     dTdt = dTdx2 + dTdy2
     return dTdt
-
 
 # Create the mesh
 mesh_instance = mesh.Mesh(x_start=0, x_end=1, y_start=0, y_end=1, x_points=40, y_points=40)

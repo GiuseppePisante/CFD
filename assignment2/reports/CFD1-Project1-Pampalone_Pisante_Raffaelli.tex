@@ -139,7 +139,7 @@ This approach allows us to solve the system using methods suited for first-order
 
 \section{Blasius Equation}
 
-\subsection*{Part (a): Convert the Blasius Equation to a System of First-Order ODEs}
+\subsection{Convert the Blasius Equation to a System of First-Order ODEs}
 
 The Blasius equation is given by:
 
@@ -185,66 +185,53 @@ with boundary conditions:
     \item As \( \eta \to \infty \): \( y_2 = 1 \)
 \end{itemize}
 
-\subsection*{Part (b): Providing an Initial Condition for \( f''(0)\)}
+\subsection{Providing an Initial Condition for \( f''(0)\)}
 
-To solve this problem as an initial value problem, we need an initial value for \( f''(0) \). However, the boundary condition \( y_2(\infty) = 1 \) is 
-specified at infinity, making it impractical to impose this condition directly at a finite point. To address this, we can use an iterative approach:
+In order to convert the Blasius equation from a boundary value problem into an initial value problem we need an initial condition for \( f''(0) \),
+such that the boundary condition \( f'(\eta) \rightarrow 1 \) as \( \eta \rightarrow \infty \) is satisfied. To address this, we can use an iterative approach:
 
 \begin{enumerate}
-    \item Guess an initial value for \( f''(0) \).
-    \item Integrate the system of equations from \( \eta = 0 \) to a sufficiently large value of \( \eta \)  where \( y_2(\eta) \) approaches a constant. 
-    To solve this system numerically, we use the Runge-Kutta method of fourth order (RK4) that allows to approximate solutions to ordinary differential equations.
+    \item Guess an initial value for \( f''(0) \) 
     
-    For a step size \( h \), the RK4 method computes the next values \( y_{i+1} \) as follows:
+    \item Using the guessed \( f''(0) \), integrate the system of first-order ODEs from \( \eta = 0 \) to a sufficiently 
+    large \( \eta \) where \( f'(\eta) \) approaches its asymptotic value.
     
-    \[
-    k_1 = h \cdot f(\eta_i, y_i)
-    \]
-    \[
-    k_2 = h \cdot f\left(\eta_i + \frac{h}{2}, y_i + \frac{k_1}{2}\right)
-    \]
-    \[
-    k_3 = h \cdot f\left(\eta_i + \frac{h}{2}, y_i + \frac{k_2}{2}\right)
-    \]
-    \[
-    k_4 = h \cdot f(\eta_i + h, y_i + k_3)
-    \]
-    
-    The next value of the solution is updated by:
-    
-    \[
-    y_{i+1} = y_i + \frac{1}{6} \left(k_1 + 2k_2 + 2k_3 + k_4\right)
-    \]
-
-    \item Check if \( y_2(\eta) \) approaches 1 as \( \eta \to \infty \). If \( y_2(\eta) \) is not close to 1, adjust the initial guess for \( y_3(0) \) 
-    iterate this process until the condition \( y_2(\infty) = 1 \) (or close to it) is satisfied within a desired tolerance.
+    \item After solving the ODEs, examine the computed value of \( f'(\eta_{\text{max}}) \). If this value is close to 1, then the chosen
+     \( f''(0) \) is likely correct. Otherwise, adjust \( f''(0) \) until \( f'(\eta_{\text{max}}) \) is sufficiently close to 1. In particular:
+     \begin{itemize}
+        \item if \( f'(\eta_{\text{max}}) < 1 \), increase \( f''(0) \);
+        \item if \( f'(\eta_{\text{max}}) > 1 \), decrease \( f''(0) \).
+    \end{itemize}
+   
 \end{enumerate}
-
-This iterative approach allows us to find an appropriate initial condition for \( y_3(0) = f''(0) \) that satisfies the boundary condition at infinity.
-
 
 
 
 
 \section{ Solving Blasius Equation numerically}
 
-\subsection*{Part (a): Euler and RK-4 methods}
-The attached file contains the Python code named Blasius.py, which should be executed to obtain the numerical solution to the Blasius equation."
+\subsection{Euler and RK-4 methods}
+The attached file \texttt{blausius.py} from our repository \cite{GitHubRepo} contains the Python code which should be executed to obtain the numerical solution to the Blasius equation.
 
-\subsection*{Part (b): Recommendations for solving the Blausius equations}
+\subsection{Recommendations for solving the Blausius equations}
 For solving the Blasius equation, I recommend using the Runge-Kutta 4 (RK4) method with a a step size of \( \Delta \eta = 0.05 \).
 The RK4 method provides greater accuracy compared to the Euler method, especially for nonlinear differential equations like the Blasius equation. 
 If computational resources are limited, a slightly larger step size, such as can still provide acceptable results.
 
-\subsection*{Part (c): Recommendations for solving the Blausius equations}
-The velocity profile of the Blasius boundary layer consists of two main components: the streamwise velocity \( u^* = f'(\eta) \) and the wall-normal velocity \( v^* \), 
+\includegraphics[width=\textwidth]{Figure_1.png}\par\vspace{1cm}
+
+\subsection{Velocity components}
+The velocity profile of the Blasius boundary layer consists of two components: the streamwise velocity \( u^* = f'(\eta) \) and the wall-normal velocity \( v^* \), 
 both non-dimensionalized with respect to the freestream velocity \( u_\infty \). The streamwise velocity starts at zero at the wall (due to the no-slip condition) and increases 
 smoothly with \( \eta \), approaching the freestream value of 1 as \( \eta \) reaches around 5. This behavior represents the transition from the boundary layer to the freestream. 
-The wall-normal velocity starts at zero at the wall and remains small throughout the boundary layer reflecting the slight upward movement of fluid near the wall due to the boundary layer growth, but it does not show a large peak
+The wall-normal velocity starts at zero at the wall and remains small throughout the boundary layer reflecting the slight upward movement of fluid near the wall due to the boundary layer growth.
 
-\subsection*{Part (d): Significance of f''(0)}
-The quantity \( f''(0) \), which is the second derivative of \( f \) with respect to \( \eta \) at \( \eta = 0 \), is significant
-because it is directly related to the shear stress at the wall as it represents the velocity gradient at the wall
+\includegraphics[width=\textwidth]{Figure_2.png}\par\vspace{1cm}
+
+\subsection{Significance of f''(0)}
+The value of \( f''(0) = 0.33 \) used in our implementation was taken from the source \cite{clarkrichards2022}. The
+quantity \( f''(0) \), which is the second derivative of \( f \) with respect to \( \eta \) at \( \eta = 0 \), is significant
+because it is directly related to the shear stress at the wall as it represents the velocity gradient at the wall.
 This velocity gradient determines how much shear is exerted by the fluid on the wall. 
 
 \begin{thebibliography}{9}

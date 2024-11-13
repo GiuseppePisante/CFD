@@ -5,8 +5,6 @@ import solver
 from matplotlib.animation import FuncAnimation
 from matplotlib.colors import Normalize
 
-
-
 def heat_transfer_pde(T, t, x, y):
     # 2D heat equation: dT/dt = (d^2T/dx^2 + d^2T/dy^2)
     dTdx2 = solver.second_derivative(T, x[0, :], axis=1)
@@ -14,8 +12,7 @@ def heat_transfer_pde(T, t, x, y):
     dTdt = dTdx2 + dTdy2
     return dTdt
 
-
-# Create the mesh
+# Create the mesh NOTA: cambiare la discretizzazione 
 mesh_instance = mesh.Mesh(x_start=0, x_end=1, y_start=0, y_end=1, x_points=40, y_points=40)
 mesh_instance.mesh_generator()
 x, y = mesh_instance.x, mesh_instance.y
@@ -26,8 +23,9 @@ T_initial = np.zeros_like(x)
 # Time parameters
 t_start = 0
 t_end = 0.16
-num_time_steps = 1600 # 16 160 1600 # ! con 16 è davvero orribile
+num_time_steps = 160 # 16 160 1600 # ! con 16 è davvero orribile
 
+# NOTA: stai attento a diminuire il dt
 # Solve the PDE and store all time steps using Explicit-Euler method
 dt = (t_end - t_start) / num_time_steps
 T_explicit = T_initial.copy()
@@ -41,7 +39,7 @@ T_crank_point = [T_crank[9,9]]
 # Point 2 
 T_explicit_final = []
 T_crank_final = []
-
+T_contourplot = []
 
 for _ in range(num_time_steps):
     T_explicit = solver.explicit_euler(heat_transfer_pde, T_explicit, x, y, t, dt)
@@ -49,6 +47,10 @@ for _ in range(num_time_steps):
     t += dt
     T_explicit_point.append(T_explicit[9,9])
     T_crank_point.append(T_crank[9,9])
+
+# NOTA: aggiungere tempi mancati
+    if t in [0.01, 0.02, 0.04, 0.08, 0.16]:
+        T_contourplot.append(T_explicit)
 
 T_explicit_final = np.array(T_explicit[9, :])
 T_crank_final = np.array(T_crank[9, :])
@@ -68,7 +70,6 @@ plt.legend()
 plt.grid(True)
 plt.savefig("temperature_evolution_point_0404.png")
 
-
 y_points = np.linspace(0, 1, 40)  # 40 points based on delta_y = 1/40
 
 # Plotting the vertical temperature profile along y at x = 0.4
@@ -82,6 +83,20 @@ plt.legend()
 plt.grid(True)
 plt.savefig("last_temperature_for_x04.png")
 
+# Plotting the numerical solution of temperature over the whole domain at times t = 0.01, 0.02, 0.04, 0.08, 0.16. 
+fig, axs = plt.subplots(1, 5, figsize=(12, 8))  # 2 rows, 3 columns
+times = [0.01, 0.02, 0.04, 0.08, 0.16]      # Times corresponding to snapshots
+
+for i, ax in enumerate(axs.flat):
+    if i < len(T_contourplot):
+        contour = ax.contourf(x, y, T_contourplot[i], cmap='hot', levels=50)
+        ax.set_title(f"Time = {times[i]}s")
+        fig.colorbar(contour, ax=ax)
+    else:
+        ax.axis('off')  # Turn off any unused subplots
+
+plt.tight_layout()
+plt.show()
 
 
 
