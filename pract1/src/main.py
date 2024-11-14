@@ -4,6 +4,7 @@ import mesh
 import solver
 from matplotlib.animation import FuncAnimation
 from matplotlib.colors import Normalize
+import time  # For timing execution
 
 def heat_transfer_pde(T, t, x, y):
     # 2D heat equation: dT/dt = (d^2T/dx^2 + d^2T/dy^2)
@@ -13,7 +14,7 @@ def heat_transfer_pde(T, t, x, y):
     return dTdt
 
 # Create the mesh
-mesh_instance = mesh.Mesh(x_start=0, x_end=1, y_start=0, y_end=1, x_points=40, y_points=40)
+mesh_instance = mesh.Mesh(x_start=0, x_end=1, y_start=0, y_end=1, x_points=100, y_points=40)
 mesh_instance.mesh_generator()
 x, y = mesh_instance.x, mesh_instance.y
 
@@ -23,24 +24,40 @@ T_initial = np.zeros_like(x)
 # Time parameters
 t_start = 0
 t_end = 0.16
-num_time_steps = 1600 # 16 160 1600 # ! con 16 è davvero orribile
+num_time_steps = 6400
 
-# Solve the PDE and store all time steps using Explicit-Euler method
+# Solve the PDE and store all time steps using Explicit-Euler and Crank-Nicolson methods
 dt = (t_end - t_start) / num_time_steps
 T_explicit = T_initial.copy()
 T_crank = T_initial.copy()
-t = t_start
 T_explicit_all_steps = [T_explicit.copy().T]
 T_crank_all_steps = [T_crank.copy().T]
 
+# Factorize A matrix for Crank-Nicolson
 P, L, U = solver.FactorizeA(T_initial, dt, x[0, 1] - x[0, 0], y[1, 0] - y[0, 0])
 
+# Timing Explicit-Euler method
+start_explicit = time.time()
+t = t_start
 for _ in range(num_time_steps):
     T_explicit = solver.explicit_euler(heat_transfer_pde, T_explicit, x, y, t, dt)
-    T_crank = solver.crank_nicolson(heat_transfer_pde, T_crank, x, y, t, dt, P, L, U)
     t += dt
     T_explicit_all_steps.append(T_explicit.copy().T)
+end_explicit = time.time()
+time_explicit = end_explicit - start_explicit
+print(f"Explicit Euler method took {time_explicit:.4f} seconds for {num_time_steps} steps.")
+
+# Timing Crank-Nicolson method
+start_crank = time.time()
+t = t_start
+for _ in range(num_time_steps):
+    T_crank = solver.crank_nicolson(heat_transfer_pde, T_crank, x, y, t, dt, P, L, U)
+    t += dt
     T_crank_all_steps.append(T_crank.copy().T)
+end_crank = time.time()
+time_crank = end_crank - start_crank
+print(f"Crank-Nicolson method took {time_crank:.4f} seconds for {num_time_steps} steps.")
+
 
 # Compute the global min and max temperature for consistent color mapping
 vmin = min(np.min(T_explicit_all_steps), np.min(T_crank_all_steps))

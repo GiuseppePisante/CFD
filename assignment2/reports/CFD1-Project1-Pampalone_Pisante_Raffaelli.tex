@@ -30,7 +30,7 @@
     \centering
     \vspace*{1in}
     
-    {\Huge\bfseries Exercise 1\par}
+    {\Huge\bfseries Exercise 2\par}
     \vspace{1.5cm}
     {\Large \today\par}
     \vspace{1.5cm}
@@ -234,6 +234,111 @@ quantity \( f''(0) \), which is the second derivative of \( f \) with respect to
 because it is directly related to the shear stress at the wall as it represents the velocity gradient at the wall.
 This velocity gradient determines how much shear is exerted by the fluid on the wall. 
 
+\section{Properties of the Blasius boundary layer:}
+
+\subsection{Computations:}
+In order to compute the boundary layer, the displacement layer, the momentum thickesses and the wall shear stress is fundamental to define the similarity variable in the Blasius solution, as suggested in \cite{Blasius_computations}: 
+\[
+\eta = y \sqrt{\frac{U_\infty}{\nu x}}
+\]
+this quantity will be used to make appropriate changes of variables in the following integrals.
+
+Boundary layer thickness, defined as the distance from the wall where the velocity reaches 99\% of the freestream velocity $U_\infty$, can be computed starting from the relation $u = f'(\eta) U_\infty = 0.99 U_\infty$ at $\eta = 0.5$ and we get:
+\[
+\frac{\delta}{x} = \frac{0.5}{\sqrt{Re_x}}.
+\]
+The displacement layer and momentum thickesses can be obtained as follows:
+\[
+\delta^* = \int_0^\infty \left(1 - \frac{u}{U_\infty}\right) dy = \sqrt{\frac{\nu x}{U_\infty}} \int_0^\infty \left(1 - f'\right) d\eta = 1.72 \sqrt{\frac{\nu x}{U_\infty}} = 1.72 \frac{x}{\sqrt{Re_x}}
+\]
+\[
+\theta = \int_0^\infty \frac{u}{U_\infty} \left(1 - \frac{u}{U_\infty}\right) dy = \sqrt{\frac{\nu x}{U_\infty}} \int_0^\infty f'(1 - f') d\eta = 0.664 \sqrt{\frac{\nu x}{U_\infty}} = 0.664 \frac{x}{\sqrt{Re_x}}
+\]
+The wall shear stress can be derived starting from the velocity gradient at the wall $f'''(0) = 0.332$:
+\[
+\tau_w = \mu \left( \frac{\partial u}{\partial y} \right)_{y=0} = 0.332 \frac{\mu V_\infty}{\sqrt{\nu x / V_\infty}} = 0.332 \rho \frac{U_\infty^2}{\sqrt{Re_x}}
+\]
+
+\subsection{Variation of $v/y$:}
+In this problem, we consider a steady, incompressible flow with constant viscosity and density. Therefore, the mass continuity equation is satisfied:
+
+\[
+\frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} = 0.
+\]
+
+From this equation, we observe that any change in the streamwise velocity \( u \) in the \( x \)-direction must be balanced by a change in the wall-normal velocity \( v \) in the \( y \)-direction leading to a non-zero \( v \) inside the boundary layer.
+
+Expanding on this topic: within the boundary layer, \( u \) increases with \( y \), going from \( u = 0 \) at the wall to \( U_\infty \) at the boundary layer edge. However, since the boundary layer thickness \( \delta(x) \) increases along the \( x \)-axis, there will also be a variation of \( u \) with respect to \( x \), this is because, as \( x \) increases, \( u \) still goes from zero to \( U_\infty \) within the boundary layer, but has more distance along \( y \) to reach this maximum due to the growth of \( \delta(x) \).
+
+According to the continuity equation, this variation of \( u \) with \( x \) must be balanced by a change in \( v \) with respect to \( y \). As a result, \( v \) increases from zero at the wall (\(y = 0\) and \( y / \delta(x) = 0\)), reaches a small maximum at some point within the boundary layer, and then decreases back to zero at the boundary layer edge (\(y = \delta(x)\) and \( y / \delta(x) = 1\)). Outside the boundary layer, where \( \frac{\partial u}{\partial x} = 0 \), we have \( \frac{\partial v}{\partial y} = 0 \), so \( v \) remains constant at zero.
+
+Now, let’s show how \( v \) varies with the Reynolds number \( \text{Re}_x \) based on the position \( x \) along the plate. The Reynolds number \( \text{Re}_x \), given by
+
+\[
+\text{Re}_x = \frac{U_\infty x}{\nu},
+\]
+
+increases as we move further along the \(x\)-axis. Since the boundary layer thickness \( \delta(x) \) grows as \( \delta(x) \propto \sqrt{\frac{\nu x}{U_\infty}} \), we observe that \( \delta(x) \) becomes thicker as \( x \) (and thus \( \text{Re}_x \)) increases.
+
+This increasing boundary layer thickness has an effect on \( v \): ss \( \delta(x) \) grows, the peak value of the wall-normal velocity \( v \) generally decreases because a thicker boundary layer "spreads out" the effect of \( u \)’s variation with \( y \), resulting in smaller gradients in \( y \) and, consequently, smaller values of \( \frac{\partial v}{\partial y} \) required to balance \( \frac{\partial u}{\partial x} \).
+
+\subsection{Sketch of the streamlines in a Blasius boundary layer:}
+To provide greater clarity in the graph, the sketch was imported from the source \cite{Streamlines}.
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{streamlines_blasius.png}
+    \caption{Streamlines in a Blasius boundary layer}
+    \label{fig: streamlines}
+\end{figure}
+
+As we can see from the picture above, the streamlines intersect the boundary. The main reason is that: as fluid flows over a surface, the viscosity of the fluid causes the particles near the wall to slow down, creating a velocity gradient. Streamlines must follow this velocity gradient, resulting in their intersection with the boundary layer. Moreover, since there is no flow separation, the streamlines continue to penetrate the boundary layer.
+
+
+
+\subsection{Bernoulli equation in the free stream:}
+
+The Bernoulli equation \eqref{Bernoulli} is a fundamental principle in fluid dynamics, often used to relate pressure, velocity, and elevation along a streamline in non-viscous and steady flow
+\begin{equation} \label{Bernoulli}
+    p + \frac{1}{2}\rho u^2 + \rho g h = p_0
+\end{equation}
+but in many applications of this equation, such as boundary layer, the gravitational term can be ignored since the variation in the elevation can be so small, so we can rewrite a simplified version of Bernoulli equation as follows:
+\begin{equation}
+    p + \frac{1}{2}\rho u^2 + \rho g h = p_0 
+\end{equation}
+This simplified equation states that for any increment of the velocity, we have a direct reduction of the pressure along a streamline. 
+
+Along a streamline in the free stream the Bernoulli equation holds because the flow is effectively inviscid (viscous effects are negligible) and there is no significant velocity gradient since the velocity is approximately constant and equal to  \( U_\infty \), leading to the equation:
+\begin{equation} \label{Resulting_Bernoulli}
+    p + \frac{1}{2}\rho U_\infty ^2 = p_0
+\end{equation}
+
+Since for the free stream the velocity is constant, the equation \eqref{Resulting_Bernoulli} implies that also the pressure along a streamline is constant.
+
+We can also observe that we can not apply Bernoulli equation in the boundary layer due to the effecs of viscosity and to the energy dissipation. 
+
+
+\subsection{Comparison of Blasius profile and the parabolic profile in a channel:}
+
+The Blasius profile describes the velocity distribution in the boundary layer over a flat plate in an unbounded flow: when a fluid flows over a flat plate, a boundary layer forms due to viscosity. The velocity for this profile start from zero at the wall, and gradually increases ad you move away from the wall, until it reaches the value of the free-stream velocity \(U_\infty\). In addition this flow has no upper boundary as can see from the figure \ref{fig:differences}:
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{plot_comparisons.png}
+    \caption{Blasius and parabolic profiles}
+    \label{fig:differences}
+\end{figure}
+
+The parabolic profile represents the velocity distribution of a laminar flow within a confined channel, so the velocity is bounded on both sides. The fact that the velocity has a parabolic profile implies that the profile is symmetric, moreover, looking at the formula \eqref{Parabolic_profile}, we see that the velocity is equal to zero on both the boundaries due to the no-slip condition, and it reaches the maximum value, \(U_{cl}\) at the channel centerline \(y = 0\), not at the boundary as Blasius one.
+
+\begin{equation} \label{Parabolic_profile}
+    \frac{u}{U_{cl}} = 1 - \frac{y^2}{\delta^2}
+\end{equation}
+
+
+
+These differences arise because the Blasius profile is for an unbounded boundary layer flow, where the velocity reaches the free-stream value, while the parabolic profile assumes bounded flow between two walls, leading to a no-slip condition on both boundaries and a peak at the center.
+
+
 \begin{thebibliography}{9}
     \bibitem{GitHubRepo}
     \textit{CFD Repository},\\
@@ -245,7 +350,15 @@ This velocity gradient determines how much shear is exerted by the fluid on the 
 
     \bibitem{clarkrichards2022} Clark Richards, 
     \textit{Solving the Blasius Equation},\\
-    Avaible at: \url{https://www.clarkrichards.org/2022/06/22/solving-the-blasius-equation/}.
+    Avaible at: \url{https://www.clarkrichards.org/2022/06/22/solving-the-blasius-equation/}
+
+    \bibitem{Streamlines} Babu, V. (2022)
+    \textit{Laminar Boundary Layer Theory. In: Fundamentals of Incompressible Fluid Flow.}
+    Available at: \url{https://doi.org/10.1007/978-3-030-74656-8_6}
+
+    \bibitem{Blasius_computations}
+    \textit{Flat-Plate Blasius Solution}, \\
+    Available at: \url{https://innovationspace.ansys.com/courses/wp-content/uploads/2020/08/Lesson4-Flat-Plate-Blasius-Solution-Handout.pdf}.
     \end{thebibliography}
        
 \end{document}
