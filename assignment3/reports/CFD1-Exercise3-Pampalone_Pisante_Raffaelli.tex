@@ -1,0 +1,64 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{titlesec}
+\usepackage{graphicx}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+
+% Title, date, and author
+\title{Exercise 3}
+\author{Your Name, Collaborator's Name}
+\date{\today}
+
+\titleformat{\section}
+  {\normalfont\normalsize\bfseries} % Format: font style, size, and weight
+  {\thesection}{1em} % Label format and spacing
+  {}
+  \renewcommand{\thesubsection}{\thesection.\alph{subsection}}
+
+\titleformat{\subsection}
+  {\normalfont\small\bfseries} % Format: font style, size, and weight
+  {\thesubsection}{1em} % Label format and spacing
+  {}
+\titleformat{\subsubsection}
+  {\normalfont\small\bfseries} % Format: font style, size, and weight
+  {\thesubsubsection}{1em} % Label format and spacing
+  {}
+
+\begin{document}
+\begin{titlepage}
+    \centering
+    \vspace*{1in}
+    
+    {\Huge\bfseries Exercise 2\par}
+    \vspace{1.5cm}
+    {\Large \today\par}
+    \vspace{1.5cm}
+    {\Large\itshape Antonio Pampalone 23586519 \\ Giuseppe Pisante 23610012\\ Martina Raffaelli 23616907 \par}
+    
+    \vfill
+    \includegraphics[width=0.3\textwidth]{FAU-Logo.png}\par\vspace{1cm} % Adjust the width as needed
+   
+\end{titlepage}
+
+\newpage
+\small
+
+\section{Finite-difference approximation of the second derivative}
+
+\section{Finite-difference approximation of the third and mixed derivatives}
+
+\section{Steady temperature distribution of an aluminum bar}
+
+\section{Compact finite difference schemes}
+
+\begin{thebibliography}{9}
+    \bibitem{GitHubRepo}
+    \textit{CFD Repository},\\
+    Available at: \url{https://github.com/GiuseppePisante/CFD.git}
+    
+    \bibitem{GitHubCopilot}
+    \textit{GitHub Copilot},\\
+    GitHub. Available at: \url{https://github.com/features/copilot}
+  \end{thebibliography}
+\end{document}
