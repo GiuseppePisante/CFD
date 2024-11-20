@@ -30,7 +30,7 @@
     \centering
     \vspace*{1in}
     
-    {\Huge\bfseries Exercise 2\par}
+    {\Huge\bfseries Exercise 3\par}
     \vspace{1.5cm}
     {\Large \today\par}
     \vspace{1.5cm}
@@ -44,21 +44,111 @@
 \newpage
 \small
 
-\section{Finite-difference approximation of the second derivative}
+\section{Steady temperature distribution of an alluminium bar}
 
-\section{Finite-difference approximation of the third and mixed derivatives}
+\subsection{Non-dimensional form of the heat equation}
 
-\section{Steady temperature distribution of an aluminum bar}
+The time-dependent heat equation in 1D is:
 
-\section{Compact finite difference schemes}
+\[
+\rho c_p \frac{\partial T}{\partial t} = \lambda \frac{\partial^2 T}{\partial x^2}
+\]
+
+In this formulation, we have replaced the temperature \(T\) with the function \(u(x, t)\).
+
+\[
+\frac{\partial u}{\partial t} = \alpha \frac{\partial^2 u}{\partial x^2}
+\]
+
+where \(\alpha\) is the thermal diffusivity defined as:
+
+\[
+\alpha = \frac{\lambda}{c \rho} 
+\]
+
+To derive the non-dimensional form of the heat equation we have to introduce the dimensionless variables \(\hat{x}\), \(\hat{t}\),
+and \(\hat{u}\), respectively, for position, time and temperature:
+
+\[
+\hat{x} = \frac{x}{L^*}, \quad \hat{t} = \frac{t}{T^*}, \quad \hat{u}(\hat{x}, \hat{t}) = \frac{u(x, t)}{U^*}
+\]
+
+Since the characteristic length, time, and temperature are \( L^* \), \( T^* \), and \( U^* \), respectively, with dimensions:
+
+\[
+[L^*] = L, \quad [T^*] = T, \quad [U^*] = U.
+\]
+
+The choice for the characteristic length is \( L^* = l \), the length of the rod, in this way, while \( x \) is in the range 
+\( 0 < x < l \), \(\hat{x}\) is in the range \( 0 < \hat{x} < 1 \). In the following passages taken from the source \cite{HeatEquation}, we have:
+
+\[
+\frac{\partial u}{\partial t} = \frac{\partial \hat{u}}{\partial \hat{t}} \cdot \frac{U^*}{T^*} = \frac{U^*}{T^*} \frac{\partial \hat{u}}{\partial \hat{t}},
+\]
+\[
+\frac{\partial u}{\partial x} = \frac{\partial \hat{u}}{\partial \hat{x}} \cdot \frac{U^*}{L^*} = \frac{U^*}{L^*} \frac{\partial \hat{u}}{\partial \hat{x}},
+\]
+\[
+\frac{\partial^2 u}{\partial x^2} = \frac{U^*}{L^*} \cdot \frac{1}{L^*} \frac{\partial^2 \hat{u}}{\partial \hat{x}^2} = \frac{U^*}{L^2} \frac{\partial^2 \hat{u}}{\partial \hat{x}^2}.
+\]
+
+Substituting these into the heat equation gives:
+\[
+\frac{U^*}{T^*} \frac{\partial \hat{u}}{\partial \hat{t}} = \alpha \frac{U^*}{L^2} \frac{\partial^2 \hat{u}}{\partial \hat{x}^2}.
+\]
+
+To make the PDE simpler, we choose for the characteristic time \( T^* = \frac{L^2}{\alpha}\), so that the equation becomes:
+\[
+\frac{\partial \hat{u}}{\partial \hat{t}} = \frac{\partial^2 \hat{u}}{\partial \hat{x}^2}
+\]
+
+The most important non-dimensional number for this problem is the Fourier number wich characterizes 
+the ratio of conductive heat transfer to thermal storage and is used to analyze heat conduction in this context.
+
+\[
+Fo = \frac{\lambda t}{\rho c_p L^2}
+\]
+
+\subsection{Dimensional form of the equation for the numerical solution}
+
+For our numerical solution we want to use the dimensional form of the equation because in this way, we can maintain physical units while 
+controlling stability numerically. For example, the Explicit Euler method for time-stepping and central difference scheme for space gives:
+\[
+\rho c_p \frac{T_i^{n+1} - T_i^n}{\Delta t} = \lambda \frac{T_{i+1}^n - 2T_i^n + T_{i-1}^n}{\Delta x^2} + q
+\]
+
+The time step $\Delta t$ and spatial interval $\Delta x$ must satisfy the Von Neumann stability criterion:
+\[
+\Delta t \leq \frac{\rho c_p (\Delta x)^2}{2 \lambda}
+\]
+
+In this way, it is possible to define a grid in terms of the effective length $L$ and the time interval $\Delta t$, 
+thereby maintaining physical units. The values of $\rho$, $c_p$, $\lambda$, and $q$ can be directly substituted into 
+the discretized equation in their dimensional form, and the boundary conditions can be applied directly. Furthermore,
+once the numerical solution is computed, the temperature at all nodes $T_i^n$ is obtained directly in Kelvin, preserving
+dimensional consistency. While non-dimensionalization may simplify some analyses, it is not strictly necessary for straightforward 
+numerical implementation.
+
+\subsection{Discretization using a second-order central differende scheme in space}
+
+At boundaries, it is not possible to use the central difference formula directly because one or both adjacent points fall outside the domain.
+The loop we implemented on python skips the first and last point because the second derivative cannot be computed at the boundaries using CDS
+without additional information. Boundary conditions can be added separately after calculating the second derivative for the internal elements.
+
 
 \begin{thebibliography}{9}
-    \bibitem{GitHubRepo}
-    \textit{CFD Repository},\\
-    Available at: \url{https://github.com/GiuseppePisante/CFD.git}
-    
-    \bibitem{GitHubCopilot}
-    \textit{GitHub Copilot},\\
-    GitHub. Available at: \url{https://github.com/features/copilot}
-  \end{thebibliography}
+  \bibitem{GitHubRepo}
+  \textit{CFD Repository},\\
+  Available at: \url{https://github.com/GiuseppePisante/CFD.git}
+  
+  \bibitem{GitHubCopilot}
+  \textit{GitHub Copilot},\\
+  GitHub. Available at: \url{https://github.com/features/copilot}
+  
+  \bibitem{HeatEquation}
+  MIT OpenCourseWare,\\
+  \textit{Heat Equation Notes}, 2006,\\
+  Available at: \url{https://ocw.mit.edu/courses/18-303-linear-partial-differential-equations-fall-2006/d11b374a85c3fde55ec971fe587f8a50_heateqni.pdf},\\
+\end{thebibliography}
+
 \end{document}
