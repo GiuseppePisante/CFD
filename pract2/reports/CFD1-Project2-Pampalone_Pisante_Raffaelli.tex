@@ -71,6 +71,71 @@ The discretization applied to the x-momentum equation takes into account the par
 
 Such equation is a steady-state equation and thus it doesn't require any time-stepping algorithm. 
 For this reason, the costraints for convergence are only applied on the spatial discretization.
+\\
+The discretization of the first derivative in the \(x\)-direction using the Backward Difference Scheme (BDS) is given by:
+
+\[
+\frac{\partial u}{\partial x} \approx \frac{u_{i,j} - u_{i-1,j}}{\Delta x}
+\]
+
+Using Taylor series expansions for \( u(x) \) around \( x_i \), we have:
+
+\[
+u_{i-1,j} = u(x_i - \Delta x) = u(x_i) - \Delta x \frac{\partial u}{\partial x} + \frac{\Delta x^2}{2} \frac{\partial^2 u}{\partial x^2} + O(\Delta x^3)
+\]
+
+Therefore, the approximation for the derivative becomes:
+
+\[
+\frac{u_{i,j} - u_{i-1,j}}{\Delta x} = \frac{\partial u}{\partial x} + \frac{\Delta x}{2} \frac{\partial^2 u}{\partial x^2} + O(\Delta x^2)
+\]
+
+The truncation error for the Backward Difference Scheme is:
+
+\[
+T_{\text{BDS}} = -\frac{\Delta x}{2} \frac{\partial^2 u}{\partial x^2} + O(\Delta x^2)
+\]
+
+The discretization of the second derivative in the \(y\)-direction using the Central Difference Scheme (CDS) is given by:
+
+\[
+\frac{\partial^2 u}{\partial y^2} \approx \frac{u_{i,j+1} - 2u_{i,j} + u_{i,j-1}}{\Delta y^2}
+\]
+
+Using Taylor series expansions for \( u(y) \) around \( y_j \), we have:
+
+\[
+u_{i,j+1} = u(y_j + \Delta y) = u(y_j) + \Delta y \frac{\partial u}{\partial y} + \frac{\Delta y^2}{2} \frac{\partial^2 u}{\partial y^2} + \frac{\Delta y^3}{6} \frac{\partial^3 u}{\partial y^3} + O(\Delta y^4)
+\]
+
+\[
+u_{i,j-1} = u(y_j - \Delta y) = u(y_j) - \Delta y \frac{\partial u}{\partial y} + \frac{\Delta y^2}{2} \frac{\partial^2 u}{\partial y^2} - \frac{\Delta y^3}{6} \frac{\partial^3 u}{\partial y^3} + O(\Delta y^4)
+\]
+
+Subtracting \( 2u_{i,j} \) from the sum of \( u_{i,j+1} \) and \( u_{i,j-1} \), we get:
+
+\[
+u_{i,j+1} - 2u_{i,j} + u_{i,j-1} = 2 \cdot \frac{\Delta y^2}{2} \frac{\partial^2 u}{\partial y^2} + O(\Delta y^4)
+\]
+
+Thus, the discretized second derivative becomes:
+
+\[
+\frac{u_{i,j+1} - 2u_{i,j} + u_{i,j-1}}{\Delta y^2} = \frac{\partial^2 u}{\partial y^2} + O(\Delta y^2)
+\]
+
+The leading truncation error for the Central Difference Scheme is:
+
+\[
+T_{\text{CDS}} = \frac{\Delta y^2}{6} \frac{\partial^4 u}{\partial y^4} + O(\Delta y^4)
+\]
+\subsection*{Summary of Truncation Errors}
+
+Thus, the sum of the truncation errors is:
+\[
+T_{\text{total}} = T_{\text{BDS}} + T_{\text{CDS}} = -\frac{\Delta x}{2} \frac{\partial^2 u}{\partial x^2} + \frac{\Delta y^2}{6} \frac{\partial^4 u}{\partial y^4} + O(\Delta x^2) + O(\Delta y^4)
+\]
+
 \section*{\Large Task 2.2:}
 This system is solved using a GMRES iterative solver, which allows us to solve the system for a non-symmetric A and the non linearities of the x-momentum.
 The solver updates the values of \( u \) and \( v \) at each iteration, denoted as \( u^{(k+1)} \) and \( v^{(k+1)} \), by utilizing the values from the previous iteration, \( u^{(k)} \) and \( v^{(k)} \), to handle the non-linear terms effectively.
