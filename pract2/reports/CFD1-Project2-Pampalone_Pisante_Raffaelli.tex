@@ -1,0 +1,167 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{titlesec}
+\usepackage{graphicx}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+
+% Title, date, and author
+\title{Project 1}
+\author{Your Name, Collaborator's Name}
+\date{\today}
+
+\titleformat{\section}
+  {\normalfont\normalsize\bfseries} % Format: font style, size, and weight
+  {\thesection}{1em} % Label format and spacing
+  {}
+  \renewcommand{\thesubsection}{\thesection.\alph{subsection}}
+
+\titleformat{\subsection}
+  {\normalfont\small\bfseries} % Format: font style, size, and weight
+  {\thesubsection}{1em} % Label format and spacing
+  {}
+\titleformat{\subsubsection}
+  {\normalfont\small\bfseries} % Format: font style, size, and weight
+  {\thesubsubsection}{1em} % Label format and spacing
+  {}
+
+\begin{document}
+\begin{titlepage}
+    \centering
+    \vspace*{1in}
+    
+    {\Huge\bfseries Project 1\par}
+    \vspace{1.5cm}
+    {\Large \today\par}
+    \vspace{1.5cm}
+    {\Large\itshape Antonio Pampalone 23586519 \\ Giuseppe Pisante 23610012\\ Martina Raffaelli 23616907 \par}
+    
+    \vfill
+    \includegraphics[width=0.3\textwidth]{FAU-Logo.png}\par\vspace{1cm} % Adjust the width as needed
+   
+\end{titlepage}
+
+\newpage
+\small
+
+\section*{\Large Task 2.0:}
+The momentum equation is a parabolic equation since, if we compute the $\Delta = B^2 - 4AC$ from the general form of the partial differential equations: 
+\[
+\]
+\begin{equation}
+  A \frac{\partial^2 u}{\partial x^2} + B \frac{\partial^2 u}{\partial x \partial y} + C \frac{\partial^2 u}{\partial y^2} + D \frac{\partial u}{\partial x} + E \frac{\partial u}{\partial y} + F u + G = 0
+\end{equation}
+
+we get $\Delta = 0$, which means that the equation is parabolic.
+
+We now define the additional boundary conditions:
+\begin{itemize}
+  \item $u(0,y) = 1$
+  \item $u(1,y) = 1$
+  \item $v(0,y) = 0$
+  \item $v(1,y) = 0$
+  \item $v(x,\infty) = 0$
+\end{itemize}
+
+\section*{\Large Task 2.1:}
+The discretization applied to the x-momentum equation takes into account the parabolic nature of the equation. The discretization is performed using the central difference scheme for the y-direction and the backward difference scheme for the x-direction. The discretized equation is as follows:
+\[
+  u_{i,j}\frac{u_{i,j} - u_{i-1,j}}{\Delta x}  + v_{i,j} \frac{u_{i,j+1} - u_{i,j-1}}{2 \Delta y} = \frac{1}{Re} \frac{u_{i,j+1} - 2u_{i,j} + u_{i,j-1}}{\Delta y^2}
+\]
+
+Such equation is a steady-state equation and thus it doesn't require any time-stepping algorithm. 
+For this reason, the costraints for convergence are only applied on the spatial discretization.
+\section*{\Large Task 2.2:}
+This system is solved using a GMRES iterative solver, which allows us to solve the system for a non-symmetric A and the non linearities of the x-momentum.
+The solver updates the values of \( u \) and \( v \) at each iteration, denoted as \( u^{(k+1)} \) and \( v^{(k+1)} \), by utilizing the values from the previous iteration, \( u^{(k)} \) and \( v^{(k)} \), to handle the non-linear terms effectively.
+The system of partial differential equations is:
+The continuity equation is discretized using the backward difference scheme (BDS) along the x-direction and the central difference scheme (CDS) along the y-direction. The discretized continuity equation is given by:
+\[
+\begin{cases}
+  \frac{u_{i,j} - u_{i-1,j}}{\Delta x} + \frac{v_{i,j+1} - v_{i,j-1}}{2 \Delta y} = 0 \\
+  u_{i,j}\frac{u_{i,j} - u_{i-1,j}}{\Delta x}  + v_{i,j} \frac{u_{i,j+1} - u_{i,j-1}}{2 \Delta y} = \frac{1}{Re} \frac{u_{i,j+1} - 2u_{i,j} + u_{i,j-1}}{\Delta y^2}
+\end{cases}
+\]
+
+To solve this, we construct a linear system of equations in the form \( \mathbf{A} \mathbf{x} = \mathbf{b} \), where \( \mathbf{A} \) is a \( 2n^2 \times 2n^2 \) matrix, \( \mathbf{b} \) is a \( 2n^2 \) vector, and \( \mathbf{x} \) is also a \( 2n^2 \) vector. The structure of \( \mathbf{x} \) is as follows:
+
+\[
+\mathbf{x} = \begin{bmatrix}
+u_{1,1} \\
+u_{1,2} \\
+\vdots \\
+u_{n,n} \\
+v_{1,1} \\
+v_{1,2} \\
+\vdots \\
+v_{n,n}
+\end{bmatrix}
+\]
+
+The structure of the matrix \( \mathbf{A} \) is as follows:
+\[
+A = 
+\begin{bmatrix}
+\frac{1}{\Delta x} & \cdots & -\frac{1}{\Delta x} & \cdots & 0 & \cdots & 0 & \cdots \\
+\cdots & \frac{u_{i,j}}{\Delta x} - \frac{2}{Re} \left(\frac{1}{\Delta x^2} + \frac{1}{\Delta y^2}\right) & \cdots & \frac{1}{Re \Delta x^2} & \cdots & 0 & \cdots & 0 & \cdots \\
+\cdots & \frac{u_{i,j}}{\Delta x} & \cdots & \frac{1}{Re \Delta x^2} & \cdots & 0 & \cdots & 0 & \cdots \\
+0 & \cdots & 0 & \cdots & \frac{1}{\Delta y} & \cdots & -\frac{1}{\Delta y} & \cdots \\
+0 & \cdots & 0 & \cdots & \frac{v_{i,j}}{2\Delta y} & \cdots & -\frac{2}{Re \Delta y^2} & \cdots \\
+0 & \cdots & 0 & \cdots & \frac{v_{i,j}}{2\Delta y} & \cdots & -\frac{2}{Re \Delta y^2} & \cdots
+\end{bmatrix}
+\]
+In addition, the boundary conditions are applied to the matrix \( \mathbf{A} \) and the vector \( \mathbf{b} \) to solve the system of equations.
+The boundary conditions are applied to the cells of \( \mathbf{b} \) and \( \mathbf{A} \) as follows:
+
+\begin{enumerate}
+  \item For \( u(0,y) = 1 \):
+  \begin{itemize}
+    \item Set \( b_{(j-1)n+1} = 1 \)
+    \item Set \( A_{(j-1)n+1, (j-1)n+1} = 1 \)
+  \end{itemize}
+  
+  \item For \( u(1,y) = 1 \):
+  \begin{itemize}
+    \item Set \( b_{(j-1)n+n} = 1 \)
+    \item Set \( A_{(j-1)n+n, (j-1)n+n} = 1 \) 
+  \end{itemize}
+  
+  \item For \( v(0,y) = 0 \):
+  \begin{itemize}
+    \item Set \( b_{n^2+(j-1)n+1} = 0 \)
+    \item Set \( A_{n^2+(j-1)n+1, n^2+(j-1)n+1} = 1 \)
+  \end{itemize}
+  
+  
+   \item For \( v(1,y) = 0 \):
+    \begin{itemize}
+      \item Set \( b_{n^2+(j-1)n+n} = 0 \)
+      \item Set \( A_{n^2+(j-1)n+n, n^2+(j-1)n+n} = 1 \)
+    \end{itemize}
+  
+  \item For \( v(x,\infty) = 0 \):
+  \begin{itemize}
+    \item Set \( b_{n^2+(n-1)n+i} = 0 \)
+    \item Set \( A_{n^2+(n-1)n+i, n^2+(n-1)n+i} = 1 \) 
+  \end{itemize}
+\end{enumerate}
+
+\section*{\Large Task 2.3:}
+import numpy as np \\
+import scipy.sparse.linalg as spla \\
+M2 = spla.spilu(A)  \\
+x = spla.gmres(A,b,M=M2)  \\
+
+HINT per chatty: come utilizzare gmres per risolvere le non linearita del problema, come specificato sopra.
+
+\begin{thebibliography}{9}
+    \bibitem{GitHubRepo}
+    \textit{CFD Repository},\\
+    Available at: \url{https://github.com/GiuseppePisante/CFD.git}
+    
+    \bibitem{GitHubCopilot}
+    \textit{GitHub Copilot},\\
+    GitHub. Available at: \url{https://github.com/features/copilot}
+    \end{thebibliography}
+
+\end{document}
