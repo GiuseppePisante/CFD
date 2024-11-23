@@ -43,6 +43,38 @@
 
 \newpage
 \small
+\section{Finite difference approximation of the second derivative}
+\subsection{fourth-order central finite-difference approximation}
+The fourth-order central finite-difference approximation of the second derivative is given by:
+\[
+\frac{\partial^2 u}{\partial x^2} = \frac{u_{i-2} - 4u_{i-1} + 6u_i - 4u_{i+1} + u_{i+2}}{\Delta x^2} + O(\Delta x^4)
+\]
+
+\subsection{Second-order one-sided finite-difference approximation}
+The second-order one-sided finite-difference approximation of the second derivative is given by:
+\[
+\frac{\partial^2 u}{\partial x^2} = \frac{u_{i-1} - 2u_i + u_{i+1}}{\Delta x^2} + O(\Delta x^2)
+\]
+
+\subsection{Situations in which we need one-sided approximations}
+One-sided approximations are needed when the function is not defined on both sides of the point where the derivative is being calculated.
+
+\section{Finite difference approximation of the third and mixed derivatives}
+\subsection{ Second-order finite-difference approximation for $\frac{\partial^3 \Psi}{\partial y^3}$}
+
+The second-order finite-difference approximation for the third derivative with respect to $y$ is:
+
+\[
+\frac{\partial^3 \Psi}{\partial y^3} \approx \frac{\Psi_{i+2, j} - 2\Psi_{i+1, j} + 2\Psi_{i-1, j} - \Psi_{i-2, j}}{2 \Delta y^3}.
+\]
+
+\subsection{ Second-order finite-difference approximation for $\frac{\partial^2 \Psi}{\partial y \partial x}$}
+
+The second-order finite-difference approximation for the mixed derivative is:
+
+\[
+\frac{\partial^2 \Psi}{\partial y \partial x} \approx \frac{\Psi_{i+1, j+1} - \Psi_{i-1, j+1} - \Psi_{i+1, j-1} + \Psi_{i-1, j-1}}{4 \Delta x \Delta y}.
+\]
 
 \section{Steady temperature distribution of an alluminium bar}
 
