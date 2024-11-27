@@ -8,18 +8,29 @@ rho = 2700               # density (kg/m^3)
 k = 237                  # thermal conductivity (W/m*K)
 alpha = k / (rho * cp)   # thermal diffusivity (m^2/s)
 
-# Apply boundary conditions
+# Boundary conditions
 T_left = 250     # temperature at the left boundary (K)
 T_right = 500    # temperature at the right boundary (K)
 
 
 # Part (c) - Discretization using a second-order CDS
 
+import numpy as np
+
 def CDS_second_derivative(f_values, dx):
     d2f_numerical = np.zeros_like(f_values)
+    n = len(f_values)
 
-    for i in range(1, len(f_values) - 1):
-        d2f_numerical[i] = (f_values[i+1] - 2 * f_values[i] + f_values[i-1]) / dx**2
+    # Central Difference Scheme for interior points
+    for i in range(1, n - 1):
+        d2f_numerical[i] = (f_values[i + 1] - 2 * f_values[i] + f_values[i - 1]) / dx**2
+
+    # Forward Difference Scheme for the first point
+    d2f_numerical[0] = (f_values[2] - 2 * f_values[1] + f_values[0]) / dx**2
+
+    # Backward Difference Scheme for the last point
+    d2f_numerical[-1] = (f_values[-1] - 2 * f_values[-2] + f_values[-3]) / dx**2
+
     return d2f_numerical
 
 
@@ -57,11 +68,16 @@ for func_name, (f, d2f_analytical) in functions.items():
         
         # Compute error at each point and the L2 norm
         error = d2f_numerical - d2f_analytical_values
-        L2_norm_error = np.sqrt(np.sum(error[1:-1]**2) * dx / L)
+        L2_norm_error = np.sqrt(np.mean(error**2) * 1 / Nx)
         errors.append(L2_norm_error)
 
     # Plot the L2 error norm against grid spacing in a log-log plot
     plt.loglog(grid_spacings, errors, label=func_name, marker='o')
+
+# Reference 
+dx_values = np.array(grid_spacings)
+delta_x_2 = dx_values**2
+plt.loglog(dx_values, delta_x_2, label="Δx^2 (Reference)", linestyle="--", color="black")
 
 # Plot formatting
 plt.xlabel("Grid spacing (Δx)")
