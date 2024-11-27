@@ -4,6 +4,7 @@
 \usepackage{graphicx}
 \usepackage[margin=1in]{geometry}
 \usepackage{hyperref}
+\usepackage{float}
 
 % Title, date, and author
 \title{Exercise 3}
@@ -212,9 +213,6 @@ Simplifying the expression, the final second-order finite-difference approximati
 \frac{\partial^2\Psi}{\partial x\partial y} \approx \frac{\Psi(i+1,j+1) - \Psi(i-1,j+1) - \Psi(i+1,j-1) + \Psi(i-1,j-1)}{4\Delta x\Delta y}
 \end{equation}
 
-
-
-
 \section{Steady temperature distribution of an alluminium bar}
 
 \subsection{Non-dimensional form of the heat equation}
@@ -291,16 +289,34 @@ While non-dimensionalization may simplify some analyses, it is not strictly nece
 
 \subsection{Discretization using a second-order central differende scheme in space}
 
-At boundaries, it is not possible to use the central difference formula directly because one or both adjacent points fall outside the domain.
-The loop we implemented on python skips the first and last point because the second derivative cannot be computed at the boundaries using CDS
-without additional information. Boundary conditions can be added separately after calculating the second derivative for the internal elements.
+At the boundaries, the Central difference scheme cannot be directly applied because one or both adjacent points fall outside the domain. 
+To address this, we use the Forward Difference Scheme at the first boundary point and the Backward Difference Scheme at the last boundary point. 
+This ensures that the second derivative is computed for all points in the domain. The formulas used are as follows:
+
+1. Central Difference Scheme for interior points:
+\[
+f''(x_i) \approx \frac{f(x_{i+1}) - 2f(x_i) + f(x_{i-1})}{\Delta x^2}
+\]
+
+2. Forward Difference Scheme at the first boundary point:
+\[
+f''(x_0) \approx \frac{f(x_2) - 2f(x_1) + f(x_0)}{\Delta x^2}
+\]
+
+3. Backward Difference Scheme at the last boundary point:
+\[
+f''(x_{N-1}) \approx \frac{f(x_{N-1}) - 2f(x_{N-2}) + f(x_{N-3})}{\Delta x^2}
+\]
 
 \subsection{Verify the correctness of the implementation}
 
-Looking at the plot, the functions at the bottom show very small errors that appear to increase slightly for finer grid spacings. 
-This behavior is due to numerical precision limits rather than an issue with the method itself. For functions like \(f(x) = x\) and \(f(x) = x^2\),
-the analytical second derivatives are either zero or constant. When $\Delta x$ becomes very small, the central difference scheme involves
-subtracting nearly equal numbers, amplifying round-off errors.
+Looking at the plot, the functions \( f(x) = \sin(x) \) and \( f(x) = x^3 \) verify the expected second-order convergence of the central 
+difference scheme. In contrast, the functions at the bottom show very small errors that slightly increase as the grid spacing becomes finer.
+This increase in error is due to numerical precision limitations rather than an issue with the method itself. For functions like \( f(x) = x \) 
+and \( f(x) = x^2 \), the analytical second derivatives are either zero or constant. As the grid spacing \( \Delta x \) becomes very small,
+ the central difference scheme involves subtracting nearly equal numbers, which amplifies round-off errors, leading to the observed increase
+in error for finer grids.
+
 
 \begin{figure}[h!]
   \centering
@@ -325,11 +341,12 @@ bar. The temperature distribution is linear between the imposed boundary conditi
 
 \subsection{Stationary temperature distribution with a homogeneus heat source}
 
-The result depicted in this graph represents the steady-state temperature distribution if there is a homogeneus heat source.
-Unlike the case with no heat source, the temperature distribution here is non-linear, with a distinct peak near the center of the bar. 
-This indicates that internal heat generation significantly affects the temperature distribution.
+The result depicted in this graph represents the steady-state temperature distribution with a homogeneous heat source. Unlike the case with no
+heat source, the temperature distribution here is non-linear, with a distinct peak near the center of the bar. This indicates that internal heat
+generation significantly affects the temperature distribution. In contrast, when no heat source is present, the temperature distribution is linear,
+as the heat transfer occurs solely due to conduction.
 
-\begin{figure}[h!]
+\begin{figure}[H]
   \centering
   \includegraphics[width=0.5\textwidth]{Figure_2.png}
   \caption{Stationary temperature distribution with a homogeneus heat source}
@@ -342,6 +359,13 @@ The result depicted in this graph represents the unsteady evolution of temperatu
 likely corresponding to a steady-state condition with no heat source effect. As time progresses, the temperature rises across the bar due to 
 the heat generated internally. The curves demonstrate how heat gradually accumulates in the material, with the most pronounced rise occurring 
 in the center of the bar.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.5\textwidth]{Figure_3.png}
+  \caption{Unsteady evolution of temperature}
+  \label{fig: Unsteady evolution of temperature}
+\end{figure}
 
 \begin{thebibliography}{9}
   \bibitem{GitHubRepo}
