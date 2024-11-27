@@ -4,6 +4,7 @@
 \usepackage{graphicx}
 \usepackage[margin=1in]{geometry}
 \usepackage{hyperref}
+\usepackage{amssymb}
 
 % Title, date, and author
 \title{Project 1}
@@ -64,7 +65,7 @@ We now define the additional boundary conditions:
 \end{itemize}
 
 \section*{\Large Task 2.1:}
-The discretization applied to the x-momentum equation takes into account the parabolic nature of the equation. The discretization is performed using the central difference scheme for the y-direction and the backward difference scheme for the x-direction. The discretized equation is as follows:
+The discretization applied to the x-momentum equation takes into account the parabolic nature of the equation. The discretization is performed using the central difference scheme for the y-direction, to capture the elliptic character of the diffusion process, and the backward difference scheme for the x-direction to better capture the convective term. The discretized equation is as follows:
 \[
   u_{i,j}\frac{u_{i,j} - u_{i-1,j}}{\Delta x}  + v_{i,j} \frac{u_{i,j+1} - u_{i,j-1}}{2 \Delta y} = \frac{1}{Re} \frac{u_{i,j+1} - 2u_{i,j} + u_{i,j-1}}{\Delta y^2}
 \]
@@ -148,7 +149,37 @@ The continuity equation is discretized using the backward difference scheme (BDS
 \end{cases}
 \]
 
-To solve this, we construct a linear system of equations in the form \( \mathbf{A} \mathbf{x} = \mathbf{b} \), where \( \mathbf{A} \) is a \( 2n^2 \times 2n^2 \) matrix, \( \mathbf{b} \) is a \( 2n^2 \) vector, and \( \mathbf{x} \) is also a \( 2n^2 \) vector. The structure of \( \mathbf{x} \) is as follows:
+
+It is important to note that at the boundaries, we cannot use this discretization directly. Depending on the boundary we have to apply different schemes:
+\begin{enumerate}
+  \item Left boundary (\( x = 0 \)): we cannot apply BDS on the x-direction. We thus use FDS on such boundary:
+  \[
+\begin{cases}
+  \frac{u_{i+1,j} - u_{i,j}}{\Delta x} + \frac{v_{i,j+1} - v_{i,j-1}}{2 \Delta y} = 0 \\
+  u_{i,j}\frac{u_{i+1,j} - u_{i,j}}{\Delta x}  + v_{i,j} \frac{u_{i,j+1} - u_{i,j-1}}{2 \Delta y} = \frac{1}{Re} \frac{u_{i,j+1} - 2u_{i,j} + u_{i,j-1}}{\Delta y^2}
+\end{cases}
+\]
+  
+\item Right boundary (\( x = 1 \)): the problem remains the same, as BDS works well on the right boundary.
+  
+\item Bottom boundary (\( y = 0 \)): CDS cannot be applied on the y-direction. We thus use FDS on such boundary:
+\[
+  \begin{cases}
+    \frac{u_{i,j} - u_{i-1,j}}{\Delta x} + \frac{v_{i,j} - v_{i,j-1}}{\Delta y} = 0 \\
+    u_{i,j}\frac{u_{i,j} - u_{i-1,j}}{\Delta x}  + v_{i,j} \frac{u_{i,j} - u_{i,j-1}}{\Delta y} = \frac{1}{Re} \frac{u_{i,j-2} - 2u_{i,j-1} + u_{i,j}}{\Delta y^2}
+  \end{cases}
+\]
+  
+\item Top boundary (\( y \to \infty \)): CDS cannot be applied on the y-direction. We thus use BDS on such boundary:
+\[
+  \begin{cases}
+    \frac{u_{i,j} - u_{i-1,j}}{\Delta x} + \frac{v_{i,j+1} - v_{i,j}}{\Delta y} = 0 \\
+    u_{i,j}\frac{u_{i,j} - u_{i-1,j}}{\Delta x}  + v_{i,j} \frac{u_{i,j+1} - u_{i,j}}{\Delta y} = \frac{1}{Re} \frac{u_{i,j+2} - 2u_{i,j+1} + u_{i,j}}{\Delta y^2}
+  \end{cases}
+\]
+\end{enumerate}
+
+To solve this, we construct a linear system of equations in the form \( \mathbf{A} \mathbf{x} = \mathbf{b} \), where \( A \in \mathbb{R}^{2n^2 \times 2n^2} \), \( b \in \mathbb{R}^{2n^2} \), and \( x \in \mathbb{R}^{2n^2 \times 2n^2} \). The structure of \( \mathbf{x} \) is as follows:
 
 \[
 \mathbf{x} = \begin{bmatrix}
@@ -165,49 +196,53 @@ v_{n,n}
 
 The structure of the matrix \( \mathbf{A} \) is as follows:
 \[
+  \hspace{-2.5cm}
 A = 
 \begin{bmatrix}
-\frac{1}{\Delta x} & \cdots & -\frac{1}{\Delta x} & \cdots & 0 & \cdots & 0 & \cdots \\
-\cdots & \frac{u_{i,j}}{\Delta x} - \frac{2}{Re} \left(\frac{1}{\Delta x^2} + \frac{1}{\Delta y^2}\right) & \cdots & \frac{1}{Re \Delta x^2} & \cdots & 0 & \cdots & 0 & \cdots \\
-\cdots & \frac{u_{i,j}}{\Delta x} & \cdots & \frac{1}{Re \Delta x^2} & \cdots & 0 & \cdots & 0 & \cdots \\
-0 & \cdots & 0 & \cdots & \frac{1}{\Delta y} & \cdots & -\frac{1}{\Delta y} & \cdots \\
-0 & \cdots & 0 & \cdots & \frac{v_{i,j}}{2\Delta y} & \cdots & -\frac{2}{Re \Delta y^2} & \cdots \\
-0 & \cdots & 0 & \cdots & \frac{v_{i,j}}{2\Delta y} & \cdots & -\frac{2}{Re \Delta y^2} & \cdots
+  -\frac{1}{\Delta x} & \frac{1}{\Delta x} &  &  &  &  &  \vdots &  -\frac{1}{\Delta y} & \frac{1}{\Delta y} \cdots&  \\
+ & \ddots  &  &  &  &  &\vdots &\ddots &  &  \\
+ \cdots-\frac{1}{\Delta x} & \frac{1}{\Delta x} &  &  & & &\vdots  &\cdots -\frac{1}{2\Delta y} & &\frac{1}{2\Delta y} \cdots  \\
+ & \vdots  &\ddots  &  &  &  &\vdots & &  &  \\
+ &  &  &  &  &  &\vdots & &  \cdots -\frac{1}{\Delta y} & \frac{1}{\Delta y}  \\
+ \cdots&\cdots  &\cdots  &\cdots  &\cdots  &\cdots  &\cdots &\cdots  &\cdots  &\cdots  \\
+ -\frac{v_{i,j}^{(k)}}{\Delta y} + \frac{1}{Re \Delta y^2} - \frac{u_{i,j}^{(k)}}{\Delta x} & \frac{v_{i,j}^{(k)}}{\Delta y} + \frac{2}{Re \Delta y^2} & \frac{1}{Re \Delta y^2} &  &\cdots  & \cdots\frac{u_{i,j}^{(k)}}{\Delta x} &\vdots &  &  &  \\
+ \cdots &-\frac{u_{i,j}^{(k)}}{\Delta x} \cdots & -\frac{1}{Re \Delta y^2} & -\frac{v_{i,j}^{(k)}}{\Delta y} + \frac{2}{Re \Delta y^2} & \frac{v_{i,j}^{(k)}}{\Delta y} - \frac{1}{Re \Delta y^2} + \frac{u_{i,j}^{(k)}}{\Delta x}  & &\cdots &\vdots &  &  \\
+ &\vdots&\vdots&\vdots&\vdots&\vdots&\vdots & &  &  \\
+ \cdots-\frac{u_{i,j}^{(k)}}{\Delta x} \cdots & -\frac{v_{i,j}^{(k)}}{2\Delta y} + \frac{1}{Re \Delta y^2} & \frac{u_{i,j}^{(k)}}{\Delta x} - \frac{2}{Re \Delta y^2} & \frac{v_{i,j}^{(k)}}{2\Delta y} + \frac{1}{Re \Delta y^2} &\cdots  & &\vdots &  &  &  \\
+ &\vdots&\vdots&\vdots&\vdots&\vdots&\vdots & &  &  \\
+ &\cdots  -\frac{u_{i,j}^{(k)}}{\Delta x} \cdots & \frac{1}{Re \Delta y^2}& \frac{v_{i,j}^{(k)}}{\Delta y} + \frac{1}{Re \Delta y^2} & \frac{u_{i,j}^{(k)}}{\Delta x} - \frac{1}{Re \Delta y^2} -\frac{v_{i,j}^{(k)}}{\Delta y} & \frac{1}{Re \Delta y^2} &\vdots &  &  & 
+ 
+
 \end{bmatrix}
 \]
-In addition, the boundary conditions are applied to the matrix \( \mathbf{A} \) and the vector \( \mathbf{b} \) to solve the system of equations.
-The boundary conditions are applied to the cells of \( \mathbf{b} \) and \( \mathbf{A} \) as follows:
+
+In addition, the boundary conditions are applied to the vector \( \mathbf{b} \) to solve the system of equations, and are applied as follows:
 
 \begin{enumerate}
   \item For \( u(0,y) = 1 \):
   \begin{itemize}
     \item Set \( b_{(j-1)n+1} = 1 \)
-    \item Set \( A_{(j-1)n+1, (j-1)n+1} = 1 \)
   \end{itemize}
   
   \item For \( u(1,y) = 1 \):
   \begin{itemize}
     \item Set \( b_{(j-1)n+n} = 1 \)
-    \item Set \( A_{(j-1)n+n, (j-1)n+n} = 1 \) 
   \end{itemize}
   
   \item For \( v(0,y) = 0 \):
   \begin{itemize}
     \item Set \( b_{n^2+(j-1)n+1} = 0 \)
-    \item Set \( A_{n^2+(j-1)n+1, n^2+(j-1)n+1} = 1 \)
   \end{itemize}
   
   
    \item For \( v(1,y) = 0 \):
     \begin{itemize}
       \item Set \( b_{n^2+(j-1)n+n} = 0 \)
-      \item Set \( A_{n^2+(j-1)n+n, n^2+(j-1)n+n} = 1 \)
     \end{itemize}
   
   \item For \( v(x,\infty) = 0 \):
   \begin{itemize}
     \item Set \( b_{n^2+(n-1)n+i} = 0 \)
-    \item Set \( A_{n^2+(n-1)n+i, n^2+(n-1)n+i} = 1 \) 
   \end{itemize}
 \end{enumerate}
 
