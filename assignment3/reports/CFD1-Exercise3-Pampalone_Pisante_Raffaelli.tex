@@ -153,27 +153,64 @@ It is important to note that this process can be applied to the forward differen
 \frac{d^2f}{dx^2} \approx \frac{f(x_{i+2}) - 2f(x_{i+1}) + f(x_i)}{(\Delta x)^2}.
 \]
 
-
 \subsection{Situations in which we need one-sided approximations}
-One-sided approximations are needed when the function is not defined on both sides of the point where the derivative is being calculated.
+Situations in which we need one-sided approximations include the discretization of convective terms, which are challenging to approximate with CDS due to instability. 
+Another case could be the discretization of an hyperbolic problem, such as the example we studied in the stability lecture of the hyperbolic transport equation. In that case, BDS was way more stable than CDS.
 
 \section{Finite difference approximation of the third and mixed derivatives}
 
 \subsection{Second-order finite-difference approximation for \texorpdfstring{$\frac{\partial^3 \Psi}{\partial y^3}$}{d3Psi/dy3}}
-For the third derivative in \(y\), apply the central difference formula iteratively. Combining terms gives:
-\[
-\frac{\partial^3 \Psi}{\partial y^3} \approx \frac{\Psi_{i+2, j} - 2\Psi_{i+1, j} + 2\Psi_{i-1, j} - \Psi_{i-2, j}}{2 \Delta y^3}.
-\]
+
+We start by recalling the central difference formula for the second derivative:
+\begin{equation}
+\frac{\partial^2 \Psi}{\partial y^2} \approx \frac{\Psi(i+1) - 2\Psi(i) + \Psi(i-1)}{\Delta y^2}.
+\end{equation}
+
+To approximate the third derivative, we take the central difference of the second derivative:
+\begin{equation}
+\frac{\partial^3 \Psi}{\partial y^3} \approx \frac{\frac{\partial^2 \Psi}{\partial y^2}(i+1) - \frac{\partial^2 \Psi}{\partial y^2}(i-1)}{2\Delta y}.
+\end{equation}
+
+Substitute the expression for the second derivative into this formula. First, write $\frac{\partial^2 \Psi}{\partial y^2}(i+1)$ and $\frac{\partial^2 \Psi}{\partial y^2}(i-1)$ as:
+\begin{align}
+\frac{\partial^2 \Psi}{\partial y^2}(i+1) &\approx \frac{\Psi(i+2) - 2\Psi(i+1) + \Psi(i)}{\Delta y^2}, \\
+\frac{\partial^2 \Psi}{\partial y^2}(i-1) &\approx \frac{\Psi(i) - 2\Psi(i-1) + \Psi(i-2)}{\Delta y^2}.
+\end{align}
+
+Substituting these into the expression for the third derivative:
+\begin{equation}
+\frac{\partial^3 \Psi}{\partial y^3} \approx \frac{\frac{\Psi(i+2) - 2\Psi(i+1) + \Psi(i)}{\Delta y^2} - \frac{\Psi(i) - 2\Psi(i-1) + \Psi(i-2)}{\Delta y^2}}{2\Delta y}.
+\end{equation}
+
+Combine the terms in the numerator:
+\begin{equation}
+\frac{\partial^3 \Psi}{\partial y^3} \approx \frac{\Psi(i+2) - 2\Psi(i+1) + \Psi(i) - \Psi(i) + 2\Psi(i-1) - \Psi(i-2)}{2\Delta y^3}.
+\end{equation}
+
+We simplify further, and we get the following result:
+\begin{equation}
+\frac{\partial^3 \Psi}{\partial y^3} \approx \frac{\Psi(i+2) - 2\Psi(i+1) + 2\Psi(i-1) - \Psi(i-2)}{2\Delta y^3}.
+\end{equation}
+
 
 \subsection{Second-order finite-difference approximation for \texorpdfstring{$\frac{\partial^2 \Psi}{\partial y \partial x}$}{d2Psi/dy dx}}
-The mixed derivative is computed using central differences in both \(x\) and \(y\). First, compute the difference along \(x\):
-\[
-\frac{\Psi_{i+1, j} - \Psi_{i-1, j}}{2\Delta x}.
-\]
-Then compute the difference along \(y\):
-\[
-\frac{\partial^2 \Psi}{\partial y \partial x} \approx \frac{\Psi_{i+1, j+1} - \Psi_{i-1, j+1} - \Psi_{i+1, j-1} + \Psi_{i-1, j-1}}{4 \Delta x \Delta y}.
-\]
+To derive the finite-difference approximation for the mixed derivative $\frac{\partial^2\Psi}{\partial x\partial y}$, we'll follow a similar step-by-step process as we did for the higher-order derivatives with respect to $y$.
+First, let's review the central difference formula for the partial derivative $\frac{\partial\Psi}{\partial y}$:
+\begin{equation}
+\frac{\partial\Psi}{\partial y} \approx \frac{\Psi(i+1,j) - \Psi(i-1,j)}{2\Delta y}
+\end{equation}
+Now, to get the mixed derivative $\frac{\partial^2\Psi}{\partial x\partial y}$, we need to differentiate this first derivative expression with respect to $x$:
+\begin{align}
+\frac{\partial^2\Psi}{\partial x\partial y} &\approx \frac{\frac{\partial\Psi}{\partial y}(i+1,j+1) - \frac{\partial\Psi}{\partial y}(i-1,j+1) - \frac{\partial\Psi}{\partial y}(i+1,j-1) + \frac{\partial\Psi}{\partial y}(i-1,j-1)}{4\Delta x\Delta y}
+\end{align}
+Substituting the central difference formula for $\frac{\partial\Psi}{\partial y}$, we get:
+\begin{align}
+\frac{\partial^2\Psi}{\partial x\partial y} &\approx \frac{(\Psi(i+1,j+1) - \Psi(i-1,j+1)) - (\Psi(i+1,j-1) - \Psi(i-1,j-1))}{4\Delta x\Delta y}
+\end{align}
+Simplifying the expression, the final second-order finite-difference approximation for the mixed derivative $\frac{\partial^2\Psi}{\partial x\partial y}$ is:
+\begin{equation}
+\frac{\partial^2\Psi}{\partial x\partial y} \approx \frac{\Psi(i+1,j+1) - \Psi(i-1,j+1) - \Psi(i+1,j-1) + \Psi(i-1,j-1)}{4\Delta x\Delta y}
+\end{equation}
 
 
 
