@@ -143,7 +143,7 @@ plt.show()
 
 # Time-stepping parameters
 dt = 0.01                 # time step (s)
-total_time = 100          # total simulation time (s)
+total_time = 1000         # total simulation time (s)
 Nt = int(total_time / dt) # number of time steps
 
 # Initialize temperature profile
@@ -166,10 +166,10 @@ for n in range(Nt):
     T_new = T.copy()
 
     for i in range(1, N - 1):
-        T_new[i] = T[i] + alpha * dt / h**2 * (T[i+1] - 2*T[i] + T[i-1]) + source_term[i] * dt
+        T_new[i] = T_new[i] + alpha * dt / h**2 * (T_new[i+1] - 2*T_new[i] + T_new[i-1]) + source_term[i] * dt
 
-    T[0] = T_left
-    T[-1] = T_right
+    T_new[0] = T_left
+    T_new[-1] = T_right
 
     T = T_new.copy()
     T_history.append(T.copy())

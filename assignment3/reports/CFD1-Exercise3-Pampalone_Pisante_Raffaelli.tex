@@ -283,22 +283,11 @@ Fo = \frac{\lambda t}{\rho c_p L^2}
 \subsection{Dimensional form of the equation for the numerical solution}
 
 For our numerical solution we want to use the dimensional form of the equation because in this way, we can maintain physical units while 
-controlling stability numerically. For example, the Explicit Euler method for time-stepping and central difference scheme for space gives:
-\[
-\rho c_p \frac{T_i^{n+1} - T_i^n}{\Delta t} = \lambda \frac{T_{i+1}^n - 2T_i^n + T_{i-1}^n}{\Delta x^2} + q
-\]
-
-The time step $\Delta t$ and spatial interval $\Delta x$ must satisfy the Von Neumann stability criterion:
-\[
-\Delta t \leq \frac{\rho c_p (\Delta x)^2}{2 \lambda}
-\]
-
-In this way, it is possible to define a grid in terms of the effective length $L$ and the time interval $\Delta t$, 
-thereby maintaining physical units. The values of $\rho$, $c_p$, $\lambda$, and $q$ can be directly substituted into 
-the discretized equation in their dimensional form, and the boundary conditions can be applied directly. Furthermore,
-once the numerical solution is computed, the temperature at all nodes $T_i^n$ is obtained directly in Kelvin, preserving
-dimensional consistency. While non-dimensionalization may simplify some analyses, it is not strictly necessary for straightforward 
-numerical implementation.
+controlling stability numerically. This approach allows us to define a grid in terms of the effective length $L$ and the time interval 
+$\Delta t$, thereby maintaining physical units. The values of $\rho$, $c_p$, $\lambda$, and $q$ can be directly substituted into 
+the discretized equation in their dimensional form, and the boundary conditions can be applied directly. Furthermore, once the numerical 
+solution is computed, the temperature at all nodes $T_i^n$ is obtained directly in Kelvin, preserving dimensional consistency. 
+While non-dimensionalization may simplify some analyses, it is not strictly necessary for straightforward numerical implementation.
 
 \subsection{Discretization using a second-order central differende scheme in space}
 
@@ -306,6 +295,53 @@ At boundaries, it is not possible to use the central difference formula directly
 The loop we implemented on python skips the first and last point because the second derivative cannot be computed at the boundaries using CDS
 without additional information. Boundary conditions can be added separately after calculating the second derivative for the internal elements.
 
+\subsection{Verify the correctness of the implementation}
+
+Looking at the plot, the functions at the bottom show very small errors that appear to increase slightly for finer grid spacings. 
+This behavior is due to numerical precision limits rather than an issue with the method itself. For functions like \(f(x) = x\) and \(f(x) = x^2\),
+the analytical second derivatives are either zero or constant. When $\Delta x$ becomes very small, the central difference scheme involves
+subtracting nearly equal numbers, amplifying round-off errors.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.5\textwidth]{Figure_4.png}
+  \caption{Convergence of second derivative approximation}
+  \label{fig: Convergence of second derivative approximation}
+\end{figure}
+
+\subsection{Stationary temperature distribution}
+
+The attached file \texttt{1D\_Heat.py} from our repository \cite{GitHubRepo} contains the Python code which should be executed to obtain 
+the numerical solution of the 1D Heat equation respectively in the cases of stationary temperature distribution (with and without heat source) 
+and unsteady evolution of temperature. The result depicted in the graph illustrates the steady-state temperature distribution along an alluminium
+bar. The temperature distribution is linear between the imposed boundary conditions, reflecting the absence of any internal heat source.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.5\textwidth]{Figure_1.png}
+  \caption{Stationary temperature distribution}
+  \label{fig: Stationary temperature distribution}
+\end{figure}
+
+\subsection{Stationary temperature distribution with a homogeneus heat source}
+
+The result depicted in this graph represents the steady-state temperature distribution if there is a homogeneus heat source.
+Unlike the case with no heat source, the temperature distribution here is non-linear, with a distinct peak near the center of the bar. 
+This indicates that internal heat generation significantly affects the temperature distribution.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.5\textwidth]{Figure_2.png}
+  \caption{Stationary temperature distribution with a homogeneus heat source}
+  \label{fig: Stationary temperature distribution with a homogeneus heat source}
+\end{figure}
+
+\subsection{Unsteady evolution of temperature}
+
+The result depicted in this graph represents the unsteady evolution of temperature of the bar. Initially, the temperature is a linear profile 
+likely corresponding to a steady-state condition with no heat source effect. As time progresses, the temperature rises across the bar due to 
+the heat generated internally. The curves demonstrate how heat gradually accumulates in the material, with the most pronounced rise occurring 
+in the center of the bar.
 
 \begin{thebibliography}{9}
   \bibitem{GitHubRepo}
