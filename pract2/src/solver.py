@@ -1,75 +1,143 @@
 import numpy as np
-from scipy.linalg import lu, solve_triangular
 
-def second_derivative(u, coord, axis):
-    du2 = np.zeros_like(u)
-    h = coord[1] - coord[0]
-    if axis == 0:
-        du2[1:-1, :] = (u[:-2, :] - 2 * u[1:-1, :] + u[2:, :]) / h**2
-    elif axis == 1:
-        du2[:, 1:-1] = (u[:, :-2] - 2 * u[:, 1:-1] + u[:, 2:]) / h**2
-    return du2
+class LinearSystem():
 
-def explicit_euler(pde_func, u_initial, x, y, t, dt):
-    u = u_initial.copy()
+    def __init__(self, Nx, Ny, dx, dy, Re):
+        self.Nx = Nx
+        self.Ny = Ny
+        self.dx = dx
+        self.dy = dy
+        self.Re = Re
+        self.N = 2 * Nx * Ny
+          
+        self.A = np.zeros((self.N, self.N))
+        self.b = np.zeros(self.N)
     
-    # Boundary conditions
-    u[0, :] = 1 - y[:,0]**3
-    u[-1, :] = 1 - np.sin(np.pi * y[:,0] / 2)
-    u[:, 0] = 1
-    u[:, -1] = 0
-    u += dt * pde_func(u, t, x, y)
+    def build_matrix(self):
+        Nx = self.Nx
+        Ny = self.Ny
+        dx = self.dx
+        dy = self.dy
+        Re = self.Re
+        
+        # Costruzione della matrice A e del vettore b
+        for j in range(Nx):      # Direzione y
+            for i in range(Ny):  # Direzione x
 
-    return u
-
-def FactorizeA(u_initial, dt, dx, dy):
-    nx, ny = u_initial.shape
-    A = np.zeros((nx * ny, nx * ny))
-    for i in range(nx):
-        for j in range(ny):
-            idx = i * ny + j
-            if i == 0 or i == nx - 1 or j == 0 or j == ny - 1:
-                # Boundary points
-                A[idx, idx] = 1
-            else:
-                A[idx, idx] = 1 + dt * (1 / dx**2 + 1 / dy**2)
-                if i > 0:
-                    A[idx, idx - ny] = -dt / (2 * dx**2)
-                if i < nx - 1:
-                    A[idx, idx + ny] = -dt / (2 * dx**2)
-                if j > 0:
-                    A[idx, idx - 1] = -dt / (2 * dy**2)
-                if j < ny - 1:
-                    A[idx, idx + 1] = -dt / (2 * dy**2)
-    
-    # LU factorization of matrix A
-    P, L, U = lu(A)
-    return P, L, U
-
-def crank_nicolson(pde_func, u_initial, x, y, t, dt, P, L, U):
-    u = u_initial.copy()
-    nx, ny = u.shape
-    
-    # Boundary conditions
-    u[0, :] = 1 - y[:,0]**3
-    u[-1, :] = 1 - np.sin(np.pi * y[:,0] / 2)
-    u[:, 0] = 1
-    u[:, -1] = 0
-    
-    b = np.zeros(nx * ny)
+                idx_u = j * Nx + i             # Indice per u(i,j)
+                idx_v = Nx * Ny + j * Nx + i   # Indice per v(i,j)
                 
-    b = u.flatten() + dt * pde_func(u, t, x, y).flatten()
-    # Boundary points
-    b[0:ny] = u[0, :]
-    b[ny * (nx - 1):] = u[-1, :]
-    b[::ny] = u[:, 0]
-    b[ny - 1::ny] = u[:, -1]
-    
-    Pb = P @ b
-    y = solve_triangular(L, Pb, lower=True)
-    # Time-stepping loop
-    u_new_flat = solve_triangular(U, y)
-    u_new = u_new_flat.reshape((nx, ny))
-    
-    return u_new
+                # Inner points
+                if 0 < i < Ny-1 and 0 < j < Nx-1:
 
+                    # Continuity equation
+                    self.A[idx_u, idx_u] += 1 / dx
+                    self.A[idx_u, idx_u - Nx] -= 1 / dx
+
+                    self.A[idx_u, idx_v + 1] += 1 / (2 * dy)
+                    self.A[idx_u, idx_v - 1] -= 1 / (2 * dy)
+                    
+                    # Momentum equation 
+                    self.A[idx_v, idx_u] += 1 / dx
+                    self.A[idx_v, idx_u] += 2 / (Re * dy**2)
+
+                    self.A[idx_v, idx_u - 1] -= 1 / (2 * dy)
+                    self.A[idx_v, idx_u - 1] += 1 / (Re * dy**2)
+
+
+                    self.A[idx_v, idx_u + 1] = 1 / (2 * dy)
+                    self.A[idx_v, idx_u + 1] += 1 / (Re * dy**2)
+
+                    self.A[idx_v, idx_u - Nx] -= 1 / dx
+                
+                # Boundary points
+                # Bordo sinistro (x=0)
+                if i == 0:
+                    self.A[idx_u, idx_u] = 1 
+                    self.A[idx_v, idx_u] = 1
+                    self.A[idx_v, idx_u] = 1
+
+                    self.b[idx_u] = 1  # Condizione di bordo u(0,y) = 1
+                    self.b[idx_v] = 0  # Condizione v(0,y)
+                    
+                # Bordo destro (x=1)
+                if i == Ny-1:
+                    self.A[idx_u, idx_u] = 1 
+                    self.A[idx_v, idx_u] = 1
+                    self.A[idx_v, idx_u] = 1
+                    self.b[idx_u] = 1  # Condizione di bordo u(1,y) = 1
+                    self.b[idx_v] = 0  # Condizione v(1,y)
+                    
+                # Bordo superiore
+                if j == 0:
+                    self.A[idx_u, idx_v] = 1 
+                    self.A[idx_v, idx_u] = 1
+                    self.A[idx_u, idx_u] = 1
+
+                    self.b[idx_u] = 1
+                    self.b[idx_v] = 0
+
+
+                # Bordo inferiore
+                if j == Nx-1:
+                    self.A[idx_u, idx_u] = 1 
+                    self.A[idx_v, idx_u] = 1
+                    self.b[idx_v] = 0  # v(1,y) = 0
+                    self.b[idx_u] = 0  # v(1,y) = 0
+
+
+    def updateMatrix(self, u_initial, v_initial):
+        Nx = self.Nx
+        Ny = self.Ny
+        dx = self.dx
+        dy = self.dy
+        Re = self.Re
+
+        for j in range(Ny):      # Direzione y
+            for i in range(Nx):  # Direzione x
+
+                idx_u = j * Nx + i             # Indice per u(i,j)
+                idx_v = Nx * Ny + j * Nx + i   # Indice per v(i,j)
+                
+                # Inner points
+                if 0 < i < Nx-1 and 0 < j < Ny-1:
+                    
+                    # Momentum equation 
+                    self.A[idx_v, idx_u] = u_initial[i,j] / dx
+                    self.A[idx_v, idx_u] -= 2 / (Re * dy**2)
+
+                    self.A[idx_v, idx_u - 1] = v_initial[i,j] / (2 * dy)
+                    self.A[idx_v, idx_u - 1] += 1 / (Re * dy**2)
+
+
+                    self.A[idx_v, idx_u + 1] = -v_initial[i,j] / (2 * dy)
+                    self.A[idx_v, idx_u + 1] += 1 / (Re * dy**2)
+
+
+                    self.A[idx_v, idx_u - Nx] = - u_initial[i,j] / dx
+                
+                # Boundary points
+                # Bordo sinistro (x=0)
+                if i == 0:
+                    """ self.A[idx_v, idx_u] -= u_initial[i,j] / dx
+                    self.A[idx_v, idx_u + Nx] += u_initial[i,j] / dx """
+                    self.A[idx_v, idx_u] = 1
+                # Bordo superiore
+                if j == 0:
+                    """ self.A[idx_v, idx_u] = -v_initial[i,j] / dy
+                    self.A[idx_v, idx_u] +=  1 / (Re * dy**2) """
+                    self.A[idx_v, idx_u] = 1
+
+                    self.A[idx_v, idx_u + 1] = v_initial[i,j] / dy
+                    self.A[idx_v, idx_u + 1] += 2 / (Re * dy**2)
+
+                # Bordo inferiore
+                if j == Ny-1:
+                    self.A[idx_v, idx_u] = u_initial[i,j] / dx
+                    self.A[idx_v, idx_u] += v_initial[i,j] / dy
+                    self.A[idx_v, idx_u] -= 1 / (Re * dy**2)
+
+                    self.A[idx_v, idx_u - 2] = 1 / (Re * dy**2)
+
+                    self.A[idx_v, idx_u - 1] = 2 / (Re * dy**2)
+                    self.A[idx_v, idx_u - 1] -= v_initial[i,j] / dy
