@@ -60,13 +60,6 @@ class LinearSystem():
                     self.b[idx_u] = 1  # Condizione di bordo u(0,y) = 1
                     self.b[idx_v] = 0  # Condizione v(0,y)
                     
-                # Bordo destro (x=1)
-                if i == Ny-1:
-                    self.A[idx_u, idx_u] = 1 
-                    self.A[idx_v, idx_u] = 1
-                    self.A[idx_v, idx_u] = 1
-                    self.b[idx_u] = 1  # Condizione di bordo u(1,y) = 1
-                    self.b[idx_v] = 0  # Condizione v(1,y)
                     
                 # Bordo superiore
                 if j == 0:
@@ -82,8 +75,11 @@ class LinearSystem():
                 if j == Nx-1:
                     self.A[idx_u, idx_u] = 1 
                     self.A[idx_v, idx_u] = 1
-                    self.b[idx_v] = 0  # v(1,y) = 0
-                    self.b[idx_u] = 0  # v(1,y) = 0
+                    self.A[idx_u, idx_v] = 1
+
+
+                    self.b[idx_v] = 0  # v(x,0) = 0
+                    self.b[idx_u] = 0  # u(x,0) = 0
 
 
     def updateMatrix(self, u_initial, v_initial):
@@ -93,8 +89,8 @@ class LinearSystem():
         dy = self.dy
         Re = self.Re
 
-        for j in range(Ny):      # Direzione y
-            for i in range(Nx):  # Direzione x
+        for j in range(Nx):      # Direzione y
+            for i in range(Ny):  # Direzione x
 
                 idx_u = j * Nx + i             # Indice per u(i,j)
                 idx_v = Nx * Ny + j * Nx + i   # Indice per v(i,j)
@@ -109,35 +105,7 @@ class LinearSystem():
                     self.A[idx_v, idx_u - 1] = v_initial[i,j] / (2 * dy)
                     self.A[idx_v, idx_u - 1] += 1 / (Re * dy**2)
 
-
-                    self.A[idx_v, idx_u + 1] = -v_initial[i,j] / (2 * dy)
+                    self.A[idx_v, idx_u + 1] = - v_initial[i,j] / (2 * dy)
                     self.A[idx_v, idx_u + 1] += 1 / (Re * dy**2)
 
-
                     self.A[idx_v, idx_u - Nx] = - u_initial[i,j] / dx
-                
-                # Boundary points
-                # Bordo sinistro (x=0)
-                if i == 0:
-                    """ self.A[idx_v, idx_u] -= u_initial[i,j] / dx
-                    self.A[idx_v, idx_u + Nx] += u_initial[i,j] / dx """
-                    self.A[idx_v, idx_u] = 1
-                # Bordo superiore
-                if j == 0:
-                    """ self.A[idx_v, idx_u] = -v_initial[i,j] / dy
-                    self.A[idx_v, idx_u] +=  1 / (Re * dy**2) """
-                    self.A[idx_v, idx_u] = 1
-
-                    self.A[idx_v, idx_u + 1] = v_initial[i,j] / dy
-                    self.A[idx_v, idx_u + 1] += 2 / (Re * dy**2)
-
-                # Bordo inferiore
-                if j == Ny-1:
-                    self.A[idx_v, idx_u] = u_initial[i,j] / dx
-                    self.A[idx_v, idx_u] += v_initial[i,j] / dy
-                    self.A[idx_v, idx_u] -= 1 / (Re * dy**2)
-
-                    self.A[idx_v, idx_u - 2] = 1 / (Re * dy**2)
-
-                    self.A[idx_v, idx_u - 1] = 2 / (Re * dy**2)
-                    self.A[idx_v, idx_u - 1] -= v_initial[i,j] / dy
