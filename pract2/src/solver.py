@@ -82,6 +82,54 @@ class LinearSystem():
 
         print(np.count_nonzero(self.A[Nx*Ny +19, :]))
 
+        """ # Indici per u e v
+        idx_u = np.arange(Nx * Ny)
+        idx_v = Nx * Ny + np.arange(Nx * Ny)
+
+        # Continuity equation
+        self.A[idx_u, idx_u] += 1 / dx
+        self.A[idx_u[:-Nx], idx_u[Nx:]] -= 1 / dx
+
+        self.A[idx_u[1:], idx_v[:-1]] += 1 / (2 * dy)
+        self.A[idx_u[:-1], idx_v[1:]] -= 1 / (2 * dy)
+
+        # Momentum equation
+        self.A[idx_v, idx_u] += 1 / dx
+        self.A[idx_v, idx_u] += 2 / (Re * dy**2)
+
+        self.A[idx_v[1:], idx_u[:-1]] -= 1 / (2 * dy)
+        self.A[idx_v[1:], idx_u[:-1]] += 1 / (Re * dy**2)
+
+        self.A[idx_v[:-1], idx_u[1:]] += 1 / (2 * dy)
+        self.A[idx_v[:-1], idx_u[1:]] += 1 / (Re * dy**2)
+
+        self.A[idx_v[:-Nx], idx_u[Nx:]] -= 1 / dx
+
+        # Boundary points
+        # Left boundary (x = 0)
+        self.A[idx_u[::Nx], idx_u[::Nx]] = 1
+        self.A[idx_v[::Nx], idx_v[::Nx]] = 1
+        self.b[idx_u[::Nx]] = 1  # Free-stream inflow for u
+        self.b[idx_v[::Nx]] = 0  # No v velocity
+
+        # Right boundary (x = Nx-1) - Outflow
+        self.A[idx_u[Nx-1::Nx], idx_u[Nx-1::Nx]] = 1
+        self.A[idx_v[Nx-1::Nx], idx_v[Nx-1::Nx]] = 1
+        self.b[idx_u[Nx-1::Nx]] = 1  # Free-stream outflow for u
+        self.b[idx_v[Nx-1::Nx]] = 0  # No v velocity
+
+        # Bottom boundary (y = 0) - No-slip wall
+        self.A[idx_u[:Nx], idx_u[:Nx]] = 1
+        self.A[idx_v[:Nx], idx_v[:Nx]] = 1
+        self.b[idx_u[:Nx]] = 0  # u = 0
+        self.b[idx_v[:Nx]] = 0  # v = 0
+
+        # Top boundary (y = Ny-1) - Far-field
+        self.A[idx_u[-Nx:], idx_u[-Nx:]] = 1
+        self.A[idx_v[-Nx:], idx_v[-Nx:]] = 1
+        self.b[idx_u[-Nx:]] = 1  # Free-stream u velocity
+        self.b[idx_v[-Nx:]] = 0  # No v velocity """
+
 
     def updateMatrix(self, u_initial, v_initial):
         Nx = self.Nx
