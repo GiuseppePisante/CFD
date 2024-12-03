@@ -2,15 +2,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import mesh
 import solver
-from matplotlib.animation import FuncAnimation
 from matplotlib.colors import Normalize
-from scipy.sparse import csc_matrix
 from scipy.sparse.linalg import gmres, LinearOperator, spilu
 
 def main():
-    Nx, Ny = 10, 10  # Example grid size
-    dx, dy = 1.0, 1.0  # Example grid spacing
-    Re = 100.0  # Example Reynolds number
+    L = 1.0 
+    Nx, Ny = 10, 10
+    dx, dy = L/Nx, L/Ny 
+    Re = 1000.0 
 
     # Create an instance of LinearSystem
     linear_system = solver.LinearSystem(Nx, Ny, dx, dy, Re)
@@ -24,53 +23,41 @@ def main():
     plt.show()
         
     # Initial guess for u and v
-    u_solution = np.ones((Nx, Ny))
-    v_solution = np.ones((Nx, Ny))
-    u_new = np.ones((Nx, Ny))
-    v_new = np.ones((Nx, Ny))
+    u_solution = np.zeros((Nx, Ny))
+    v_solution = np.zeros((Nx, Ny))
+    u_new = np.zeros((Nx, Ny))
+    v_new = np.zeros((Nx, Ny))
 
-    # Set initial conditions on the boundaries
-    u_solution[:, 0] = 1.0  # Left boundary
-    u_solution[:, -1] = 1.0  # Right boundary
-    u_solution[0, :] = 0.0  # Bottom boundary
-    u_solution[-1, :] = 1.0  # Top boundary
+    tolerance = 1.e-10
 
-    v_solution[0, :] = 0.0  # Bottom boundary
-    v_solution[-1, :] = 0.0  # Top boundary
-
-    tolerance = 1.e-06
-
-    for iteration in range(2):
+    for iteration in range(10):
         print(f"Iteration {iteration + 1}")
-        
-        # Update the matrix A and vector b using the current solution
-        linear_system.updateMatrix(u_solution, v_solution)
         
         # Solve the linear system with GMRES
         solution, info = gmres(linear_system.A, linear_system.b)
+
         # Extract u and v from the solution
         u_solution = solution[:Nx * Ny].reshape((Nx, Ny))
         v_solution = solution[Nx * Ny:].reshape((Nx, Ny))
 
+        # Update the matrix A and vector b using the current solution
+        linear_system.updateMatrix(u_solution, v_solution)
+
         # Check convergence
-        error = np.linalg.norm(u_new - u_solution) + np.linalg.norm(v_new - u_solution)
-        print("error:", error)
-        if error < tolerance:
+        residual = np.linalg.norm(linear_system.b - linear_system.A @ solution)
+        normalized_residual = residual / np.linalg.norm(linear_system.b)
+        print("normalized residual:", normalized_residual)
+        if normalized_residual < tolerance:
             print(f"Converged after {iteration + 1} iterations.")
             break
 
-        u_new = solution[:Nx * Ny].reshape((Nx, Ny))
-        v_new = solution[Nx * Ny:].reshape((Nx, Ny))
     
-    # Create the initial plot with consistent color scaling
+
+
+    #PLOT
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 7))
     u_min, u_max = np.min(u_solution), np.max(u_solution)
-    
-    # Ensure levels array is strictly increasing
-    if u_min == u_max:
-        levels = np.linspace(u_min, u_max + 1, 100)
-    else:
-        levels = np.linspace(u_min, u_max, 100)
+    levels = np.linspace(u_min, u_max, 100)
     
     norm = Normalize(vmin=u_min, vmax=u_max)
     

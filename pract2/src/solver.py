@@ -51,35 +51,36 @@ class LinearSystem():
                     self.A[idx_v, idx_u - Nx] -= 1 / dx
                 
                 # Boundary points
-                # Bordo sinistro (x=0)
+                # Left boundary (x = 0)
                 if i == 0:
-                    self.A[idx_u, idx_u] = 1 
-                    self.A[idx_v, idx_u] = 1
-                    self.A[idx_v, idx_u] = 1
-
-                    self.b[idx_u] = 1  # Condizione di bordo u(0,y) = 1
-                    self.b[idx_v] = 0  # Condizione v(0,y)
-                    
-                    
-                # Bordo superiore
-                if j == 0:
-                    self.A[idx_u, idx_v] = 1 
-                    self.A[idx_v, idx_u] = 1
                     self.A[idx_u, idx_u] = 1
+                    self.A[idx_v, idx_v] = 1
+                    self.b[idx_u] = 1  # Free-stream inflow for u
+                    self.b[idx_v] = 0  # No v velocity
 
-                    self.b[idx_u] = 1
-                    self.b[idx_v] = 0
+                # Right boundary (x = Nx-1) - Outflow
+                if i == Nx-1:
+                    # self.A[idx_u, idx_u] = 1
+                    self.A[idx_u, idx_u] = 1
+                    self.A[idx_v, idx_v] = 1
+                    self.b[idx_u] = 1  # Free-stream outflow for u
+                    self.b[idx_v] = 0  # No v velocity
 
+                # Bottom boundary (y = 0) - No-slip wall
+                if j == 0:
+                    self.A[idx_u, idx_u] = 1
+                    self.A[idx_v, idx_v] = 1
+                    self.b[idx_u] = 0  # u = 0
+                    self.b[idx_v] = 0  # v = 0
 
-                # Bordo inferiore
-                if j == Nx-1:
-                    self.A[idx_u, idx_u] = 1 
-                    self.A[idx_v, idx_u] = 1
-                    self.A[idx_u, idx_v] = 1
+                # Top boundary (y = Ny-1) - Far-field
+                if j == Ny-1:
+                    self.A[idx_u, idx_u] = 1
+                    self.A[idx_v, idx_v] = 1
+                    self.b[idx_u] = 1  # Free-stream u velocity
+                    self.b[idx_v] = 0  # No v velocity
 
-
-                    self.b[idx_v] = 0  # v(x,0) = 0
-                    self.b[idx_u] = 0  # u(x,0) = 0
+        print(np.count_nonzero(self.A[Nx*Ny +19, :]))
 
 
     def updateMatrix(self, u_initial, v_initial):
