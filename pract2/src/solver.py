@@ -19,142 +19,81 @@ class LinearSystem():
         dx = self.dx
         dy = self.dy
         Re = self.Re
-        
-        # Costruzione della matrice A e del vettore b
-        for j in range(Nx):      # Direzione y
-            for i in range(Ny):  # Direzione x
 
-                idx_u = j * Nx + i             # Indice per u(i,j)
-                idx_v = Nx * Ny + j * Nx + i   # Indice per v(i,j)
-                
-                # Inner points
-                if 0 < i < Ny-1 and 0 < j < Nx-1:
-
-                    # Continuity equation
-                    self.A[idx_u, idx_u] += 1 / dx
-                    self.A[idx_u, idx_u - Nx] -= 1 / dx
-
-                    self.A[idx_u, idx_v + 1] += 1 / (2 * dy)
-                    self.A[idx_u, idx_v - 1] -= 1 / (2 * dy)
-                    
-                    # Momentum equation 
-                    self.A[idx_v, idx_u] += 1 / dx
-                    self.A[idx_v, idx_u] += 2 / (Re * dy**2)
-
-                    self.A[idx_v, idx_u - 1] -= 1 / (2 * dy)
-                    self.A[idx_v, idx_u - 1] += 1 / (Re * dy**2)
-
-
-                    self.A[idx_v, idx_u + 1] = 1 / (2 * dy)
-                    self.A[idx_v, idx_u + 1] += 1 / (Re * dy**2)
-
-                    self.A[idx_v, idx_u - Nx] -= 1 / dx
-                
-                # Boundary points
-                # Left boundary (x = 0)
-                if i == 0:
-                    self.A[idx_u, idx_u] = 1
-                    self.A[idx_v, idx_v] = 1
-                    self.b[idx_u] = 1  # Free-stream inflow for u
-                    self.b[idx_v] = 0  # No v velocity
-
-                # Right boundary (x = Nx-1) - Outflow
-                if i == Nx-1:
-                    # self.A[idx_u, idx_u] = 1
-                    self.A[idx_u, idx_u] = 1
-                    self.A[idx_v, idx_v] = 1
-                    self.b[idx_u] = 1  # Free-stream outflow for u
-                    self.b[idx_v] = 0  # No v velocity
-
-                # Bottom boundary (y = 0) - No-slip wall
-                if j == 0:
-                    self.A[idx_u, idx_u] = 1
-                    self.A[idx_v, idx_v] = 1
-                    self.b[idx_u] = 0  # u = 0
-                    self.b[idx_v] = 0  # v = 0
-
-                # Top boundary (y = Ny-1) - Far-field
-                if j == Ny-1:
-                    self.A[idx_u, idx_u] = 1
-                    self.A[idx_v, idx_v] = 1
-                    self.b[idx_u] = 1  # Free-stream u velocity
-                    self.b[idx_v] = 0  # No v velocity
-
-        print(np.count_nonzero(self.A[Nx*Ny +19, :]))
-
-        """ # Indici per u e v
         idx_u = np.arange(Nx * Ny)
         idx_v = Nx * Ny + np.arange(Nx * Ny)
 
-        # Continuity equation
-        self.A[idx_u, idx_u] += 1 / dx
-        self.A[idx_u[:-Nx], idx_u[Nx:]] -= 1 / dx
+        musk_inner = (idx_u % Nx != 0) & (idx_u % Nx != Nx-1) & (idx_u < Nx * Ny - Nx) & (idx_u >= Nx)
+        musk_left = (idx_u % Nx == 0)
+        musk_right = (idx_u % Nx == Nx-1)
+        musk_bottom = (idx_u < Nx)
+        musk_top = (idx_u >= Nx * Ny - Nx)
 
-        self.A[idx_u[1:], idx_v[:-1]] += 1 / (2 * dy)
-        self.A[idx_u[:-1], idx_v[1:]] -= 1 / (2 * dy)
+        # Continuity equation
+        self.A[idx_u[musk_inner], idx_u[musk_inner]] += 1 / dx
+        self.A[idx_u[1:][musk_inner[1:]], idx_u[:-1][musk_inner[1:]]] -= 1 / dx
+
+        self.A[idx_u[Nx:][musk_inner[Nx:]], idx_v[:-Nx][musk_inner[:-Nx]]] += 1 / (2 * dy)
+        self.A[idx_u[:-Nx][musk_inner[:-Nx]], idx_v[Nx:][musk_inner[:-Nx]]] -= 1 / (2 * dy)
 
         # Momentum equation
-        self.A[idx_v, idx_u] += 1 / dx
-        self.A[idx_v, idx_u] += 2 / (Re * dy**2)
+        self.A[idx_v[musk_inner], idx_u[musk_inner]] += 1 / dx
+        self.A[idx_v[musk_inner], idx_u[musk_inner]] += 2 / (Re * dy**2)
 
-        self.A[idx_v[1:], idx_u[:-1]] -= 1 / (2 * dy)
-        self.A[idx_v[1:], idx_u[:-1]] += 1 / (Re * dy**2)
+        self.A[idx_v[:-Nx][musk_inner[:-Nx]], idx_u[Nx:][musk_inner[Nx:]]] -= 1 / (2 * dy)
+        self.A[idx_v[:-Nx][musk_inner[:-Nx]], idx_u[Nx:][musk_inner[Nx:]]] -= 1 / (Re * dy**2)
 
-        self.A[idx_v[:-1], idx_u[1:]] += 1 / (2 * dy)
-        self.A[idx_v[:-1], idx_u[1:]] += 1 / (Re * dy**2)
+        self.A[idx_v[Nx:][musk_inner[Nx:]], idx_u[:-Nx][musk_inner[:-Nx]]-Nx] += 1 / (2 * dy)
+        self.A[idx_v[Nx:][musk_inner[Nx:]], idx_u[:-Nx][musk_inner[:-Nx]]-Nx] -= 1 / (Re * dy**2)
 
-        self.A[idx_v[:-Nx], idx_u[Nx:]] -= 1 / dx
+        self.A[idx_v[:-1][musk_inner[:-1]], idx_u[1:][musk_inner[1:]]-1] -= 1 / dx
 
         # Boundary points
         # Left boundary (x = 0)
-        self.A[idx_u[::Nx], idx_u[::Nx]] = 1
-        self.A[idx_v[::Nx], idx_v[::Nx]] = 1
-        self.b[idx_u[::Nx]] = 1  # Free-stream inflow for u
-        self.b[idx_v[::Nx]] = 0  # No v velocity
+        self.A[idx_u[musk_left], idx_u[musk_left]] = 1
+        self.A[idx_v[musk_left], idx_v[musk_left]] = 1
+        self.b[idx_u[musk_left]] = 1  # Free-stream inflow for u
+        self.b[idx_v[musk_left]] = 0
 
         # Right boundary (x = Nx-1) - Outflow
-        self.A[idx_u[Nx-1::Nx], idx_u[Nx-1::Nx]] = 1
-        self.A[idx_v[Nx-1::Nx], idx_v[Nx-1::Nx]] = 1
-        self.b[idx_u[Nx-1::Nx]] = 1  # Free-stream outflow for u
-        self.b[idx_v[Nx-1::Nx]] = 0  # No v velocity
+        self.A[idx_u[musk_right], idx_u[musk_right]] = 1
+        self.A[idx_v[musk_right], idx_v[musk_right]] = 1
+        self.b[idx_u[musk_right]] = 1  # Free-stream outflow for u
+        self.b[idx_v[musk_right]] = 0
 
         # Bottom boundary (y = 0) - No-slip wall
-        self.A[idx_u[:Nx], idx_u[:Nx]] = 1
-        self.A[idx_v[:Nx], idx_v[:Nx]] = 1
-        self.b[idx_u[:Nx]] = 0  # u = 0
-        self.b[idx_v[:Nx]] = 0  # v = 0
+        self.A[idx_u[musk_bottom], idx_u[musk_bottom]] = 1
+        self.A[idx_v[musk_bottom], idx_v[musk_bottom]] = 1
+        self.b[idx_u[musk_bottom]] = 0  # u = 0
+        self.b[idx_v[musk_bottom]] = 0  # v = 0
 
         # Top boundary (y = Ny-1) - Far-field
-        self.A[idx_u[-Nx:], idx_u[-Nx:]] = 1
-        self.A[idx_v[-Nx:], idx_v[-Nx:]] = 1
-        self.b[idx_u[-Nx:]] = 1  # Free-stream u velocity
-        self.b[idx_v[-Nx:]] = 0  # No v velocity """
+        self.A[idx_u[musk_top], idx_u[musk_top]] = 1
+        self.A[idx_v[musk_top], idx_v[musk_top]] = 1
+        self.b[idx_u[musk_top]] = 1  # Free-stream u velocity
+        self.b[idx_v[musk_top]] = 0  # No v velocity
 
 
-    def updateMatrix(self, u_initial, v_initial):
+    def updateMatrix(self, solution):
         Nx = self.Nx
         Ny = self.Ny
         dx = self.dx
         dy = self.dy
         Re = self.Re
 
-        for j in range(Nx):      # Direzione y
-            for i in range(Ny):  # Direzione x
+        idx_u = np.arange(Nx * Ny)
+        idx_v = Nx * Ny + np.arange(Nx * Ny)
 
-                idx_u = j * Nx + i             # Indice per u(i,j)
-                idx_v = Nx * Ny + j * Nx + i   # Indice per v(i,j)
-                
-                # Inner points
-                if 0 < i < Nx-1 and 0 < j < Ny-1:
-                    
-                    # Momentum equation 
-                    self.A[idx_v, idx_u] = u_initial[i,j] / dx
-                    self.A[idx_v, idx_u] -= 2 / (Re * dy**2)
+        musk_inner = (idx_u % Nx != 0) & (idx_u % Nx != Nx-1) & (idx_u < Nx * Ny - Nx) & (idx_u >= Nx)
+        
+        # Momentum equation 
+        self.A[idx_v[musk_inner], idx_u[musk_inner]] = solution[idx_u][musk_inner] / dx
+        self.A[idx_v[musk_inner], idx_u[musk_inner]] += 2 / (Re * dy**2)
 
-                    self.A[idx_v, idx_u - 1] = v_initial[i,j] / (2 * dy)
-                    self.A[idx_v, idx_u - 1] += 1 / (Re * dy**2)
+        self.A[idx_v[:-Nx][musk_inner[:-Nx]], idx_u[Nx:][musk_inner[Nx:]]] = - solution[idx_v[:-Nx][musk_inner[:-Nx]]] / (2 * dy)
+        self.A[idx_v[:-Nx][musk_inner[:-Nx]], idx_u[Nx:][musk_inner[Nx:]]] -= 1 / (Re * dy**2)
 
-                    self.A[idx_v, idx_u + 1] = - v_initial[i,j] / (2 * dy)
-                    self.A[idx_v, idx_u + 1] += 1 / (Re * dy**2)
+        self.A[idx_v[Nx:][musk_inner[Nx:]], idx_u[:-Nx][musk_inner[:-Nx]]-Nx] = solution[idx_v[Nx:][musk_inner[Nx:]]] / (2 * dy)
+        self.A[idx_v[Nx:][musk_inner[Nx:]], idx_u[:-Nx][musk_inner[:-Nx]]-Nx] -= 1 / (Re * dy**2)
 
-                    self.A[idx_v, idx_u - Nx] = - u_initial[i,j] / dx
+        self.A[idx_v[:-1][musk_inner[:-1]], idx_u[1:][musk_inner[1:]]-1] = - solution[idx_u[:-1][musk_inner[:-1]]] / dx
