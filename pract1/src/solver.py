@@ -12,7 +12,6 @@ def second_derivative(u, coord, axis):
 
 def explicit_euler(pde_func, u_initial, x, y, t, dt):
     u = u_initial.copy()
-    
     # Boundary conditions
     u[0, :] = 1 - y[:,0]**3
     u[-1, :] = 1 - np.sin(np.pi * y[:,0] / 2)
