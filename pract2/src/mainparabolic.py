@@ -1,36 +1,43 @@
 import numpy as np
-from solverparabolic import explicit_euler_solver, apply_boundary_conditions, initialize_conditions, plot_solution_2d
+import matplotlib.pyplot as plt
+from solverparabolic import solve_parabolic_1d
 
-# Example usage
-if __name__ == "__main__":
-    L = 1.0
-    Nx, Ny = 10, 10
-    Re = 10000.0
+# Parameters
+Re = 10000  # Diffusivity
+dx = 0.001      # Spatial step size
+dt = 0.0001     # Time step size
+t_max = 1.0   # Maximum time
+length = 0.08  # Length of the rod
 
-    delta_99 = 4.91 / np.sqrt(Re) * L
-    H = 2.0 * delta_99
-    dx, dy = H / Nx, L / Ny
+# Initial condition
+nx = int(length / dx) + 1
+x = np.linspace(0, length, nx)
+u0 = np.ones(nx)  # Initial condition set to 1 everywhere
+v0 = np.zeros(nx)  # Initial velocity distribution
+# Solve the heat equation
+u, v = solve_parabolic_1d(u0,v0, Re, dx, dt, t_max)
 
-    dt = 0.0001
-    x_final = 1.0
-    y_points = Ny + 1
-    x_points = Nx + 1
-    y = np.linspace(0, H, y_points)
-    x = np.linspace(0, L, x_points)
+# Plot the results as a 2D heatmap
+plt.imshow(u.T, extent=[0, t_max, 0, length], aspect='auto', origin='lower', cmap='viridis')
+plt.colorbar(label='Velocity')
+plt.xlabel('Time')
+plt.ylabel('Position')
+plt.title('Velocity distribution over time')
+plt.show()
 
-    u_initial, v_initial = initialize_conditions(y_points)
-    u_initial = apply_boundary_conditions(u_initial,2)
-    v_initial = apply_boundary_conditions(v_initial,2)
-    u_initial[0]=1
+plt.imshow(v.T, extent=[0, t_max, 0, length], aspect='auto', origin='lower', cmap='viridis')
+plt.colorbar(label='Velocity')
+plt.xlabel('Time')
+plt.ylabel('Position')
+plt.title('Velocity distribution over time')
+plt.show()
 
-    u = np.zeros((x_points, y_points))
-    v = np.zeros((x_points, y_points))
+# Plot the value of a point u over time
+point_index = nx // 2  # Choose the middle point
+time = np.linspace(0, t_max, int(t_max / dt))
+plt.plot(time, u[:, point_index])
+plt.xlabel('Time')
+plt.ylabel('Velocity at midpoint')
+plt.title('Velocity at midpoint over time')
+plt.show()
 
-    u[0, :] = u_initial
-    v[0, :] = v_initial
-
-    for i in range(1, x_points):
-        u[i, :], v[i, :] = explicit_euler_solver(u[i-1, :],v[i-1,:], dy, dt, dt,  Re)
-
-    print(u)
-    plot_solution_2d(x, y, u, v)
