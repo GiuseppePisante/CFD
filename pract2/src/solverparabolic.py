@@ -15,14 +15,15 @@ def solve_parabolic_1d(u0,v0, Re, dy, dt, t_max):
     v[0, 0] = 0
 
     for n in range(1, nt):
-        v[n, 1] = v[n-1, 0]/dy + (u[n, 1]-u[n-1, 1])/dt
-        for i in range(1, nx-1):
-            u[n, i] = u[n-1, i] + dt / u[n-1, i] * ((u[n-1, i+1] - 2*u[n-1, i] + u[n-1, i-1])/(Re * dy ** 2))
-            # - v[n-1,i] * (u[n-1,i + 1] - u[n-1,i - 1]) / (2 * dy)
-            v[n, i + 1] = v[n-1,i - 1]/(2 * dy) + (u[n-1,i]-u[n,i])/dt
+        v[n, 1] = v[n-1, 0] - dy * (u[n, 1]-u[n-1, 1])/dt
         # Boundary conditions
         u[n, 0] = 0
         u[n, -1] = 1
         v[n, 0] = 0
+        
+        for i in range(1, nx-1):
+            u[n, i] = u[n-1, i] + dt / u[n-1, i] * ((u[n-1, i+1] - 2*u[n-1, i] + u[n-1, i-1])/(Re * dy ** 2))
+            # -v[n-1,i] * (u[n-1,i + 1] - u[n-1,i - 1]) / (2 * dy)
+            v[n, i + 1] = v[n-1,i - 1] - 2 * dy * (u[n-1,i]-u[n,i])/dt
 
     return u, v
