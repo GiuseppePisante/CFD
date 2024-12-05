@@ -17,27 +17,22 @@ v0 = np.zeros(nx)  # Initial velocity distribution
 # Solve the heat equation
 u, v = solve_parabolic_1d(u0,v0, Re, dx, dt, t_max)
 
-# Plot the results as a 2D heatmap
-plt.imshow(u.T, extent=[0, t_max, 0, length], aspect='auto', origin='lower', cmap='viridis')
-plt.colorbar(label='Velocity')
-plt.xlabel('Time')
-plt.ylabel('Position')
-plt.title('Velocity distribution over time')
-plt.show()
+# Plot the results as 2D heatmaps in a single figure with two subplots
+fig, axs = plt.subplots(2, 1, figsize=(10, 8))
 
-plt.imshow(v.T, extent=[0, t_max, 0, length], aspect='auto', origin='lower', cmap='viridis')
-plt.colorbar(label='Velocity')
-plt.xlabel('Time')
-plt.ylabel('Position')
-plt.title('Velocity distribution over time')
-plt.show()
+# Plot u
+im1 = axs[0].imshow(u.T, extent=[0, t_max, 0, length], aspect='auto', origin='lower', cmap='jet')
+axs[0].set_title('Velocity distribution (u) over time')
+axs[0].set_xlabel('Time')
+axs[0].set_ylabel('Position')
+fig.colorbar(im1, ax=axs[0], label='Velocity')
 
-# Plot the value of a point u over time
-point_index = nx // 2  # Choose the middle point
-time = np.linspace(0, t_max, int(t_max / dt))
-plt.plot(time, u[:, point_index])
-plt.xlabel('Time')
-plt.ylabel('Velocity at midpoint')
-plt.title('Velocity at midpoint over time')
-plt.show()
+# Plot v
+im2 = axs[1].imshow(v.T, extent=[0, t_max, 0, length], aspect='auto', origin='lower', cmap='jet')
+axs[1].set_title('Velocity distribution (v) over time')
+axs[1].set_xlabel('Time')
+axs[1].set_ylabel('Position')
+fig.colorbar(im2, ax=axs[1], label='Velocity')
 
+plt.tight_layout()
+plt.show()
