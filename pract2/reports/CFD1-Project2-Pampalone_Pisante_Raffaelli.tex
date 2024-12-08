@@ -58,11 +58,10 @@ we get $\Delta = 0$, which means that the equation is parabolic.
 We now define the additional boundary conditions:
 \begin{itemize}
   \item $u(0,y) = 1$
-  \item $u(1,y) = 1$
   \item $v(0,y) = 0$
-  \item $v(1,y) = 0$
-  \item $v(x,\infty) = 0$
 \end{itemize}
+
+For x=1, we do not need boundary conditions, since it would overconstrain the problem.
 
 \section*{\Large Task 2.1:}
 The discretization applied to the x-momentum equation takes into account the parabolic nature of the equation. The discretization is performed using the central difference scheme for the y-direction, to capture the elliptic character of the diffusion process, and the backward difference scheme for the x-direction to better capture the convective term. The discretized equation is as follows:
@@ -138,7 +137,7 @@ T_{\text{total}} = T_{\text{BDS}} + T_{\text{CDS}} = -\frac{\Delta x}{2} \frac{\
 \]
 
 \section*{\Large Task 2.2:}
-This system is solved using a GMRES iterative solver, which allows us to solve the system for a non-symmetric A and the non linearities of the x-momentum.
+This system is solved using a BiCGStab iterative solver, which allows us to solve the system for a non-symmetric A and the non linearities of the x-momentum.
 The solver updates the values of \( u \) and \( v \) at each iteration, denoted as \( u^{(k+1)} \) and \( v^{(k+1)} \), by utilizing the values from the previous iteration, \( u^{(k)} \) and \( v^{(k)} \), to handle the non-linear terms effectively.
 The system of partial differential equations is:
 The continuity equation is discretized using the backward difference scheme (BDS) along the x-direction and the central difference scheme (CDS) along the y-direction. The discretized continuity equation is given by:
@@ -159,9 +158,6 @@ It is important to note that at the boundaries, we cannot use this discretizatio
   u_{i,j}\frac{u_{i,j+1} - u_{i,j}}{\Delta x}  + v_{i,j} \frac{u_{i+1,j} - u_{i-1,j}}{2 \Delta y} = \frac{1}{Re} \frac{u_{i+1,j} - 2u_{i,j} + u_{i-1,j}}{\Delta y^2}
 \end{cases}
 \]
-  
-\item Right boundary (\( x = 1 \)): the problem remains the same, as BDS works well on the right boundary.
-  
 \item Bottom boundary (\( y = 0 \)): CDS cannot be applied on the y-direction. We thus use FDS on such boundary:
 \[
   \begin{cases}
@@ -169,17 +165,9 @@ It is important to note that at the boundaries, we cannot use this discretizatio
     u_{i,j}\frac{u_{i,j} - u_{i,j-1}}{\Delta x}  + v_{i,j} \frac{u_{i,j} - u_{i-1,j}}{\Delta y} = \frac{1}{Re} \frac{u_{i-2,j} - 2u_{i-1,j} + u_{i,j}}{\Delta y^2}
   \end{cases}
 \]
-  
-\item Top boundary (\( y \to \infty \)): CDS cannot be applied on the y-direction. We thus use BDS on such boundary:
-\[
-  \begin{cases}
-    \frac{u_{i,j} - u_{i-1,j}}{\Delta x} + \frac{v_{i,j+1} - v_{i,j}}{\Delta y} = 0 \\
-    u_{i,j}\frac{u_{i,j} - u_{i-1,j}}{\Delta x}  + v_{i,j} \frac{u_{i,j+1} - u_{i,j}}{\Delta y} = \frac{1}{Re} \frac{u_{i,j+2} - 2u_{i,j+1} + u_{i,j}}{\Delta y^2}
-  \end{cases}
-\]
 \end{enumerate}
-
-To solve this, we construct a linear system of equations in the form \( \mathbf{A} \mathbf{x} = \mathbf{b} \), where \( A \in \mathbb{R}^{2n^2 \times 2n^2} \), \( b \in \mathbb{R}^{2n^2} \), and \( x \in \mathbb{R}^{2n^2 \times 2n^2} \). The structure of \( \mathbf{x} \) is as follows:
+Since we only apply Dirichlet Boundary Conditions, a different discretization at the boundaries is not relevant for solving the problem. But for generality, we decided to add this information.
+To solve this, we first tried to construct a linear system of equations in the form \( \mathbf{A} \mathbf{x} = \mathbf{b} \), where \( A \in \mathbb{R}^{2n^2 \times 2n^2} \), \( b \in \mathbb{R}^{2n^2} \), and \( x \in \mathbb{R}^{2n^2 \times 2n^2} \). The structure of \( \mathbf{x} \) is as follows:
 
 \[
 \mathbf{x} = \begin{bmatrix}
@@ -216,43 +204,21 @@ A =
 \end{bmatrix}
 \]
 
-In addition, the boundary conditions are applied to the vector \( \mathbf{b} \) to solve the system of equations, and are applied as follows:
-
-\begin{enumerate}
-  \item For \( u(0,y) = 1 \):
-  \begin{itemize}
-    \item Set \( b_{(j-1)n+1} = 1 \)
-  \end{itemize}
-  
-  \item For \( u(1,y) = 1 \):
-  \begin{itemize}
-    \item Set \( b_{(j-1)n+n} = 1 \)
-  \end{itemize}
-  
-  \item For \( v(0,y) = 0 \):
-  \begin{itemize}
-    \item Set \( b_{n^2+(j-1)n+1} = 0 \)
-  \end{itemize}
-  
-  
-   \item For \( v(1,y) = 0 \):
-    \begin{itemize}
-      \item Set \( b_{n^2+(j-1)n+n} = 0 \)
-    \end{itemize}
-  
-  \item For \( v(x,\infty) = 0 \):
-  \begin{itemize}
-    \item Set \( b_{n^2+(n-1)n+i} = 0 \)
-  \end{itemize}
-\end{enumerate}
-
-\section*{\Large Task 2.3:}
-import numpy as np \\
-import scipy.sparse.linalg as spla \\
-M2 = spla.spilu(A)  \\
-x = spla.gmres(A,b,M=M2)  \\
-
-HINT per chatty: come utilizzare gmres per risolvere le non linearita del problema, come specificato sopra.
+However, given the complexity of the system, we were unable to solve it through such method and we thus decided to move towards a different route.
+In particular, given the physical nature of the problem, we decided to trat the x spatial variable as a temporal variable, in order to solve the problem in a 1D environment using Explicit Euler.
+This was in fact a very good way to solve the problem, as it is clearly more simple and doesn't require the construction of a complex system of equations.
+\\
+In the context of Explicit Euler, the left boundary condition was thus treated as an initial condition.
+\section*{Python Code}
+Our Python implementation can be found at the following GitHub repository \cite{GitHubRepo}. In the src folder there can be found two main scripts and two solvers.
+One script is related to the 1D solver using Explicit Euler, which works correctly. The other script pertains to the 2D solver, which is still a work in progress. 
+The solutions for both \( u \) and \( v \) are included in this report, as requested.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.8\textwidth]{velocity_distribution.png}
+  \caption{Velocity distribution along the domain}
+  \label{fig:velocity_distribution}
+\end{figure}
 
 \begin{thebibliography}{9}
     \bibitem{GitHubRepo}
