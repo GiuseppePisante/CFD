@@ -8,7 +8,7 @@
 \usepackage{subfigure}
 
 % Title, date, and author
-\title{Project 1}
+\title{Project 2}
 \author{Your Name, Collaborator's Name}
 \date{\today}
 
@@ -32,7 +32,7 @@
     \centering
     \vspace*{1in}
     
-    {\Huge\bfseries Project 1\par}
+    {\Huge\bfseries Project 2\par}
     \vspace{1.5cm}
     {\Large \today\par}
     \vspace{1.5cm}
@@ -210,7 +210,8 @@ In particular, given the physical nature of the problem, we decided to trat the 
 This was in fact a very good way to solve the problem, as it is clearly more simple and doesn't require the construction of a complex system of equations.
 \\
 In the context of Explicit Euler, the left boundary condition was thus treated as an initial condition.
-\section*{Python Code}
+
+\section*{\Large Task 2.3:}
 Our Python implementation can be found at the following GitHub repository \cite{GitHubRepo}. In the src folder there can be found two main scripts and two solvers.
 One script is related to the 1D solver using Explicit Euler, which works correctly. The other script pertains to the 2D solver, which is still a work in progress. 
 The solutions for both \( u \) and \( v \) are included in this report, as requested.
@@ -221,6 +222,14 @@ The solutions for both \( u \) and \( v \) are included in this report, as reque
   \label{fig:velocity_distribution}
 \end{figure}
 
+\section*{\Large Task 2.4:}
+The velocity profiles of the \( u \)-component show good agreement, exhibiting a parabolic shape that is consistent with the boundary layer 
+growth and the distribution predicted by theory. However, as the \( x \)-coordinate increases, discrepancies may emerge due to the inherent 
+approximations of the Blasius solution, which neglects explicit variations along \( x \) and assumes a flow structure that is invariant in the 
+direction of the main flow. The differences are more pronounced in the transverse velocity component, \( v \), as this velocity component is
+particularly sensitive to the derivatives calculated numerically in the boundary layer equations and it is less accurately described by the
+Blasius solution, which primarily emphasizes the longitudinal component \( u \). In summary, while the theoretical and numerical solutions 
+agree qualitatively in the initial regions of the flow field, the discrepancies tend to increase with \( x \).
 
 \section*{\Large Task 2.5:}
 Starting from the non-dimensional result obtained in the previous task, we can now obtain the dimensional results by multiplying the non-dimensional results by the characteristic scales of the problem, as follows:
