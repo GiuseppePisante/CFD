@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from solver import solve_CDS
+from solver import solve_1UP
+from solver import solve_2UP
 
 # Parameters
 L = 1.0            
@@ -26,7 +28,7 @@ phi[-1] = 1
 phi_new = np.zeros_like(phi)
 
 # Time integration with CDS scheme
-phi, time, steps, steady_state = solve_CDS(phi, Dt, Dx, Pe, nt_max)
+phi, time, steps, steady_state = solve_1UP(phi, Dt, Dx, Pe, nt_max)
 
 if steady_state:
     print(f"Steady state reached at time {time:.2f} after {steps} time steps.")
