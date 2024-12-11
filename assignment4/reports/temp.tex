@@ -1,0 +1,119 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{titlesec}
+\usepackage{graphicx}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+
+% Title, date, and author
+\title{Exercise 4}
+\author{Your Name, Collaborator's Name}
+\date{\today}
+
+\titleformat{\section}
+  {\normalfont\normalsize\bfseries} % Format: font style, size, and weight
+  {\thesection}{1em} % Label format and spacing
+  {}
+  \renewcommand{\thesubsection}{\thesection.\alph{subsection}}
+
+\titleformat{\subsection}
+  {\normalfont\small\bfseries} % Format: font style, size, and weight
+  {\thesubsection}{1em} % Label format and spacing
+  {}
+\titleformat{\subsubsection}
+  {\normalfont\small\bfseries} % Format: font style, size, and weight
+  {\thesubsubsection}{1em} % Label format and spacing
+  {}
+
+\begin{document}
+\begin{titlepage}
+    \centering
+    \vspace*{1in}
+    
+    {\Huge\bfseries Exercise 4\par}
+    \vspace{1.5cm}
+    {\Large \today\par}
+    \vspace{1.5cm}
+    {\Large\itshape Antonio Pampalone 23586519 \\ Giuseppe Pisante 23610012\\ Martina Raffaelli 23616907 \par}
+    
+    \vfill
+    \includegraphics[width=0.3\textwidth]{FAU-Logo.png}\par\vspace{1cm} % Adjust the width as needed
+   
+\end{titlepage}
+
+\newpage
+\small
+
+\section{Stability of the unsteady advection-diffusion equation}
+
+\subsection{Discretization of of the unsteady one-dimensional advection-diffusion equation}
+
+
+We start with the one-dimensional advection-diffusion equation:
+
+\[
+\rho \left( \frac{\partial \Phi}{\partial t} + U \frac{\partial \Phi}{\partial x} \right) = \alpha \frac{\partial^2 \Phi}{\partial x^2}.
+\]
+
+We use central finite differencing in space and explicit Euler in time. The terms are discretized as follows:
+
+\begin{itemize}
+    \item \(\frac{\partial \Phi}{\partial t} \approx \frac{\Phi_i^{n+1} - \Phi_i^n}{\Delta t}\)
+    \item \(\frac{\partial \Phi}{\partial x} \approx \frac{\Phi_{i+1}^n - \Phi_{i-1}^n}{2\Delta x}\)
+    \item \(\frac{\partial^2 \Phi}{\partial x^2} \approx \frac{\Phi_{i+1}^n - 2\Phi_i^n + \Phi_{i-1}^n}{\Delta x^2}\)
+\end{itemize}
+
+Substituting these approximations into the original equation, we get:
+
+\[
+\rho \left( \frac{\Phi_i^{n+1} - \Phi_i^n}{\Delta t} \right) + \rho U \left( \frac{\Phi_{i+1}^n - \Phi_{i-1}^n}{2\Delta x} \right) = \alpha \left( \frac{\Phi_{i+1}^n - 2\Phi_i^n + \Phi_{i-1}^n}{\Delta x^2} \right).
+\]
+
+Multiplying through by \(\Delta t\):
+
+\[
+\rho \Phi_i^{n+1} - \rho \Phi_i^n + \rho U \Delta t \left( \frac{\Phi_{i+1}^n - \Phi_{i-1}^n}{2\Delta x} \right) = \alpha \Delta t \left( \frac{\Phi_{i+1}^n - 2\Phi_i^n + \Phi_{i-1}^n}{\Delta x^2} \right).
+\]
+
+Rearranging to isolate \(\Phi_i^{n+1}\) on the left-hand side:
+
+\[
+\rho \Phi_i^{n+1} = \rho \Phi_i^n - \rho U \Delta t \left( \frac{\Phi_{i+1}^n - \Phi_{i-1}^n}{2\Delta x} \right) + \alpha \Delta t \left( \frac{\Phi_{i+1}^n - 2\Phi_i^n + \Phi_{i-1}^n}{\Delta x^2} \right).
+\]
+
+Dividing through by \(\rho\):
+
+\[
+\Phi_i^{n+1} = \Phi_i^n - c \left( \frac{\Phi_{i+1}^n - \Phi_{i-1}^n}{2} \right) + d \left( \Phi_{i+1}^n - 2\Phi_i^n + \Phi_{i-1}^n \right),
+\]
+
+where:
+
+\[
+c = \frac{U \Delta t}{\Delta x}, \quad d = \frac{\alpha \Delta t}{\rho (\Delta x)^2}.
+\]
+
+The parameter $c$ represents the Courant number and quantifies the influence of advection in the simulation. 
+For stability and accuracy in explicit schemes, $c$ should typically be small to satisfy the Courant-Friedrichs-Lewy condition that requires $c \leq 1$. 
+If $c$ is too large, the simulation may become unstable or inaccurate because the flow travels across more than one grid cell per time step.
+The parameter $d$ measures the contribution of diffusion to the simulation and it should typically be small to ensure numerical stability.
+The diffusion stability condition generally requires $d \leq 1/2$ to ensure that diffusion does not dominate excessively or destabilize the solution.
+
+
+
+
+
+
+
+
+\begin{thebibliography}{9}
+  \bibitem{GitHubRepo}
+  \textit{CFD Repository},\\
+  Available at: \url{https://github.com/GiuseppePisante/CFD.git}
+  
+  \bibitem{GitHubCopilot}
+  \textit{GitHub Copilot},\\
+  GitHub. Available at: \url{https://github.com/features/copilot}
+
+\end{thebibliography}
+\end{document}
