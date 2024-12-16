@@ -4,6 +4,9 @@
 \usepackage{graphicx}
 \usepackage[margin=1in]{geometry}
 \usepackage{hyperref}
+\usepackage{amssymb}
+\usepackage{bm}
+
 
 % Title, date, and author
 \title{Exercise 4}
@@ -83,9 +86,10 @@ Rearranging to isolate \(\Phi_i^{n+1}\) on the left-hand side:
 
 Dividing through by \(\rho\):
 
-\[
+\begin{equation}
+  \label{eq:discretized}
 \Phi_i^{n+1} = \Phi_i^n - c \left( \frac{\Phi_{i+1}^n - \Phi_{i-1}^n}{2} \right) + d \left( \Phi_{i+1}^n - 2\Phi_i^n + \Phi_{i-1}^n \right),
-\]
+\end{equation}
 
 where:
 
@@ -100,9 +104,83 @@ The parameter $d$ measures the contribution of diffusion to the simulation and i
 The diffusion stability condition generally requires $d \leq 1/2$ to ensure that diffusion does not dominate excessively or destabilize the solution.
 
 
+\subsection{Stability Analysis Using Von Neumann Method}
+Given the discretized convection-diffusion equation \eqref{eq:discretized}, we can perform a Von Neumann stability analysis to determine the stability conditions for the explicit scheme. 
+\\This is made possible due to the linear nature of such equation and by not considering the imact of boundary conditions. 
+We will consider the domain as periodic in \(x\), allowing the solution and the error to be expressed using a Fourier series with a period of length \(2L\).
 
+Assuming a disturbance of the form:
 
+\[
+\epsilon(x, t) = V(t) e^{ikx},
+\]
 
+where $\theta = k \Delta x$ is the phase angle.
+\\We can insert the error function \(epsilon(x, t)\) into the discretized differential equation and estimate the temporal behaviour of the amplitude by evaluation the amplification factor \(G\). This can be directly applied to the solution, by exploiting the linearity of the equation so that:
+
+\[
+\phi_i^n = V^n e^{I \theta i}, \quad \phi_{i+1}^n = V^n e^{I \theta (i+1)}, \quad \phi_{i-1}^n = V^n e^{I \theta (i-1)}.
+\]
+
+Substituting into the discretized equation:
+
+\[
+V^{n+1} = V^n \left(1 - \frac{c}{2} (e^{I \theta} - e^{-I \theta}) + d (e^{I \theta} - 2 + e^{-I \theta})\right).
+\]
+
+By considering the Euler relation \(e^{I \theta} = \cos \theta + I \sin \theta\), we can simplify the equation to:
+
+\[
+V^{n+1} = V^n \left(1 - I c \sin \theta + 2d (\cos \theta - 1)\right).
+\]
+
+The amplification factor $G$, which can be computed for subsequent steps, is the following:
+
+\[
+G = 1 - i c \sin \theta + 2d (\cos \theta - 1).
+\]
+
+To obtain stability, by remembering that the amplification factor should damp the error to obtain stability, we require that the absolute value of $G$ is less than or equal to 1:
+
+\[
+|G| \leq 1.
+\]
+
+We then compute $|G|^2$ to find the stability condition on the real domain:
+
+\[
+|G|^2 = \left(1 + 2d (\cos \theta - 1)\right)^2 + (c \sin \theta)^2.
+\]
+
+For stability, we need to find the values of $c$ and $d$ that satisfy the condition:
+
+\[
+|G|^2 \leq 1.
+\]
+
+We can solve this with variable substitution and trigonometric identities to find the stability condition for the explicit scheme.
+We get the following disequation:
+
+\[
+t^2(1-\frac{c^2}{4d^2}) + t(\frac{1}{d}-2) + 1 (1-\frac{1}{d}+\frac{c^2}{4d^2}) \leq 0.,
+\]
+
+where \(t = \cos \theta\).
+
+We can thus solve it by applying the general quadratic formula to find the stability condition:
+
+\[
+\frac{\frac{1}{d}-2-\sqrt{(\frac{1}{d}-2)^2-4(1-\frac{c^2}{4d^2})(1-\frac{1}{d}-\frac{c^2}{4d^2})}}{2(1-\frac{c^2}{4d^2})}\leq t \leq \frac{\frac{1}{d}-2+\sqrt{(\frac{1}{d}-2)^2-4(1-\frac{c^2}{4d^2})(1-\frac{1}{d}-\frac{c^2}{4d^2})}}{2(1-\frac{c^2}{4d^2})}
+\]
+
+We can now substitute the values of \(c\) and \(d\) to find the stability condition for the explicit scheme.
+We recall that \(c\)=\(\frac{U \Delta t}{\Delta x}\) and \(d\)=\(\frac{\alpha \Delta t}{\rho (\Delta x)^2}\).
+
+By substituting this in the disequation we get:
+
+\[
+\frac{\frac{\alpha \Delta t}{\rho (\Delta x)^2}-2-\sqrt{(\frac{\alpha \Delta t}{\rho (\Delta x)^2}-2)^2-4(1-\frac{U^2 \Delta t^2}{4 \alpha \Delta x^2})(1-\frac{\alpha \Delta t}{\rho (\Delta x)^2}-\frac{U^2 \Delta t^2}{4 \alpha \Delta x^2})}}{2(1-\frac{U^2 \Delta t^2}{4 \alpha \Delta x^2})}\leq t \leq \frac{\frac{\alpha \Delta t}{\rho (\Delta x)^2}-2+\sqrt{(\frac{\alpha \Delta t}{\rho (\Delta x)^2}-2)^2-4(1-\frac{U^2 \Delta t^2}{4 \alpha \Delta x^2})(1-\frac{\alpha \Delta t}{\rho (\Delta x)^2}-\frac{U^2 \Delta t^2}{4 \alpha \Delta x^2})}}{2(1-\frac{U^2 \Delta t^2}{4 \alpha \Delta x^2})}
+\]
 
 
 
