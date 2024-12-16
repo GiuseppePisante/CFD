@@ -169,20 +169,172 @@ where \(t = \cos \theta\).
 
 We can thus solve it by applying the general quadratic formula to find the stability condition:
 
-\[
-\frac{\frac{1}{d}-2-\sqrt{(\frac{1}{d}-2)^2-4(1-\frac{c^2}{4d^2})(1-\frac{1}{d}-\frac{c^2}{4d^2})}}{2(1-\frac{c^2}{4d^2})}\leq t \leq \frac{\frac{1}{d}-2+\sqrt{(\frac{1}{d}-2)^2-4(1-\frac{c^2}{4d^2})(1-\frac{1}{d}-\frac{c^2}{4d^2})}}{2(1-\frac{c^2}{4d^2})}
-\]
+\begin{equation}
+\frac{\frac{1}{d}-2-\sqrt{(\frac{1}{d}-2)^2-4(1-\frac{c^2}{4d^2})(1-\frac{1}{d}-\frac{c^2}{4d^2})}}{2(1-\frac{c^2}{4d^2})}\leq t
+\end{equation}
+\begin{equation}
+t \leq \frac{\frac{1}{d}-2+\sqrt{(\frac{1}{d}-2)^2-4(1-\frac{c^2}{4d^2})(1-\frac{1}{d}-\frac{c^2}{4d^2})}}{2(1-\frac{c^2}{4d^2})}
+\end{equation}
 
 We can now substitute the values of \(c\) and \(d\) to find the stability condition for the explicit scheme.
 We recall that \(c\)=\(\frac{U \Delta t}{\Delta x}\) and \(d\)=\(\frac{\alpha \Delta t}{\rho (\Delta x)^2}\).
 
 By substituting this in the disequation we get:
 
-\[
-\frac{\frac{\alpha \Delta t}{\rho (\Delta x)^2}-2-\sqrt{(\frac{\alpha \Delta t}{\rho (\Delta x)^2}-2)^2-4(1-\frac{U^2 \Delta t^2}{4 \alpha \Delta x^2})(1-\frac{\alpha \Delta t}{\rho (\Delta x)^2}-\frac{U^2 \Delta t^2}{4 \alpha \Delta x^2})}}{2(1-\frac{U^2 \Delta t^2}{4 \alpha \Delta x^2})}\leq t \leq \frac{\frac{\alpha \Delta t}{\rho (\Delta x)^2}-2+\sqrt{(\frac{\alpha \Delta t}{\rho (\Delta x)^2}-2)^2-4(1-\frac{U^2 \Delta t^2}{4 \alpha \Delta x^2})(1-\frac{\alpha \Delta t}{\rho (\Delta x)^2}-\frac{U^2 \Delta t^2}{4 \alpha \Delta x^2})}}{2(1-\frac{U^2 \Delta t^2}{4 \alpha \Delta x^2})}
-\]
+\begin{equation}
+\frac{\frac{\alpha \Delta t}{\rho (\Delta x)^2}-2-\sqrt{(\frac{\alpha \Delta t}{\rho (\Delta x)^2}-2)^2-4(1-\frac{U^2 \Delta t^2}{4 \alpha \Delta x^2})(1-\frac{\alpha \Delta t}{\rho (\Delta x)^2}-\frac{U^2 \Delta t^2}{4 \alpha \Delta x^2})}}{2(1-\frac{U^2 \Delta t^2}{4 \alpha \Delta x^2})}\leq t
+\end{equation}
+\begin{equation}
+  t \leq \frac{\frac{\alpha \Delta t}{\rho (\Delta x)^2}-2+\sqrt{(\frac{\alpha \Delta t}{\rho (\Delta x)^2}-2)^2-4(1-\frac{U^2 \Delta t^2}{4 \alpha \Delta x^2})(1-\frac{\alpha \Delta t}{\rho (\Delta x)^2}-\frac{U^2 \Delta t^2}{4 \alpha \Delta x^2})}}{2(1-\frac{U^2 \Delta t^2}{4 \alpha \Delta x^2})}
+\end{equation}
+Given the complexity of the disequation, it is beneficial to analyze the two extreme cases: \(\theta = 0\) and \(\theta = \pi\).
 
+\begin{enumerate}
+  \item \textbf{Case 1: \( \theta = \pi \) (Maximum Frequency)}
 
+  At \( \theta = \pi \), we have:
+
+  \[
+  \cos \pi = -1, \quad \sin \pi = 0.
+  \]
+
+  Substitute into the expression for \( G \):
+
+  \[
+  G = 1 + 2d (-1 - 1) = 1 - 4d.
+  \]
+
+  The magnitude is:
+
+  \[
+  |G|^2 = (1 - 4d)^2.
+  \]
+
+  For instability, we need:
+
+  \[
+  (1 - 4d)^2 > 1.
+  \]
+
+  Taking the square root:
+
+  \[
+  |1 - 4d| > 1.
+  \]
+
+  This gives two conditions:
+
+  \[
+  1 - 4d > 1 \quad \text{or} \quad 1 - 4d < -1.
+  \]
+
+  Solving these inequalities:
+
+  \begin{enumerate}
+    \item \( 1 - 4d > 1 \implies d < 0 \) (not physically meaningful),
+    \item \( 1 - 4d < -1 \implies d > \frac{1}{2} \).
+  \end{enumerate}
+
+  Thus, \textbf{instability occurs at \( \theta = \pi \) when \( d > \frac{1}{2} \)}.
+  Substituting \( d = \frac{\alpha \Delta t}{\rho (\Delta x)^2} \) into the instability condition \( d > \frac{1}{2} \):
+
+  \[
+  \frac{\alpha \Delta t}{\rho (\Delta x)^2} > \frac{1}{2}.
+  \]
+
+  Rearranging to find the relationship between \( \Delta x \) and \( \Delta t \):
+
+  \[
+  \Delta t < \frac{\rho (\Delta x)^2}{2 \alpha}.
+  \]
+
+  This inequality provides the stability condition for the explicit scheme in terms of the time step \( \Delta t \) and the spatial step \( \Delta x \). For the scheme to be stable, the time step must be sufficiently small relative to the square of the spatial step.
+
+  \item \textbf{Case 2: \( \theta \approx 0 \) (Low Frequencies)}
+
+  For small \( \theta \), we use the Taylor expansions:
+
+  \[
+  \sin \theta \approx \theta, \quad \cos \theta \approx 1 - \frac{\theta^2}{2}.
+  \]
+
+  Substitute into the expression for \( G \):
+
+  \[
+  G \approx 1 - d \theta^2 - i c \theta.
+  \]
+
+  Compute \( |G|^2 \):
+
+  \[
+  |G|^2 \approx (1 - d \theta^2)^2 + (c \theta)^2.
+  \]
+
+  Neglecting terms of order \( \theta^4 \), we get:
+
+  \[
+  |G|^2 \approx 1 - 2d \theta^2 + c^2 \theta^2.
+  \]
+
+  For instability, we need:
+
+  \[
+  1 - 2d \theta^2 + c^2 \theta^2 > 1.
+  \]
+
+  Canceling the 1:
+
+  \[
+  -2d \theta^2 + c^2 \theta^2 > 0,
+  \]
+
+  or:
+
+  \[
+  (c^2 - 2d) \theta^2 > 0.
+  \]
+
+  For instability, this implies:
+
+  \[
+  c^2 > 2d.
+  \]
+  Substituting \( c = \frac{U \Delta t}{\Delta x} \) and \( d = \frac{\alpha \Delta t}{\rho (\Delta x)^2} \) into the instability condition \( c^2 > 2d \):
+
+  \[
+  \left( \frac{U \Delta t}{\Delta x} \right)^2 > 2 \left( \frac{\alpha \Delta t}{\rho (\Delta x)^2} \right).
+  \]
+
+  Simplifying:
+
+  \[
+  \frac{U^2 (\Delta t)^2}{(\Delta x)^2} > \frac{2 \alpha \Delta t}{\rho (\Delta x)^2}.
+  \]
+
+  Multiplying both sides by \( (\Delta x)^2 \):
+
+  \[
+  U^2 (\Delta t)^2 > \frac{2 \alpha \Delta t}{\rho}.
+  \]
+
+  Dividing both sides by \( \Delta t \):
+
+  \[
+  U^2 \Delta t > \frac{2 \alpha}{\rho}.
+  \]
+
+  Rearranging to find the relationship between \( \Delta x \) and \( \Delta t \):
+
+  \[
+  \Delta t < \frac{2 \alpha}{\rho U^2}.
+  \]
+
+  Thus, the stability condition for the explicit scheme, considering both advection and diffusion, is:
+
+  \[
+  \Delta t < \min \left( \frac{\rho (\Delta x)^2}{2 \alpha}, \frac{2 \alpha}{\rho U^2} \right).
+  \]
+\end{enumerate}
 
 \begin{thebibliography}{9}
   \bibitem{GitHubRepo}
