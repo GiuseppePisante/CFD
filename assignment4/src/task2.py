@@ -75,64 +75,6 @@ for i, Pe in enumerate([25, 50, 100]):
     
     A, b = disc.discretization1(N, dx, Pe)
     res1 = np.linalg.solve(A, b)
-    
-    A, b = disc.discretization2(N, dx, Pe)
-    res2 = np.linalg.solve(A, b)
-    
-    A, b = disc.discretization3(N, dx, Pe)
-    res3 = np.linalg.solve(A, b)
-    
-    axs[0, i].plot(x, res1, label='discretization1')
-    axs[0, i].plot(x, res2, label='discretization2')
-    axs[0, i].plot(x, res3, label='discretization3')
-    axs[0, i].set_title(f'Pe={Pe}')
-    axs[0, i].legend()
-
-for i, Pe in enumerate([120, 125, 128, 130, 135]):
-    u = analytical_solution(x, Pe)
-    
-    A, b = disc.discretization1(N, dx, Pe)
-    res1 = np.linalg.solve(A, b)
-    
-    A, b = disc.discretization2(N, dx, Pe)
-    res2 = np.linalg.solve(A, b)
-    
-    A, b = disc.discretization3(N, dx, Pe)
-    res3 = np.linalg.solve(A, b)
-    
-    axs[1, i % 3].plot(x, res1, label='discretization1')
-    axs[1, i % 3].plot(x, res2, label='discretization2')
-    axs[1, i % 3].plot(x, res3, label='discretization3')
-    axs[1, i % 3].set_title(f'Pe={Pe}')
-    axs[1, i % 3].legend()
-
-for i, Pe in enumerate([150, 200, 400]):
-    u = analytical_solution(x, Pe)
-    
-    A, b = disc.discretization1(N, dx, Pe)
-    res1 = np.linalg.solve(A, b)
-    
-    A, b = disc.discretization2(N, dx, Pe)
-    res2 = np.linalg.solve(A, b)
-    
-    A, b = disc.discretization3(N, dx, Pe)
-    res3 = np.linalg.solve(A, b)
-    
-    axs[2, i].plot(x, res1, label='discretization1')
-    axs[2, i].plot(x, res2, label='discretization2')
-    axs[2, i].plot(x, res3, label='discretization3')
-    axs[2, i].set_title(f'Pe={Pe}')
-    axs[2, i].legend()
-
-plt.tight_layout()
-plt.savefig('task2_fixed_dx.png')
-fig, axs = plt.subplots(3, 3, figsize=(15, 15))
-
-for i, Pe in enumerate([25, 50, 100]):
-    u = analytical_solution(x, Pe)
-    
-    A, b = disc.discretization1(N, dx, Pe)
-    res1 = np.linalg.solve(A, b)
     axs[0, 0].plot(x, res1, label=f'Pe={Pe}')
     axs[0, 0].set_title('discretization1')
     axs[0, 0].legend()
@@ -193,5 +135,3 @@ for i, Pe in enumerate([150, 200, 400]):
 
 plt.tight_layout()
 plt.savefig('task2_fixed_dx.png')
-
-
