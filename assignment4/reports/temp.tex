@@ -46,6 +46,274 @@
 
 \newpage
 \small
+\section{Steady advaction-diffusion equation}
+\subsection{Non-dimensional form of the equation and boundary conditions}
+Starting from the one-dimensional advection-diffusion equation:
+\begin{equation} \label{initialeq}
+    \rho \left(\frac{\partial \Phi}{\partial t} + U \frac{\partial \Phi}{\partial x}\right) = \alpha \frac{\partial^2 \Phi}{\partial x \partial x} 
+\end{equation}
+we derive the non-dimensional form of the equation by introducing the following non-dimensional variables:
+\[
+    x^* = \frac{x}{L}, \quad t^* = \frac{t}{T}, \quad \Phi^* = \frac{\Phi }{\Phi_L}
+\]
+where $L$ is a characteristic length, $T = \tfrac{L}{U}$ is the characteristic advection time, and $\Phi_L$ is a characteristic value of the variable $\Phi$.
+
+Then we perform the change of the variable for the deivatives:
+\[
+    \frac{\partial}{\partial x} = \frac{1}{L} \frac{\partial}{\partial x^*}, \quad \frac{\partial}{\partial t} = \frac{1}{T} \frac{\partial}{\partial t^*}, \quad \frac{\partial^2}{\partial x \partial x} = \frac{1}{L^2} \frac{\partial^2}{\partial x^{*2}}
+\]
+
+Now we substitute the relations above into the original equation:
+\[
+    \rho \left(\frac{\Phi_L}{T} \frac{\partial \Phi^*}{\partial t^*} + U \frac{\Phi_L}{L} \frac{\partial \Phi^*}{\partial x^*}\right) = \alpha \frac{\Phi_L}{L^2} \frac{\partial^2 \Phi^*}{\partial x^{*2}}
+\]
+This equation can be simplified by dividing by $\Phi_L$ (assuming the quantity is not zero) and observing that $T = \tfrac{L}{U}$:
+\[
+    \rho \left(\frac{U}{T} \frac{\partial \Phi^*}{\partial t^*} + \frac{U}{L} \frac{\partial \Phi^*}{\partial x^*}\right) = \alpha \frac{1}{L^2} \frac{\partial^2 \Phi^*}{\partial x^{*2}}
+\]
+now we multiply for $\frac{L}{\rho U}$ and we get the following eqaution:
+\[
+    \frac{\partial \Phi^*}{\partial t^*} +  \frac{\partial \Phi^*}{\partial x^*} = \frac{\alpha}{\rho U L} \frac{\partial^2 \Phi^*}{\partial x^{*2}}
+\]
+where we can substitute the Peclet number $Pe = \tfrac{U L}{\alpha}$ to obtain the non-dimensional form of the equation \eqref{initialeq}:
+\begin{equation} \label{non-dim}
+    \frac{\partial \Phi^*}{\partial t^*} +\frac{\partial \Phi^*}{\partial x^*} = \frac{1}{Pe} \frac{\partial^2 \Phi^*}{\partial x^{*2}} 
+\end{equation}
+
+Now we repeat the same procedure for the boundary condistions, starting from the dimensional ones:
+\begin{equation} \label{bc}
+    \Phi(0, t) = 0, \quad \Phi(L, t) = \Phi_L
+\end{equation}
+and performing the change of variable: $x = 0$ becomes $x^* = 0$ and $x = L$ becomes $x^* = 1$.
+Thus, the non-dimensional boundary conditions are:
+\begin{equation} \label{non-dim-bc}
+    \Phi^*(0, t^*) = 0, \quad \Phi^*(1, t^*) = 1
+\end{equation}
+
+\subsection{Analytical solution of the steady non-dimensional equation}
+The steady non-dimensional equation is obtained by setting the time derivative to zero in \eqref{non-dim}:
+\begin{equation} \label{steady}
+    Pe \frac{\partial \Phi^*}{\partial x^*} = \frac{\partial^2 \Phi^*}{\partial x^{*2}}
+\end{equation}
+which represents a second-order ordinary differential equation. The general solution of this equation is:
+\[
+    \Phi^*(x^*) = C_1 e^{\lambda_1 x^*} + C_2 e^{\lambda_2 x^*}
+\]
+where $\lambda_1$ and $\lambda_2$ are the roots of the characteristic equation, which can be found by substituting $\Phi^*(x^*) = e^{\lambda x^*}$ into the ODE, as follows:
+\[
+    \lambda^2 e^{\lambda x^*} = Pe \lambda e^{\lambda x^*} \quad \Rightarrow \quad \lambda^2 = Pe \lambda \quad \Rightarrow \quad \lambda = 0, \lambda = Pe
+\]
+
+Then we have to find the constants $C_1$ and $C_2$ by imposing the boundary conditions \eqref{non-dim-bc}:
+\[
+    \Phi^*(0) = C_1 + C_2 = 0, \quad \Phi^*(1) = C_1 e^{0} + C_2 e^{Pe} = 1
+\]
+from which we get:
+\[
+    C_1 = - C_2, \quad C_2 = \frac{1}{1 - e^{Pe}}
+\]
+and the final solution is:
+\begin{equation} \label{analyticalsolution}
+    \Phi^*(x^*) = \frac{e^{x^* Pe} - 1}{e^{Pe} - 1}
+\end{equation}
+
+\subsection{Discretization of the steady non-dimensional equation}
+\subsubsection*{Diffusion term discretization}
+We discretize the diffusion term with the central finite differencing scheme:
+\begin{equation} \label{diffusion}
+    \frac{1}{Pe} \frac{\partial^2 \Phi^*}{\partial x^{*2}} \approx \frac{1}{Pe} \frac{\Phi^*_{i+1} - 2 \Phi^*_i + \Phi^*_{i-1}}{\Delta x^{*2}}
+\end{equation}
+
+\subsubsection*{Advection term discretization}
+For the advection term we use different approaches:
+\begin{itemize}
+\item Second-order central differencing: 
+\begin{equation} \label{advection}
+    \frac{\partial \Phi^*}{\partial x^*} \approx \frac{\Phi^*_{i+1} - \Phi^*_{i-1}}{2 \Delta x^*}
+\end{equation}
+
+\item First-order upwind differencing:
+\begin{equation} \label{upwind}
+    \frac{\partial \Phi^*}{\partial x^*} \approx \frac{\Phi^*_{i} - \Phi^*_{i-1}}{\Delta x^*}
+\end{equation}
+\item Second-order upwind differencing:
+\begin{equation} \label{upwind2}
+    \frac{\partial \Phi^*}{\partial x^*} \approx \frac{3 \Phi^*_{i} - 4 \Phi^*_{i-1} + \Phi^*_{i-2}}{2 \Delta x^*}
+\end{equation}
+\end{itemize}
+
+\subsection{Matrix form of the discretized equation}
+To obtain the matrix formulations we have to match the discretizations of the the advection term with the one for the diffusion term.
+\subsubsection*{Second-order central differencing for the advection term}
+\begin{equation}
+    \frac{1}{Pe} \frac{\Phi^*_{i+1} - 2 \Phi^*_i + \Phi^*_{i-1}}{\Delta x^{*2}} = \frac{\Phi^*_{i+1} - \Phi^*_{i-1}}{2 \Delta x^*}
+\end{equation}
+\[
+    \Phi^*_{i+1} - 2 \Phi^*_i + \Phi^*_{i-1} = \frac{Pe \Delta x^*}{2} (\Phi^*_{i+1} - \Phi^*_{i-1})
+\]
+\[
+    (1 - \frac{Pe \Delta x^*}{2}) \Phi^*_{i+1} - 2 \Phi^*_i + (1 + \frac{Pe \Delta x^*}{2}) \Phi^*_{i-1} = 0
+\]
+Then we set the boundary condistions: $\Phi_0 = 0$ and $\Phi_N = 1$ and we obtain the following matrix form:
+\begin{equation}
+    \begin{bmatrix}
+        1 & 0 &  &  &  \\
+        1 + \frac{Pe \Delta x^*}{2} & -2 & 1 - \frac{Pe \Delta x^*}{2} &  &  \\
+        & 1 + \frac{Pe \Delta x^*}{2} & -2 & 1 - \frac{Pe \Delta x^*}{2} &  &  \\
+            &   \ddots & \ddots & \ddots & \\
+        &  &  1 + \frac{Pe \Delta x^*}{2} & -2 & 1 - \frac{Pe \Delta x^*}{2} \\
+        &  & & 0 & 1
+    \end{bmatrix}
+    \begin{bmatrix}
+        \Phi_0 \\
+        \Phi_1 \\
+        \vdots \\
+        \vdots \\
+        \Phi_{N-1} \\
+        \Phi_N
+    \end{bmatrix}
+    = 
+    \begin{bmatrix}
+        0 \\
+        0 \\
+        \vdots \\
+        \vdots \\
+        0 \\
+        1
+    \end{bmatrix}
+\end{equation}
+
+\subsubsection*{First-order upwind differencing for the advection term}
+\begin{equation}
+    \frac{1}{Pe} \frac{\Phi^*_{i+1} - 2 \Phi^*_i + \Phi^*_{i-1}}{\Delta x^{*2}} = \frac{\Phi^*_{i} - \Phi^*_{i-1}}{\Delta x^*}
+\end{equation}
+\[
+    \Phi^*_{i+1} - 2 \Phi^*_i + \Phi^*_{i-1} = Pe \Delta x^* (\Phi^*_{i} - \Phi^*_{i-1})
+\]
+\[
+    \Phi^*_{i+1} - (2 + Pe \Delta x^*) \Phi^*_i + (1 + Pe \Delta x^*)\Phi^*_{i-1} = 0
+\]
+Then we set the boundary condistions: $\Phi_0 = 0$ and $\Phi_N = 1$ and we obtain the following matrix form:
+\begin{equation}
+    \begin{bmatrix}
+        1 & 0 &  &  &  \\
+        1 + Pe \Delta x^* & - (2 + Pe \Delta x^*) & 1 &  &  \\
+        & 1 + Pe \Delta x^* & - (2 + Pe \Delta x^*) & 1 &  &  \\
+            &   \ddots & \ddots & \ddots & \\
+        &  &  1 + Pe \Delta x^* & - (2 + Pe \Delta x^*) & 1 \\
+        &  & & 0 & 1
+    \end{bmatrix}
+    \begin{bmatrix}
+        \Phi_0 \\
+        \Phi_1 \\
+        \vdots \\
+        \vdots \\
+        \Phi_{N-1} \\
+        \Phi_N
+    \end{bmatrix}
+    = 
+    \begin{bmatrix}
+        0 \\
+        0 \\
+        \vdots \\
+        \vdots \\
+        0 \\
+        1
+    \end{bmatrix}
+\end{equation}
+
+\subsubsection*{Second-order upwind differencing for the advection term}
+\begin{equation}
+    \frac{1}{Pe} \frac{\Phi^*_{i+1} - 2 \Phi^*_i + \Phi^*_{i-1}}{\Delta x^{*2}} = \frac{3 \Phi^*_{i} - 4 \Phi^*_{i-1} + \Phi^*_{i-2}}{2 \Delta x^*}
+\end{equation}
+\[
+    \Phi^*_{i+1} - 2 \Phi^*_i + \Phi^*_{i-1} = \frac{Pe \Delta x^*}{2} (3 \Phi^*_{i} - 4 \Phi^*_{i-1} + \Phi^*_{i-2})
+\]
+\[
+    \Phi_{i+1} - (2 + \frac{3}{2} Pe \Delta x^*) \Phi_i + (1 + 2 Pe \Delta x^*) \Phi_{i-1} - \frac{Pe}{2} \Delta x^* \Phi_{i-2} = 0
+\]    
+Then we set the boundary condistions: $\Phi_0 = 0$ and $\Phi_N = 1$ and we obtain the following matrix form:
+
+\begin{equation}
+    \begin{bmatrix}
+        1 & 0 &  &  &  \\
+        1 + 2 Pe \Delta x^*  & - (2 + \frac{3}{2} Pe \Delta x^*) & 1 &  &  \\
+        - \frac{Pe}{2} \Delta x^* & 1 + 2 Pe \Delta x^*  & - (2 + \frac{3}{2} Pe \Delta x^*) & 1 &  &  \\
+            &   \ddots & \ddots & \ddots & \\
+        & - \frac{Pe}{2} \Delta x^* &  1 + 2 Pe \Delta x^*  & - (2 + \frac{3}{2} Pe \Delta x^*) & 1 \\
+        &  & & 0 & 1
+    \end{bmatrix}
+    \begin{bmatrix}
+        \Phi_0 \\
+        \Phi_1 \\
+        \vdots \\
+        \vdots \\
+        \Phi_{N-1} \\
+        \Phi_N
+    \end{bmatrix}
+    = 
+    \begin{bmatrix}
+        0 \\
+        0 \\
+        \vdots \\
+        \vdots \\
+        0 \\
+        1
+    \end{bmatrix}
+\end{equation}
+
+
+
+\section{Numerical solution of the steady advection-diffusion equation}
+
+\subsection{$L^2$ norm}
+As suggested by the assignment, to analyze the accuracy of the numerical discretizations described in the previous task,
+we implemented the three methods and computed the $L^2$ norm of the error between the analytical solution and the numerical solution.
+The error was plotted in a log-log scale against $\Delta x$, as shown in the convergence plot below.
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.45\textwidth]{task2_L2norm.png}
+    \caption{Convergence plot of the $L^2$ norm of the error}
+    \label{fig:L2norm}
+\end{figure}
+
+The results show different convergence behaviors for the three methods. 
+The second-order central differencing scheme (Discretization1) shows a trend of second-order accuracy. This can be seen by the fact that the slope of the $L^2$ norm
+follows the one of $\Delta x^2$ in the log-log plot. This behavior aligns with the theoretical expectation.
+
+In contrast, the first-order upwind differencing method (Discretization 2) shows a much slower convergence: the error remains nearly constant for smaller $\Delta x$ values.
+This result may suggest that numerical diffusion dominates the solution, and further grid refinement does not improve accuracy.
+First-order schemes like upwind differencing are stable but suffer from significant numerical dissipation, especially for advection-dominated problems or at high Peclet numbers.
+
+The second-order upwind method (Discretization 3) displays improved accuracy compared to the first-order upwind method, with the error reducing more significantly as  $\Delta x$ decreases.
+However, the convergence behavior is less smooth, with some variability observed at intermediate grid sizes. This may result from the interplay between truncation errors and the Peclet number, which affects the balance between advection and diffusion.
+
+\subsection{Comparison for different Peclet numbers}
+To further investigate the impact of the Peclet number on the accuracy of the numerical solutions, we repeated the convergence analysis for different values of $Pe$, as indicated by the assignment.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.45\textwidth]{task2_fixed_dx.png}
+    \caption{Solutions for different Peclet numbers}
+    \label{fig:L2norm_fixed_dx}
+\end{figure}
+
+From the picture above, we can observe that CDS discretization shows an oscillatory behavior for high Peclet numbers in particular for the region where the solution varies rapidly, while it provides high accuracy in regions where the solution varies smoothly.
+This behavior may be due to the fact that the CDS is not a suitable method when the advection term is dominant, since it is not capturing the upwind information.
+
+Focusing on the first-order upwind discretization, we can see that the solution is stable for all Peclet numbers, but for small Peclet values it is making the function smoother than it should be, because of the numerical dissipation.
+
+In the end we can see that the second-order upwind discretization is able to capture the correct behavior of the solution, providing a good approximation and stability for all Peclet numbers.
+
+All the three methods are described by sparse matrices, which reflects the local nature of the finite difference approximations, but the second-order upwind scheme, which provides the highest accuracy, requires more memory due to the larger stencil size.
+
+
+\subsection{Comparison of the different methods}
+For advection-dominated problems with medium to high Peclet numbers, the second-order upwind scheme is generally the best choice as it balances stability and accuracy effectively, avoiding any kind of oscillation.
+For high Peclet values, we can also consider to use the first-order upwind scheme, since it is stable and does not show oscillations, it is also easier to implement and computationally cheaper than the second-order upwind scheme.
+For problems in which we have a Peclet number close to 1 the CDS scheme is a viable option.
+
+
 
 \section{Stability of the unsteady advection-diffusion equation}
 
