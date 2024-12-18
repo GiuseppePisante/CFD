@@ -1,0 +1,69 @@
+import numpy as np
+
+def max_change(phi_old, phi_new):
+    return np.max(np.abs(phi_new - phi_old))
+
+def apply_periodic_bc(phi):
+    phi[0] = phi[-2]  
+    phi[-1] = phi[1]  
+    return phi
+
+def CDS(phi, dt, dx, Pe, nt_max, tol=1e-6):
+    phi_new = np.zeros_like(phi)
+
+    for n in range(nt_max):
+        phi_old = phi.copy()
+
+        for i in range(1, len(phi) - 1):
+            advection_term = dt / (2 * dx) * (phi[i + 1] - phi[i - 1])
+            diffusion_term = dt / (Pe * dx**2) * (phi[i + 1] - 2 * phi[i] + phi[i - 1])
+            phi_new[i] = phi[i] - advection_term + diffusion_term
+
+        phi_new = apply_periodic_bc(phi_new)
+
+        if max_change(phi_old, phi_new) < tol:
+            break
+
+        phi[:] = phi_new
+
+    return phi
+
+def UP1(phi, dt, dx, Pe, nt_max, tol=1e-6):
+    phi_new = np.zeros_like(phi)
+
+    for n in range(nt_max):
+        phi_old = phi.copy()
+
+        for i in range(1, len(phi) - 1):
+            advection_term = dt / dx * (phi[i] - phi[i - 1])
+            diffusion_term = dt / (Pe * dx**2) * (phi[i + 1] - 2 * phi[i] + phi[i - 1])
+            phi_new[i] = phi[i] - advection_term + diffusion_term
+
+        phi_new = apply_periodic_bc(phi_new)
+
+        if max_change(phi_old, phi_new) < tol:
+            break
+
+        phi[:] = phi_new
+
+    return phi
+
+def UP2(phi, dt, dx, Pe, nt_max, tol=1e-6):
+    phi_new = np.zeros_like(phi)
+
+    for n in range(nt_max):
+        phi_old = phi.copy()
+
+        for i in range(1, len(phi) - 1): 
+            advection_term = dt / (2 * dx) * (3 * phi[i] - 4 * phi[i - 1] + phi[i - 2])
+            diffusion_term = dt / (Pe * dx**2) * (phi[i + 1] - 2 * phi[i] + phi[i - 1])
+            phi_new[i] = phi[i] - advection_term + diffusion_term
+
+        phi_new = apply_periodic_bc(phi_new)
+
+        if max_change(phi_old, phi_new) < tol:
+            break
+
+        phi[:] = phi_new
+
+    return phi

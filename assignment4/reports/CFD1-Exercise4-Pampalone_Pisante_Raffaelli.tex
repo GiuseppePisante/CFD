@@ -368,8 +368,8 @@ c = \frac{U \Delta t}{\Delta x}, \quad d = \frac{\alpha \Delta t}{\rho (\Delta x
 The parameter $c$ represents the Courant number and quantifies the influence of advection in the simulation. 
 For stability and accuracy in explicit schemes, $c$ should typically be small to satisfy the Courant-Friedrichs-Lewy condition that requires $c \leq 1$. 
 If $c$ is too large, the simulation may become unstable or inaccurate because the flow travels across more than one grid cell per time step.
-The parameter $d$ measures the contribution of diffusion to the simulation and it should typically be small to ensure numerical stability.
-The diffusion stability condition generally requires $d \leq 1/2$ to ensure that diffusion does not dominate excessively or destabilize the solution.
+The parameter $d$ represents the Fourier number and measures the contribution of diffusion to the simulation.
+The diffusion stability condition requires $d \leq 1/2$ to ensure that diffusion does not dominate excessively or destabilize the solution.
 
 
 \subsection{Stability Analysis Using Von Neumann Method}
@@ -604,13 +604,99 @@ Given the complexity of the disequation, it is beneficial to analyze the two ext
   \]
 \end{enumerate}
 
-\section{Stability region}
+\subsection{Stability region}
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.8\textwidth]{stability_region_plot.png}
   \caption{Stability region for the explicit scheme.}
   \label{fig:stability_region}
 \end{figure}
+
+
+\section{Numerical solution of the unsteady advection-diffusion equation}
+
+The attached file \texttt{task4.py} from our repository \cite{GitHubRepo} contains the Python code which should be executed to obtain 
+the numerical solution of the unsteady advection-diffusion equation using different discretization methods respectively: second-order central 
+differencing, first- and second-order upwind differencing.The solutions are included in this report, as requested. In the case of an explicit 
+scheme, the solution obtained using the Central Difference Scheme is stable only for low Peclet numbers, as the diffusion phenomenon dominates 
+over advection. For higher Peclet numbers, the solution becomes unconditionally unstable due to the dominance of the advection term.
+On the contrary, using the first- and second-order upwind methods, the largest allowed time-step based on coefficient analysis is:
+
+\[
+\Delta t < \min \left( \frac{\rho (\Delta x)^2}{2 \alpha}, \frac{\Delta x}{U} \right),
+\]
+
+
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.5\textwidth]{task4.png}
+  \caption{Numerical solution of the unsteady advection-diffusion equation}
+  \label{fig:Numerical solution of the unsteady advection-diffusion equation}
+\end{figure}
+
+
+\section{Wave speed and minimum required grid resolution}
+
+\subsection{Connection between grid resolution and the wave number of the ine wave}
+
+To accurately represent a sine wave on a grid, the grid resolution $\Delta x$ must be such that there are at least 2 grid points per wavelength.
+The smallest allowable wavelenght is:
+
+\[
+\lambda_{\text{min}} = 2 \Delta x
+\]
+Since the wavelength $\lambda$ and the wavenumber $k$ are related, the maximal wave number $k_{\text{max}}$ that can be resolved by the grid is:
+
+\[
+\lambda = \frac{2\pi}{k} \implies k_{\text{max}} = \frac{\pi}{\Delta x}
+\]
+If \( k > k_{\text{max}} \), the sine wave cannot be correctly represented. In particular, for coarser grids $\frac{\Delta x}{16}$ the 
+high-wavenumber waves \( k = 8, 16 \) exhibit numerical dissipation and the sine wave appear damped due to insufficient resolution. For finer
+grids all of the sine wave are well within the limit and should be resolved correctly. However, as k increases, the accuracy may decrease slightly
+due to numerical errors.
+
+\subsection{Ideal behavior for each Pe}
+
+For \( Pe = 25 \) the ideal behavior is a damped sine wave over time because the diffusion term introduces energy dissipation, reducing the
+wave amplitude. Higher wavenumbers k are affected more because diffusion acts more strongly on smaller wavelengths. Thus, diffusion plays a 
+significant role. For \( Pe \to \infty \) diffusion is negligible and he ideal behavior is a pure advection of the sine wave, meaning the wave 
+travels at a constant speed without any change in amplitude or shape.
+
+\subsection{Turbulent flow}
+A turbulent flow can be thought of as the combination of different waves with different wavenumbers. To accurately simulate turbulent flows, 
+the numerical scheme should minimize diffusion that distort the wave amplitude and phase. 
+
+Central Difference Scheme provides second-order accuracy and does well for lower wavenumbers but is is prone to numerical dispersion errors, 
+especially at high wavenumbers and high Peclet numbers so It may generate oscillations or instabilities when the grid resolution is not sufficient.
+
+First-Order Upwind Scheme is inherently stable and free from oscillations, even at high Peclet numbers. However, introduces numerical diffusion 
+which causes significant damping of high-wavenumber waves so is not ideal for turbulent flows because its numerical diffusion suppresses high-frequency components.
+
+Second-Order Upwind Scheme is more accurate and better at preserving wave amplitudes at higher Peclet numbers leading to better representation of high-wavenumber waves, 
+so it is a better choice for simulating a turbulent flow because it provides a balance between numerical stability and resolution of high-wavenumber components.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=1\textwidth]{task5_dx_16.png}
+    \caption{Periodic boundary condition for \(\frac{\Delta x}{16}\).}
+    \label{fig:periodic_dx_16}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=1\textwidth]{task5_dx_32.png}
+    \caption{Periodic boundary condition for \(\frac{\Delta x}{32}\).}
+    \label{fig:periodic_dx_32}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=1\textwidth]{task5_dx_64.png}
+    \caption{Periodic boundary condition for \(\frac{\Delta x}{64}\).}
+    \label{fig:periodic_dx_64}
+\end{figure}
+
 \begin{thebibliography}{9}
   \bibitem{GitHubRepo}
   \textit{CFD Repository},\\

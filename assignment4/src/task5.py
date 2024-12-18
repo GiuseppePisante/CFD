@@ -1,50 +1,48 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import solver as solv
+import solver5 as solv  
 
-# Parameters
-L = 1.0
-U = 1.0
-rho = 1.0
-Pe_values = [25, np.inf]  # Use Pe = 25 and Pe -> infinity
+# Grid spacings
 dx_values = [1/16, 1/32, 1/64]
-k_values = [1, 2, 4, 8, 16]  # Different wave numbers
+Pe_values = [25, 1e6]  
+k_values = [1, 2, 4, 8, 16]
+dt = 0.001
+nt_max = 1000
 
-# Time parameters
-dt = 0.01
-nt_max = 10000
-
-# Periodic Boundary Solver
-def apply_periodic_boundary(phi):
-    phi[0] = phi[-1]
+# Periodic boundary condition 
+def periodic_bc(phi):
+    phi[0] = phi[-2]  
+    phi[-1] = phi[1] 
     return phi
 
-# Run simulations
-fig, axs = plt.subplots(len(k_values), len(dx_values), figsize=(20, 15), sharex=True, sharey=True)
+for dx in dx_values:
+    N = int(1 / dx) + 1
+    x = np.linspace(0, 1, N)
 
-for i, k in enumerate(k_values):
-    for j, dx in enumerate(dx_values):
-        N = int(L / dx) + 1
-        x = np.linspace(0, L, N)
-        phi_initial = np.sin(2 * k * np.pi * x)  # Initial condition
-        
+    fig, axs = plt.subplots(1, len(k_values), figsize=(20, 5), sharey=True)
+    fig.suptitle(f"Solutions for dx = {dx:.3f}", fontsize=16)
+
+    for j, k in enumerate(k_values):
+        phi = np.sin(2 * k * np.pi * x)
+        phi = periodic_bc(phi)
+
         for Pe in Pe_values:
-            # Initialize phi
-            phi = phi_initial.copy()
-            
-            # Time-stepping loop for periodic conditions
-            for _ in range(nt_max):
-                phi = solv.CDS(phi, dt, dx, Pe, nt_max)  # Update phi using solver
-                phi = apply_periodic_boundary(phi)  # Apply periodic boundary condition
+            phi_CDS = solv.CDS(phi.copy(), dt, dx, Pe, nt_max)
+            phi_UP1 = solv.UP1(phi.copy(), dt, dx, Pe, nt_max)
+            phi_UP2 = solv.UP2(phi.copy(), dt, dx, Pe, nt_max)
 
-            # Plot results
-            axs[i, j].plot(x, phi, label=f'Pe={Pe}')
+            label = f"Pe={Pe:.0f}"
+            axs[j].plot(x, phi_CDS, label=f"CDS, {label}")
+            axs[j].plot(x, phi_UP1, label=f"UP1, {label}")
+            axs[j].plot(x, phi_UP2, label=f"UP2, {label}")
         
-        axs[i, j].set_title(f'k={k}, dx={dx}')
-        axs[i, j].legend()
-        axs[i, j].set_xlabel('x')
-        axs[i, j].set_ylabel('Phi')
+        axs[j].set_title(f"k={k}")
+        axs[j].set_xlabel("x")
+        axs[j].legend()
+        axs[j].grid()
 
-plt.tight_layout()
-plt.savefig('task4_periodic_fixed.png')
-plt.show()
+    axs[0].set_ylabel("Φ(x)")
+    plt.tight_layout()
+    plt.subplots_adjust(top=0.85) 
+
+    plt.savefig(f"task5_dx_{int(1/dx)}.png")

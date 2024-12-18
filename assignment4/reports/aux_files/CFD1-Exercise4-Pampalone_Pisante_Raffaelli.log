@@ -1,9 +1,9 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2024.10.20)  18 DEC 2024 12:32
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2024.10.20)  18 DEC 2024 12:34
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**temp.tex
-(./temp.tex
+**CFD1-Exercise4-Pampalone_Pisante_Raffaelli.tex
+(./CFD1-Exercise4-Pampalone_Pisante_Raffaelli.tex
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
 (/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
@@ -310,25 +310,213 @@ File: l3backend-pdftex.def 2024-01-04 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count288
 \l__pdf_internal_box=\box54
 )
-(aux_files/temp.aux
-! Missing \endcsname inserted.
+(aux_files/CFD1-Exercise4-Pampalone_Pisante_Raffaelli.aux)
+\openout1 = `CFD1-Exercise4-Pampalone_Pisante_Raffaelli.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 31.
+LaTeX Font Info:    ... okay on input line 31.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 31.
+LaTeX Font Info:    ... okay on input line 31.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 31.
+LaTeX Font Info:    ... okay on input line 31.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 31.
+LaTeX Font Info:    ... okay on input line 31.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 31.
+LaTeX Font Info:    ... okay on input line 31.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 31.
+LaTeX Font Info:    ... okay on input line 31.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 31.
+LaTeX Font Info:    ... okay on input line 31.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 31.
+LaTeX Font Info:    ... okay on input line 31.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 31.
+LaTeX Font Info:    ... okay on input line 31.
+
+(/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count289
+\scratchdimen=\dimen169
+\scratchbox=\box55
+\nofMPsegments=\count290
+\nofMParguments=\count291
+\everyMPshowfont=\toks25
+\MPscratchCnt=\count292
+\MPscratchDim=\dimen170
+\MPnumerator=\count293
+\makeMPintoPDFobject=\count294
+\everyMPtoPDFconversion=\toks26
+) (/usr/share/texlive/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
+Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+85.
+
+(/usr/share/texlive/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+))
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+*geometry* verbose mode - [ preamble ] result:
+* driver: pdftex
+* paper: <default>
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: 
+* h-part:(L,W,R)=(72.26999pt, 469.75502pt, 72.26999pt)
+* v-part:(T,H,B)=(72.26999pt, 650.43001pt, 72.26999pt)
+* \paperwidth=614.295pt
+* \paperheight=794.96999pt
+* \textwidth=469.75502pt
+* \textheight=650.43001pt
+* \oddsidemargin=0.0pt
+* \evensidemargin=0.0pt
+* \topmargin=-37.0pt
+* \headheight=12.0pt
+* \headsep=25.0pt
+* \topskip=10.0pt
+* \footskip=30.0pt
+* \marginparwidth=65.0pt
+* \marginparsep=11.0pt
+* \columnsep=10.0pt
+* \skip\footins=9.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+Package hyperref Info: Link coloring OFF on input line 31.
+(aux_files/CFD1-Exercise4-Pampalone_Pisante_Raffaelli.out)
+(aux_files/CFD1-Exercise4-Pampalone_Pisante_Raffaelli.out)
+\@outlinefile=\write3
+\openout3 = `CFD1-Exercise4-Pampalone_Pisante_Raffaelli.out'.
+
+<FAU-Logo.png, id=76, 1927.2pt x 1084.05pt>
+File: FAU-Logo.png Graphic file (type png)
+<use FAU-Logo.png>
+Package pdftex.def Info: FAU-Logo.png  used on input line 43.
+(pdftex.def)             Requested size: 140.92793pt x 79.26566pt.
+ [1
+
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./FAU-Logo.png>]
+LaTeX Font Info:    Trying to load font information for U+msa on input line 52.
+
+
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 52.
+
+
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
+been already used, duplicate ignored
 <to be read again> 
-                   \protect 
-l.46 ...n for $\frac {\Delta x}{16}$}{figure.5}{}}
-                                                  
-? X
- 
+                   \relax 
+l.125 \end{equation}
+                     [1] [2]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 269.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `superscript' on input line 269.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 269.
+
+<task2_L2norm.png, id=123, 462.528pt x 346.896pt>
+File: task2_L2norm.png Graphic file (type png)
+<use task2_L2norm.png>
+Package pdftex.def Info: task2_L2norm.png  used on input line 275.
+(pdftex.def)             Requested size: 211.38832pt x 158.54192pt.
+<task2_fixed_dx.png, id=125, 1084.05pt x 1084.05pt>
+File: task2_fixed_dx.png Graphic file (type png)
+<use task2_fixed_dx.png>
+Package pdftex.def Info: task2_fixed_dx.png  used on input line 296.
+(pdftex.def)             Requested size: 211.38832pt x 211.38063pt.
+[3 <./task2_L2norm.png>] [4 <./task2_fixed_dx.png>] [5] [6] [7]
+<stability_region_plot.png, id=167, 578.16pt x 433.62pt>
+File: stability_region_plot.png Graphic file (type png)
+<use stability_region_plot.png>
+Package pdftex.def Info: stability_region_plot.png  used on input line 610.
+(pdftex.def)             Requested size: 375.80544pt x 281.84966pt.
+<task4.png, id=169, 1084.05pt x 1084.05pt>
+File: task4.png Graphic file (type png)
+<use task4.png>
+Package pdftex.def Info: task4.png  used on input line 633.
+(pdftex.def)             Requested size: 234.8775pt x 234.8692pt.
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+[8 <./stability_region_plot.png>] [9 <./task4.png>]
+<task5_dx_16.png, id=184, 1445.4pt x 361.35pt>
+File: task5_dx_16.png Graphic file (type png)
+<use task5_dx_16.png>
+Package pdftex.def Info: task5_dx_16.png  used on input line 681.
+(pdftex.def)             Requested size: 469.75502pt x 117.43735pt.
+<task5_dx_32.png, id=185, 1445.4pt x 361.35pt>
+File: task5_dx_32.png Graphic file (type png)
+<use task5_dx_32.png>
+Package pdftex.def Info: task5_dx_32.png  used on input line 688.
+(pdftex.def)             Requested size: 469.75502pt x 117.43735pt.
+<task5_dx_64.png, id=186, 1445.4pt x 361.35pt>
+File: task5_dx_64.png Graphic file (type png)
+<use task5_dx_64.png>
+Package pdftex.def Info: task5_dx_64.png  used on input line 695.
+(pdftex.def)             Requested size: 469.75502pt x 117.43735pt.
+ [10 <./task5_dx_16.png> <./task5_dx_32.png> <./task5_dx_64.png>]
+(aux_files/CFD1-Exercise4-Pampalone_Pisante_Raffaelli.aux)
+ ***********
+LaTeX2e <2023-11-01> patch level 1
+L3 programming layer <2024-01-22>
+ ***********
+Package rerunfilecheck Info: File `CFD1-Exercise4-Pampalone_Pisante_Raffaelli.o
+ut' has not changed.
+(rerunfilecheck)             Checksum: 1299BB469F57C8D66EFD3274DD3762E7;5213.
+ ) 
 Here is how much of TeX's memory you used:
- 9897 strings out of 476182
- 148453 string characters out of 5795594
- 1922975 words of memory out of 5000000
- 31826 multiletter control sequences out of 15000+600000
- 558069 words of font info for 36 fonts, out of 8000000 for 9000
+ 10602 strings out of 476182
+ 160170 string characters out of 5795594
+ 1954975 words of memory out of 5000000
+ 32404 multiletter control sequences out of 15000+600000
+ 569573 words of font info for 78 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 75i,0n,79p,261b,42s stack positions out of 10000i,1000n,20000p,200000b,200000s
-No pages of output.
+ 75i,9n,79p,551b,536s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ </home/antoniopampalone02/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec
+/tcrm0900.600pk></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
+mbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.
+pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></u
+sr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmex9.pfb></usr
+/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share
+/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/share/texliv
+e/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf
+-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/f
+onts/type1/public/amsfonts/cm/cmmi9.pfb></usr/share/texlive/texmf-dist/fonts/ty
+pe1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/pub
+lic/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/ams
+fonts/cm/cmr5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm
+/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pf
+b></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/
+share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5.pfb></usr/share/t
+exlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/share/texlive/
+texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/share/texlive/texmf-d
+ist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/share/texlive/texmf-dist/fo
+nts/type1/public/amsfonts/cm/cmti9.pfb></usr/share/texlive/texmf-dist/fonts/typ
+e1/public/amsfonts/cm/cmtt9.pfb>
+Output written on aux_files/CFD1-Exercise4-Pampalone_Pisante_Raffaelli.pdf (11 
+pages, 1021638 bytes).
 PDF statistics:
- 0 PDF objects out of 1000 (max. 8388607)
- 0 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 310 PDF objects out of 1000 (max. 8388607)
+ 235 compressed objects within 3 object streams
+ 63 named destinations out of 1000 (max. 500000)
+ 185 words of extra memory for PDF output out of 10000 (max. 10000000)
 

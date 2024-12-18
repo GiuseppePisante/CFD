@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import solver as solv
+import solver4 as solv
 
 # Parameters
 L = 1.0                       
@@ -8,11 +8,12 @@ U = 1.0
 rho = 1.0
 Pe_values = np.array([25, 50, 100, 120, 125, 128, 130, 135, 150, 200, 400])
 
-# Grid spacing
+# Grid spacings
 dx = 1/32
 N = int(1/dx) + 1
-x = np.linspace(0, L, N)       
-nt_max= 1000000         
+x = np.linspace(0, L, N)   
+dt = 0.001    
+nt_max= 1000         
 
 # Initial and boundary condition 
 phi = np.zeros(N)        
@@ -21,9 +22,6 @@ phi[-1] = 1
 fig, axs = plt.subplots(3, 3, figsize=(15, 15))
 
 for i, Pe in enumerate([25, 50, 100]):
-
-    alpha = rho * U * L / Pe
-    dt = min( dx / U , rho * dx**2 / (2 * alpha))
   
     phi_1 = solv.CDS(phi, dt, dx, Pe, nt_max)
     axs[0, 0].plot(x, phi_1, label=f'Pe={Pe}')
@@ -41,9 +39,6 @@ for i, Pe in enumerate([25, 50, 100]):
     axs[2, 0].legend()
 
 for i, Pe in enumerate([120, 125, 128, 130, 135]):
-
-    alpha = rho * U * L / Pe
-    dt = min( dx / U , rho * dx**2 / (2 * alpha))
   
     phi_1 = solv.CDS(phi, dt, dx, Pe, nt_max)
     axs[0, 1].plot(x, phi_1, label=f'Pe={Pe}')
@@ -61,9 +56,6 @@ for i, Pe in enumerate([120, 125, 128, 130, 135]):
     axs[2, 1].legend()
 
 for i, Pe in enumerate([150, 200, 400]):
-
-    alpha = rho * U * L / Pe
-    dt = min( dx / U , rho * dx**2 / (2 * alpha))
   
     phi_1 = solv.CDS(phi, dt, dx, Pe, nt_max)
     axs[0, 2].plot(x, phi_1, label=f'Pe={Pe}')
