@@ -192,6 +192,11 @@ Now we assemble the complete discretization by combining the three terms:
   \end{aligned}
 \end{equation}
 
+The finite-volume formulation of the $x$-momentum equation consists in a balancing of the forces acting on a control volume.
+Convective terms, which are in the form $u*u$, represent momentum transport due to fluid motion and are evaluated at control volume vertical faces using linear interpolation and linearization.
+Diffusion terms, which are the ones like $-\frac{1}{Re} \frac{u_{i+1,j} - u_{i,j}}{\Delta x}$, account for viscous effects, with velocity gradients calculated at the horizontal faces.
+Cross-convection terms, which consist in the multiplication between $v$ and $u$, capture the interaction between $x$- and $y$- velocity components, while the pressure gradient term drives flow and is determined using interpolated cell-center values.
+
 The discretization of the y-momentum equation can be obtained following an analogous procedure, where $x$ and $y$, and $u$ and $v$ are swapped in the equations, and in the end we obtain the following expression:
 \begin{equation}
   \begin{aligned}
@@ -206,6 +211,15 @@ The discretization of the y-momentum equation can be obtained following an analo
     & + \Delta x (p_{i,j+1} - p_{i,j}) = 0
   \end{aligned}
 \end{equation}
+
+In the picture reported below we can see which are the reference control volumes for each of the three equations, moreover we can see
+that the center of each control volume is the point where we store the variable ($u$, $v$ and $p$) we are computing in this specific control volume with the corresponding equation.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.5\textwidth]{controlvolumes.jpg}
+  \caption{Control volumes}
+\end{figure}
 
 
 \section*{\Large Task 3.2:}
