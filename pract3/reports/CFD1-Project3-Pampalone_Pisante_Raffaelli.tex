@@ -118,6 +118,7 @@ This leads us to the following expression:
   0.25 (u_{i-1,j} + u_{i,j})^2 \approx 0.25 (u^*_{i-1,j} + u^*_{i,j}) (u_{i-1,j} + u_{i,j}) &= 0.25 (u^*_{i-1,j} u_{i-1,j} + u^*_{i,j} u_{i,j} + u^*_{i-1,j} u_{i,j} + u^*_{i,j} u_{i-1,j})
   \end{aligned}
 \end{equation}
+The linearization of quadratic terms in this derivation reflects the iterative approach adopted in the SIMPLE algorithm, where coefficients such as $a^u_j$ are updated iteratively to address non-linearities.
 
 Including the linearization in the discretization we obtain:
 \begin{flalign}
@@ -221,8 +222,86 @@ that the center of each control volume is the point where we store the variable 
   \caption{Control volumes}
 \end{figure}
 
-
+\newpage
 \section*{\Large Task 3.2:}
+\subsubsection*{1) Initialization}
+We set an initial guess for velocities ($u^*$ and $p^*$) and pressure ($p^*$) fields and we ensure that the values are consistent with the boundary conditions.
+We also set relaxation parameters ($\alpha_p$ and $\alpha_u$) to control the convergence of the solution.
+
+\subsubsection*{2) Prediction step}
+In this step we solve the momentum equations to compute the intermediate velocities $u^*$ and $v^*$.
+In particular, for the x-momentum equation we have the following formula to solve implicitly:
+\begin{equation}
+  a_{P}u_{P}=\sum_{nb}a_{nb}u_{nb}+b_{u}-\frac{\partial p^{*}}{\partial x}
+\end{equation}
+where $a_{P}$, $a_{nb}$ and $b_{u}$ are the coefficients that derive from the discretization equation and $\frac{\partial p^{*}}{\partial x}$ is the pressure gradient
+at the cell faces which can be approximated as $\frac{\partial p^{*}}{\partial x}=\frac{p_{E}^{*}-p_{P}^{*}}{\Delta x}$.
+
+For y-momentum equation we have the analogue formula:
+\begin{equation}
+  a_{P}v_{P}=\sum_{nb}a_{nb}v_{nb}+b_{u}-\frac{\partial p^{*}}{\partial y}
+\end{equation}
+where  the pressure gradient can be approximated as $\frac{\partial p^{*}}{\partial y}=\frac{p_{N}^{*}-p_{P}^{*}}{\Delta y}$.
+
+We solve these equations for all the cells in order to obtain the predicted velocities $u^*$ and $v^*$.
+
+\subsubsection*{3) Correction step}
+This step is necessary to ensure that the continuity equation is satisfied. 
+We start by deriving the pressure correction equation from the continuity equation:
+\begin{equation}
+  \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} = 0
+\end{equation}
+and then we substitute the corrected velocities $u = u^* + u'$ and $v = v^* + v'$ in the equation, where $u'$ and $v'$ are the corrections to the velocities due to pressure correction. 
+Substituting them into the equation and exploiting the linearity property of the partial derivatives, we get:
+\begin{equation}
+  \frac{\partial u^*}{\partial x} + \frac{\partial v^*}{\partial y} + \frac{\partial u'}{\partial x} + \frac{\partial v'}{\partial y} = 0
+\end{equation}
+
+For the momentum equations, the velocity corrections $u'$ and $v'$ are proportional to the pressure correction $p'$, as follows:
+\begin{equation}
+  u' = -\frac{\Delta x}{a_P} \frac{\partial p'}{\partial x}, \quad v' = -\frac{\Delta y}{a_P} \frac{\partial p'}{\partial y}.
+\end{equation}
+where $a_P$ is the coefficient of the discretized momentum equation.
+
+Then we substitute the velocity corrections in the continuity equation and we obtain the pressure correction equation:
+\begin{equation}
+  \frac{\partial}{\partial x}\left(-\frac{\Delta x}{a_P}\frac{\partial p'}{\partial x}\right) + \frac{\partial}{\partial y}\left(-\frac{\Delta y}{a_P}\frac{\partial p'}{\partial y}\right) = -\left(\frac{\partial u^*}{\partial x} + \frac{\partial v^*}{\partial y}\right)
+\end{equation}
+
+Then we integrated over the control volume and apply the divergence theorem to convert the volume integrals into surface integrals, and we approximate the gradients at the faces of the control volume using central differences.
+Then we assemble the  resulting terms into a discretized Poisson equation for $p'$,where the source term is the divergence of the predicted velocity field $u^*$ and $v^*$, and we get:
+\begin{equation}
+  a_P p'_P = \sum_{nb} a_{nb} p_{nb} + b_p
+\end{equation} 
+where $p'_P$ is the pressure correction at the cell center, $p'_{nb}$ are the pressure corrections at the neighboring cells (east, west, north, south), $a_P$ and $a_{nb}$ are the coefficients that derive from the discretization equation, and the source term is $b_p = \rho \left( \frac{u_E^* - u_W^*}{\Delta x} + \frac{v_N^* - v_S^*}{\Delta y} \right)$. 
+
+This equation forms a system of linear equations that is solved using numerical methods (e.g., iterative solvers like Gauss-Seidel).
+
+
+\subsubsection*{4) Update pressure and velocity fields}
+We update the pressure field in order to ensure that the corrected velocity field satisfies the continuity equation. 
+The update of the pressure field $p^{\nu +1}$ is calculated as:
+\begin{equation}
+  p^{\nu+1} = p^* + \alpha_p p'
+\end{equation}
+where $\alpha_p$ is the relaxation factor for pressure and it controls how much of the correction is applied.
+
+Then we adjust the predicted velocities as follows:
+\begin{equation}
+  u^{\nu+1} = u^* - \frac{\Delta x}{a_P} \frac{\partial p'}{\partial x}, \quad v^{\nu+1} = v^* - \frac{\Delta y}{a_P} \frac{\partial p'}{\partial y}.
+  \end{equation}
+where the approximations for the partial derivatives of the pressure are: $\frac{\partial p'}{\partial x} = \frac{p'_{E} - p'_{W}}{\Delta x}$ and $\frac{\partial p'}{\partial y} = \frac{p'_{N} - p'_{S}}{\Delta y}$.
+
+\subsubsection*{5) Convergence check}
+At the end we evaluate convergence criteria for both velocity and pressure fields. We can use the following criteria:
+
+\begin{itemize}
+  \item Velocity: $||u^{\nu+1} - u^*|| \leq \text{tolerance}$.
+  \item Pressure: $||p^{\nu+1} - p^*|| \leq \text{tolerance}$.
+\end{itemize}
+
+If not converged, set $u^* = u^{\nu+1}$ and $p^* = p^{\nu+1}$ and repeat the process from step 2.
+
 \section*{\Large Task 3.3:}
 \section*{\Large Task 3.4:}
 \section*{\Large Task 3.5:}
