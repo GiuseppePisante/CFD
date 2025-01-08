@@ -7,7 +7,7 @@
 \usepackage{float}
 
 % Title, date, and author
-\title{Exercise 3}
+\title{Exercise 5}
 \author{Your Name, Collaborator's Name}
 \date{\today}
 
@@ -31,7 +31,7 @@
     \centering
     \vspace*{1in}
     
-    {\Huge\bfseries Exercise 3\par}
+    {\Huge\bfseries Exercise 5\par}
     \vspace{1.5cm}
     {\Large \today\par}
     \vspace{1.5cm}
@@ -44,7 +44,125 @@
 
 \newpage
 \small
-\section{Finite difference approximation of the second derivative}
+\section{Implicit Euler scheme for diffusion equation}
+\subsection{Discretization}
+Recalling the general form of the implicit Euler method:
+\begin{equation*}
+  \phi^{n+1}_{i,j} = \phi^{n}_{i,j} + f(\phi^{n+1}, t^{n+1}) \Delta t 
+\end{equation*}
+we get for the diffusion equation:
+\begin{equation*}
+  \phi^{n+1}_{i,j} = \phi^{n}_{i,j} + \alpha (\frac{\partial^2 \phi^{n+1}_{i,j}}{\partial x^2} + \frac{\partial^2 \phi^{n+1}_{i,j}}{\partial y^2}) \Delta t
+\end{equation*}
+
+Then we use the second order central difference scheme for the spatial derivatives:
+\begin{equation*}
+  \frac{\partial^2 \phi^{n+1}_{i,j}}{\partial x^2} = \frac{\phi^{n+1}_{i+1,j} - 2\phi^{n+1}_{i,j} + \phi^{n+1}_{i-1,j}}{\Delta x^2}
+\end{equation*}
+\begin{equation*}
+  \frac{\partial^2 \phi^{n+1}_{i,j}}{\partial y^2} = \frac{\phi^{n+1}_{i,j+1} - 2\phi^{n+1}_{i,j} + \phi^{n+1}_{i,j-1}}{\Delta y^2}
+\end{equation*}
+
+Substituting the above equations into the diffusion equation, we get:
+\begin{equation} \label{discretization}
+  \phi^{n+1}_{i,j} = \phi^{n}_{i,j} + \alpha \left( \frac{\phi^{n+1}_{i+1,j} - 2\phi^{n+1}_{i,j} + \phi^{n+1}_{i-1,j}}{\Delta x^2} + \frac{\phi^{n+1}_{i,j+1} - 2\phi^{n+1}_{i,j} + \phi^{n+1}_{i,j-1}}{\Delta y^2} \right) \Delta t
+\end{equation}
+where we can rearrange the terms to get the following expression:
+\begin{equation}
+  \phi^{n+1}_{i,j} (1 + 2 \alpha \Delta t(\frac{1}{\Delta x^2} + \frac{1}{\Delta y^2})) - \alpha \Delta t \left( \frac{\phi^{n+1}_{i+1,j} + \phi^{n+1}_{i-1,j}}{\Delta x^2} + \frac{\phi^{n+1}_{i,j+1} + \phi^{n+1}_{i,j-1}}{\Delta y^2} \right) = \phi^{n}_{i,j}
+\end{equation}
+
+\subsection{Consistency proof}
+In order to prove consistency of the discretization we have to show that the truncation error $T$ goes to zero as the grid spacing ($\Delta x, \Delta y$) goes to zero and the time step ($\Delta t$) goes to zero.
+
+
+We start with the exact form of the diffusion equation:
+
+\begin{equation}
+\frac{\partial \phi}{\partial t} = \alpha \left( \frac{\partial^2 \phi}{\partial x^2} + \frac{\partial^2 \phi}{\partial y^2} \right).
+\end{equation}
+
+The discretized scheme for the implicit Euler method is described by equation \eqref{discretization}.
+
+To analyze the truncation error, we expand \( \phi_{i+1,j}^{n+1}, \phi_{i-1,j}^{n+1}, \phi_{i,j+1}^{n+1}, \phi_{i,j-1}^{n+1} \) using Taylor series around \( \phi_{i,j}^{n+1} \). For example, the expansion for \( \phi_{i+1, j}^{n+1} \) is given by:
+
+\begin{equation*}
+\phi_{i+1,j}^{n+1} = \phi_{i,j}^{n+1} + \Delta x \frac{\partial \phi}{\partial x} + \frac{\Delta x^2}{2} \frac{\partial^2 \phi}{\partial x^2} + \frac{\Delta x^3}{6} \frac{\partial^3 \phi}{\partial x^3} + \cdots,
+\end{equation*}
+
+and similar expansions hold for the other terms. Then we substitute these expansions into the discretized scheme. For example, the term 
+
+\begin{equation*}
+\frac{\phi_{i+1, j}^{n+1} - 2\phi_{i,j}^{n+1} + \phi_{i-1,j}^{n+1}}{\Delta x^2}
+\end{equation*}
+
+becomes:
+
+\begin{equation*}
+\frac{\partial^2 \phi}{\partial x^2} + \frac{\Delta x^2}{12} \frac{\partial^4 \phi}{\partial x^4} + \cdots.
+\end{equation*}
+
+Substituting all the Taylor expansions into the discretized equation and rearranging terms, we obtain the residual or truncation error as:
+
+\begin{equation}
+T = \Delta t \frac{\partial^2 \phi}{\partial t^2} + \frac{\Delta x^2}{12} \frac{\partial^4 \phi}{\partial x^4} + \frac{\Delta y^2}{12} \frac{\partial^4 \phi}{\partial y^4} + \cdots.
+\end{equation}
+
+As \( \Delta t \to 0 \), \( \Delta x \to 0 \), and \( \Delta y \to 0 \), the truncation error \( T \) approaches zero, demonstrating that the discretization is consistent.
+
+
+\subsection{Stability criteria}
+
+To determine the stability criterion for the implicit Euler scheme using the Von Neumann method, we start with the discretized equation \eqref{discretization} and we
+introduce the parameters $ r_x = \frac{\alpha \Delta t}{\Delta x^2} $ and $ r_y = \frac{\alpha \Delta t}{\Delta y^2} $, then the equation becomes:
+\begin{equation*}
+\phi_{i,j}^{n+1} = \phi_{i,j}^n + r_x \left( \phi_{i+1,j}^{n+1} - 2\phi_{i,j}^{n+1} + \phi_{i-1,j}^{n+1} \right) + r_y \left( \phi_{i,j+1}^{n+1} - 2\phi_{i,j}^{n+1} + \phi_{i,j-1}^{n+1} \right).
+\end{equation*}
+
+Rearranging terms, we write:
+\begin{equation*}
+\phi_{i,j}^{n+1} \left( 1 + 2r_x + 2r_y \right) = \phi_{i,j}^n + r_x \left( \phi_{i+1,j}^{n+1} + \phi_{i-1,j}^{n+1} \right) + r_y \left( \phi_{i,j+1}^{n+1} + \phi_{i,j-1}^{n+1} \right).
+\end{equation*}
+
+The Von Neumann method assumes a Fourier mode solution of the form:
+\begin{equation*}
+\phi_{i,j}^n = G^n e^{I(k_x i \Delta x + k_y j \Delta y)},
+\end{equation*}
+where $ G $ is the amplification factor,$ k_x $ and $ k_y $ are the wave numbers in the $ x $- and $ y $-directions, and $ I = \sqrt{-1} $.
+
+We substituting this Fourier mode into the discretized equation, and the neighboring terms become:
+\begin{equation*}
+\phi_{i+1,j}^{n+1} = G e^{I k_x \Delta x} \phi_{i,j}^{n+1}, \quad \phi_{i-1,j}^{n+1} = G e^{-I k_x \Delta x} \phi_{i,j}^{n+1},
+\end{equation*}
+\begin{equation*}
+\phi_{i,j+1}^{n+1} = G e^{I k_y \Delta y} \phi_{i,j}^{n+1}, \quad \phi_{i,j-1}^{n+1} = G e^{-I k_y \Delta y} \phi_{i,j}^{n+1}.
+\end{equation*}
+
+Using these expressions, substitute into the equation. Simplify the exponentials using $ e^{I \theta} + e^{-I \theta} = 2 \cos \theta $, leading to:
+\begin{equation*}
+G \phi_{i,j}^{n+1} \left( 1 + 2r_x + 2r_y \right) = \phi_{i,j}^n + 2r_x G \phi_{i,j}^{n+1} \cos(k_x \Delta x) + 2r_y G \phi_{i,j}^{n+1} \cos(k_y \Delta y).
+\end{equation*}
+
+Factoring $G$ from the left-hand side:
+
+\begin{equation*}
+G \left( 1 + 2r_x + 2r_y - 2r_x \cos(k_x \Delta x) - 2r_y \cos(k_y \Delta y) \right) = 1.
+\end{equation*}
+
+We solve for $ G $:
+\begin{equation*}
+G = \frac{1}{1 + 2r_x + 2r_y - 2r_x \cos(k_x \Delta x) - 2r_y \cos(k_y \Delta y)}.
+\end{equation*}
+
+The scheme is stable if $ |G| \leq 1 $. For the implicit Euler method, the denominator in $ G $ is always greater than 1 for all $ k_x $ and $ k_y $. So we have that:
+\begin{equation}
+|G| \leq 1,
+\end{equation}
+which implies unconditional stability.
+
+\subsection{Convergence proof}
+Since the scheme is both consistent and stable, for the Lax equivalence theorem, the scheme is convergent.
+
 
 \begin{thebibliography}{9}
   \bibitem{GitHubRepo}
