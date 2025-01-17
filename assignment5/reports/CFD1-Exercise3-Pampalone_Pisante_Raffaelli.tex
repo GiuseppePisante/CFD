@@ -293,7 +293,7 @@ At a velocity inlet, a specified velocity boundary condition is given. The mass 
 and other variables such as density and velocity components. To compute the diffusive flux the gradient of the scalar quantities is computed using
 one-sided finite differences. At a solid (impermeable) wall, there is no mass flux because the normal velocity component is zero along the wall. 
 Similarly, due to zero velocity along the wall, the convective flux is zero as well. In contrast, the diffusive flux inside the momentum equation 
-is not equal to zero contributes to momentum transfer due to shear stress. At a symmetry boundary, the boundary normal velocity component is zero,
+is not equal to zero and contributes to momentum transfer due to shear stress. At a symmetry boundary, the boundary normal velocity component is zero,
 so the mass flux through the boundary is equal to zero as weel as the convective flux of all variables is equal to zero. The diffusive fluxes
 of all scalar quantities is also equal to zero since the scalar gradients normal to the symmetry boundary are zero.
 
@@ -313,11 +313,5 @@ variables are solved separately.
   \bibitem{GitHubCopilot}
   \textit{GitHub Copilot},\\
   GitHub. Available at: \url{https://github.com/features/copilot}
-  
-  \bibitem{HeatEquation}
-  MIT OpenCourseWare,\\
-  \textit{Heat Equation Notes}, 2006,\\
-  Available at: \url{https://ocw.mit.edu/courses/18-303-linear-partial-differential-equations-fall-2006/d11b374a85c3fde55ec971fe587f8a50_heateqni.pdf},\\
-\end{thebibliography}
 
 \end{document}
