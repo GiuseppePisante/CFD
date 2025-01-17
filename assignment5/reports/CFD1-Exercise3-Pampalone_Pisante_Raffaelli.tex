@@ -163,6 +163,147 @@ which implies unconditional stability.
 \subsection{Convergence proof}
 Since the scheme is both consistent and stable, for the Lax equivalence theorem, the scheme is convergent.
 
+\section{Finite-volume method}
+
+\subsection{Co-located grid}
+
+In the co-located finite volume method, all variables are stored at the same location, typically the cell center. This approach uses the 
+same control volumes for all conservation equations, which minimizes programming and storage effort, especially for geometric quantities. 
+It is particularly beneficial in handling complex geometries, as control volumes can easily conform to complicated boundaries. However, 
+a significant challenge is the pressure-velocity coupling, which can lead to oscillations in the pressure field. This issue is often 
+addressed using "momentum interpolation" to ensure stability. 
+
+\subsection{Staggered grid}
+
+A staggered grid is a numerical technique in which different variables are stored at different locations within the control volume. 
+Specifically, pressure is stored at the center of the cell, while velocity components are stored at the faces of the cell. This results in 
+different control volumes for different equations. One of the primary advantages of the staggered grid is that many terms can be calculated 
+without the need for interpolation, maintaining second-order accuracy. It provides strong coupling between the pressure and velocity fields, 
+which helps prevent oscillations in the solution, ensuring stability. However, a significant disadvantage of the staggered grid is the difficulty 
+and computational expense of extending it to arbitrary, curvilinear, and non-orthogonal grids, which limits its flexibility in handling complex geometries.
+
+\subsection{Variable arrangements}
+
+In the picture reported below, the staggered variable arrangement is illustrated as (1). In contrast, (2) shows the co-located variable arrangement.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.5\textwidth]{Variable.jpg}
+  \caption{Variable arrangements}
+\end{figure}
+
+\subsection{Integral form of the equation}
+
+To derive the integral form of the partial differential equation, we integrate over a control volume:
+\[
+\int_V \frac{\partial (\rho \Phi)}{\partial t} \, dV + \int_V \nabla \cdot (\rho \vec{u} \Phi - \alpha \nabla \Phi) \, dV = \int_V S_\Phi \, dV
+\]
+Applying the divergence theorem to the second term, we obtain:
+\[
+\int_V \frac{\partial (\rho \Phi)}{\partial t} \, dV + \int_{\partial V} (\rho \vec{u} \Phi - \alpha \nabla \Phi) \cdot \vec{n} \, dA = \int_V S_\Phi \, dV
+\]
+
+\subsection{Approximation of the volume and surface integral}
+
+Using the mid-point rule, volume integrals over are approximated by evaluating the integrand at the center of the control volume \( P \).
+\[
+\int_V \frac{\partial (\rho \Phi)}{\partial t} \, dV \approx \frac{\partial (\rho \Phi)_P}{\partial t} \Delta x \Delta y
+\]
+Surface integrals over are approximated by evaluating fluxes through face at the midpoints of the faces of the control volume.
+\[
+\int_{\partial V} \left( \rho u \Phi - \alpha \nabla \Phi \right) \cdot n \, dA \approx \sum_f F_f A_f
+\]
+
+
+\subsection{Approximation of the source term and time derivative}
+
+The source term \( S_\Phi \) is assumed constant within the control volume:
+\[
+\int_V S_\Phi \, dV \approx S_{\Phi, P} \Delta x \Delta y
+\]
+The time derivative is discretized using a finite difference method. For a first-order explicit scheme:
+\[
+\frac{\partial (\rho \Phi)_P}{\partial t} \approx 
+\frac{(\rho \Phi)_P^{n+1} - (\rho \Phi)_P^n}{\Delta t}
+\]
+
+\subsection{Approximation of the Flux terms}
+
+\subsection*{Convective Fluxes}
+
+The upwind scheme uses the value of $\Phi$ from the upstream cell based on the flow direction:
+\begin{equation}
+(\rho u \Phi)_f = \rho_f u_f \Phi_{\text{upwind}}
+\end{equation}
+For example at the east face, if $u_e > 0$, $\Phi_{\text{upwind}} = \Phi_P$, so:
+\begin{equation}
+  (\rho u \Phi)_e = \rho_e u_e \Phi_P 
+  \end{equation}
+The central scheme uses the average value of $\Phi$ from adjacent cells on either side of the face:
+\begin{equation}
+(\rho u \Phi)_f = \rho_f u_f \frac{\Phi_L + \Phi_R}{2}
+\end{equation}
+For example, at the east face, $\Phi_L = \Phi_P$ and $\Phi_R = \Phi_E$, so:
+\begin{equation}
+(\rho u \Phi)_e = \rho_e u_e \frac{\Phi_P + \Phi_E}{2}
+\end{equation}
+
+\subsection*{Diffusive Fluxes}
+
+A central difference scheme is used to approximate the gradient of $\Phi$ at each face:
+\begin{equation}
+(\nabla \Phi)_f = \frac{\Phi_R - \Phi_L}{\Delta x_f}
+\end{equation}
+For example, at the east face:
+\begin{equation}
+(\nabla \Phi)_e = \frac{\Phi_E - \Phi_P}{\Delta x_e}
+\end{equation}
+
+\subsection{Final Discretized Equation}
+
+For a uniform grid, the final discretized equation it's given by:
+
+\begin{align*}
+\frac{(\rho \Phi)_P^{n+1} - (\rho \Phi)_P^n}{\Delta t} \Delta x \Delta y + \Delta y \Bigg[ & (\rho u \Phi)_e - (\rho u \Phi)_w - \alpha \frac{\Phi_E - \Phi_P}{\Delta x} + \alpha \frac{\Phi_P - \Phi_W}{\Delta x} \Bigg] \\
++ \Delta x \Bigg[ & (\rho v \Phi)_n - (\rho v \Phi)_s - \alpha \frac{\Phi_N - \Phi_P}{\Delta y} + \alpha \frac{\Phi_P - \Phi_S}{\Delta y} \Bigg] = S_{\Phi, P} \Delta x \Delta y
+\end{align*}
+
+\subsection{Flux blending}
+
+Flux blending is used to combine the advantages of both schemes. The CDS is second-order accurate in space, providing higher accuracy when the
+flow is smooth however, it can cause numerical oscillations, especially in cases with high Peclet numbers. The UDS is first-order 
+accurate in space but is stable and avoids oscillations in high Peclet number flows. Flux blending provides the stability of the UDS whith higher 
+accuracy of the CDS. The blending ratio $\beta$ allows control over the relative contributions of these two schemes. A good blending ratio can be derived 
+based on the Peclet number:
+\[
+\beta = \frac{Pe}{1 + Pe}
+\]
+This formula ensures:
+\[
+\beta \to 0 \quad \text{as} \quad Pe \to 0 \quad \text{(diffusion-dominated)}
+\]
+
+\[
+\beta \to 1 \quad \text{as} \quad Pe \to \infty \quad \text{(convection-dominated)}
+\]
+
+\subsection{Boundary conditions}
+
+At a velocity inlet, a specified velocity boundary condition is given. The mass flux and convective flux are computed using the given velocity 
+and other variables such as density and velocity components. To compute the diffusive flux the gradient of the scalar quantities is computed using
+one-sided finite differences. At a solid (impermeable) wall, there is no mass flux because the normal velocity component is zero along the wall. 
+Similarly, due to zero velocity along the wall, the convective flux is zero as well. In contrast, the diffusive flux inside the momentum equation 
+is not equal to zero contributes to momentum transfer due to shear stress. At a symmetry boundary, the boundary normal velocity component is zero,
+so the mass flux through the boundary is equal to zero as weel as the convective flux of all variables is equal to zero. The diffusive fluxes
+of all scalar quantities is also equal to zero since the scalar gradients normal to the symmetry boundary are zero.
+
+\subsection{Advantages of a fully coupled and a sequential solution of NSE}
+
+A fully coupled sequential solution of the Navier-Stokes equations involves solving the equations step by step, with feedback between the 
+pressure and velocity fields at each time step. The advantage of this approach is that coupling ensures that the pressure and velocity fields
+are adjusted iteratively to maintain physical consistency, which can improve stability compared to uncoupled methods where only individual 
+variables are solved separately.
+
 
 \begin{thebibliography}{9}
   \bibitem{GitHubRepo}
