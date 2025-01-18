@@ -163,6 +163,124 @@ which implies unconditional stability.
 \subsection{Convergence proof}
 Since the scheme is both consistent and stable, for the Lax equivalence theorem, the scheme is convergent.
 
+\section{Explicit Euler Scheme for the Diffusion Equation}
+
+\subsection{Discretization}
+The two-dimensional diffusion equation is given as:
+\begin{equation}
+\frac{\partial \Phi}{\partial t} = \alpha \left( \frac{\partial^2 \Phi}{\partial x^2} + \frac{\partial^2 \Phi}{\partial y^2} \right).
+\end{equation}
+
+Using the explicit Euler method, we approximate the time derivative as:
+\begin{equation}
+\frac{\partial \Phi}{\partial t} \approx \frac{\Phi_{i,j}^{n+1} - \Phi_{i,j}^n}{\Delta t}.
+\end{equation}
+Here, \( \Phi_{i,j}^n \) represents the value of \( \Phi \) at grid point \( (i, j) \) at time step \( n \), and \( \Delta t \) is the time step size.
+
+Rewriting the time derivative, we get:
+\begin{equation}
+\Phi_{i,j}^{n+1} = \Phi_{i,j}^n + \Delta t \cdot \alpha \left( \frac{\partial^2 \Phi}{\partial x^2} + \frac{\partial^2 \Phi}{\partial y^2} \right).
+\end{equation}
+
+For the second-order derivatives in space, we use central finite differencing. The second derivative in the \( x \)-direction is approximated as:
+\begin{equation}
+\frac{\partial^2 \Phi}{\partial x^2} \approx \frac{\Phi_{i+1,j}^n - 2\Phi_{i,j}^n + \Phi_{i-1,j}^n}{\Delta x^2}.
+\end{equation}
+Similarly, the second derivative in the \( y \)-direction is approximated as:
+\begin{equation}
+\frac{\partial^2 \Phi}{\partial y^2} \approx \frac{\Phi_{i,j+1}^n - 2\Phi_{i,j}^n + \Phi_{i,j-1}^n}{\Delta y^2}.
+\end{equation}
+
+Substitute the spatial discretizations into the equation for \( \Phi_{i,j}^{n+1} \):
+\begin{equation}
+\Phi_{i,j}^{n+1} = \Phi_{i,j}^n + \alpha \Delta t \left( \frac{\Phi_{i+1,j}^n - 2\Phi_{i,j}^n + \Phi_{i-1,j}^n}{\Delta x^2} + \frac{\Phi_{i,j+1}^n - 2\Phi_{i,j}^n + \Phi_{i,j-1}^n}{\Delta y^2} \right).
+\end{equation}
+
+\subsection{ Consistency}
+The goal is to prove that the explicit Euler discretization for the two-dimensional diffusion equation is consistent. This involves showing that the truncation error \( T \) vanishes as \( \Delta t \to 0 \), \( \Delta x \to 0 \), and \( \Delta y \to 0 \).
+
+Rewriting the discretized form, we have:
+\begin{equation}
+\frac{\Phi_{i,j}^{n+1} - \Phi_{i,j}^n}{\Delta t} = \alpha \left( \frac{\Phi_{i+1,j}^n - 2\Phi_{i,j}^n + \Phi_{i-1,j}^n}{\Delta x^2} + \frac{\Phi_{i,j+1}^n - 2\Phi_{i,j}^n + \Phi_{i,j-1}^n}{\Delta y^2} \right).
+\end{equation}
+
+Expand the neighboring points \( \Phi_{i+1,j}^n, \Phi_{i-1,j}^n, \Phi_{i,j+1}^n, \Phi_{i,j-1}^n \) using Taylor series about \( \Phi_{i,j}^n \):
+\begin{align}
+\Phi_{i+1,j}^n &= \Phi_{i,j}^n + \Delta x \frac{\partial \Phi}{\partial x} + \frac{\Delta x^2}{2} \frac{\partial^2 \Phi}{\partial x^2} + \frac{\Delta x^3}{6} \frac{\partial^3 \Phi}{\partial x^3} + \cdots, \\
+\Phi_{i-1,j}^n &= \Phi_{i,j}^n - \Delta x \frac{\partial \Phi}{\partial x} + \frac{\Delta x^2}{2} \frac{\partial^2 \Phi}{\partial x^2} - \frac{\Delta x^3}{6} \frac{\partial^3 \Phi}{\partial x^3} + \cdots.
+\end{align}
+
+Similarly, for the \( y \)-direction:
+\begin{align}
+\Phi_{i,j+1}^n &= \Phi_{i,j}^n + \Delta y \frac{\partial \Phi}{\partial y} + \frac{\Delta y^2}{2} \frac{\partial^2 \Phi}{\partial y^2} + \frac{\Delta y^3}{6} \frac{\partial^3 \Phi}{\partial y^3} + \cdots, \\
+\Phi_{i,j-1}^n &= \Phi_{i,j}^n - \Delta y \frac{\partial \Phi}{\partial y} + \frac{\Delta y^2}{2} \frac{\partial^2 \Phi}{\partial y^2} - \frac{\Delta y^3}{6} \frac{\partial^3 \Phi}{\partial y^3} + \cdots.
+\end{align}
+
+Substitute the Taylor expansions into the spatial discretization terms:
+\begin{align}
+\frac{\Phi_{i+1,j}^n - 2\Phi_{i,j}^n + \Phi_{i-1,j}^n}{\Delta x^2} &= \frac{\partial^2 \Phi}{\partial x^2} + \frac{\Delta x^2}{12} \frac{\partial^4 \Phi}{\partial x^4} + \mathcal{O}(\Delta x^4), \\
+\frac{\Phi_{i,j+1}^n - 2\Phi_{i,j}^n + \Phi_{i,j-1}^n}{\Delta y^2} &= \frac{\partial^2 \Phi}{\partial y^2} + \frac{\Delta y^2}{12} \frac{\partial^4 \Phi}{\partial y^4} + \mathcal{O}(\Delta y^4).
+\end{align}
+
+The residual (truncation error \( T \)) when substituting the discretized equation into the original PDE is:
+\begin{equation}
+T = \frac{\Phi_{i,j}^{n+1} - \Phi_{i,j}^n}{\Delta t} - \alpha \left( \frac{\partial^2 \Phi}{\partial x^2} + \frac{\partial^2 \Phi}{\partial y^2} \right).
+\end{equation}
+
+From the Taylor expansions, the leading terms of \( T \) are:
+\begin{equation}
+T = \Delta t \frac{\partial^2 \Phi}{\partial t^2} + \frac{\Delta x^2}{12} \frac{\partial^4 \Phi}{\partial x^4} + \frac{\Delta y^2}{12} \frac{\partial^4 \Phi}{\partial y^4} + \mathcal{O}(\Delta t^2, \Delta x^4, \Delta y^4).
+\end{equation}
+
+As \( \Delta t \to 0 \), \( \Delta x \to 0 \), and \( \Delta y \to 0 \), the truncation error \( T \to 0 \). Thus, the scheme is consistent.
+
+\subsection{ Stability Analysis using the Von Neumann Method}
+We assume a Fourier mode solution of the form:
+\begin{equation}
+\Phi_{i,j}^n = G^n e^{I(k_x i \Delta x + k_y j \Delta y)},
+\end{equation}
+
+We substitute the assumed solution into the discretized equation. For neighboring terms in the \( x \)-direction:
+\begin{align}
+\Phi_{i+1,j}^n &= G^n e^{I k_x (i+1) \Delta x} = G^n e^{I k_x \Delta x} e^{I k_x i \Delta x}, \\
+\Phi_{i-1,j}^n &= G^n e^{I k_x (i-1) \Delta x} = G^n e^{-I k_x \Delta x} e^{I k_x i \Delta x}.
+\end{align}
+For the \( y \)-direction:
+\begin{align}
+\Phi_{i,j+1}^n &= G^n e^{I k_y (j+1) \Delta y} = G^n e^{I k_y \Delta y} e^{I k_y j \Delta y}, \\
+\Phi_{i,j-1}^n &= G^n e^{I k_y (j-1) \Delta y} = G^n e^{-I k_y \Delta y} e^{I k_y j \Delta y}.
+\end{align}
+
+Substituting these into the discretized equation, we have:
+\begin{align}
+G \Phi_{i,j}^n &= \Phi_{i,j}^n + \alpha \Delta t \bigg[
+\frac{\Phi_{i,j}^n (e^{I k_x \Delta x} + e^{-I k_x \Delta x} - 2)}{\Delta x^2} \nonumber \\
+&\quad + \frac{\Phi_{i,j}^n (e^{I k_y \Delta y} + e^{-I k_y \Delta y} - 2)}{\Delta y^2}
+\bigg].
+\end{align}
+
+Using the identity \( e^{I \theta} + e^{-I \theta} = 2 \cos \theta \), we simplify:
+\begin{align}
+G \Phi_{i,j}^n &= \Phi_{i,j}^n + \alpha \Delta t \Phi_{i,j}^n \left[
+\frac{2 \cos(k_x \Delta x) - 2}{\Delta x^2} + \frac{2 \cos(k_y \Delta y) - 2}{\Delta y^2}
+\right].
+\end{align}
+
+Divide through by \( \Phi_{i,j}^n \) (which is non-zero):
+\begin{equation}
+G = 1 + 2 \alpha \Delta t \left[
+\frac{\cos(k_x \Delta x) - 1}{\Delta x^2} + \frac{\cos(k_y \Delta y) - 1}{\Delta y^2}
+\right].
+\end{equation}
+
+The method is stable if \( |G| \leq 1 \). Since \( \cos \theta \leq 1 \), the terms \( \cos(k_x \Delta x) - 1 \) and \( \cos(k_y \Delta y) - 1 \) are always \( \leq 0 \). To ensure stability, the magnitude of the amplification factor \( G \) must not exceed 1. This leads to the stability criterion:
+\begin{equation}
+\alpha \Delta t \left( \frac{1}{\Delta x^2} + \frac{1}{\Delta y^2} \right) \leq \frac{1}{2}.
+\end{equation}
+
+\subsection{ Convergence}
+Since the scheme is both consistent and stable, for the Lax equivalence theorem, the scheme is convergent.
+
 \section{Finite-volume method}
 
 \subsection{Co-located grid}
