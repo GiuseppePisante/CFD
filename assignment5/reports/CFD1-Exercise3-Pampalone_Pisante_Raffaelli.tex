@@ -422,6 +422,139 @@ pressure and velocity fields at each time step. The advantage of this approach i
 are adjusted iteratively to maintain physical consistency, which can improve stability compared to uncoupled methods where only individual 
 variables are solved separately.
 
+\section{Correspondence between finite-volume and finite-difference methods}
+
+\subsection{Constant $\alpha$:}
+Given the one-dimensional unsteady diffusion equation:
+\begin{equation}
+  \frac{\partial u}{\partial t} = \frac{\partial}{\partial x} \left( \alpha \frac{\partial u}{\partial x} \right)
+\end{equation}
+we can obtain its semi-discretization using the finite-volume method with CDS formulation as shown below.
+
+First we integrate over a control volume $\left[x_{i-1/2}, x_{i+1/2}\right]$:
+\begin{equation}
+  \int_{x_{i-1/2}}^{x_{i+1/2}} \frac{\partial u}{\partial t} \, dx = \int_{x_{i-1/2}}^{x_{i+1/2}} \frac{\partial}{\partial x} \left( \alpha \frac{\partial u}{\partial x} \right) \, dx.
+\end{equation}
+The time derivative term can be simplified as follows:
+\[
+\int_{x_{i-1/2}}^{x_{i+1/2}} \frac{\partial u}{\partial t} dx \approx \Delta x \frac{\partial u_i}{\partial t}
+\]
+while for the diffusion term we use the divergence theorem:
+\[
+  \int_{x_{i-1/2}}^{x_{i+1/2}} \frac{\partial}{\partial x} \left( \alpha \frac{\partial u}{\partial x} \right) \, dx \approx \left[ \alpha \frac{\partial u}{\partial x} \right]_{x_{i+1/2}} - \left[ \alpha \frac{\partial u}{\partial x} \right]_{x_{i-1/2}}.
+\]
+
+Then we discretize the fluxes using a centrale difference scheme for $\frac{\partial u}{\partial x}$:
+\begin{align}
+  \left[ \alpha \frac{\partial u}{\partial x} \right]_{x_{i+1/2}} &\approx \alpha \frac{u_{i+1} - u_i}{\Delta x}, \\
+  \left[ \alpha \frac{\partial u}{\partial x} \right]_{x_{i-1/2}} &\approx \alpha \frac{u_i - u_{i-1}}{\Delta x}.
+\end{align}
+
+In the end we substitute these expressions into the diffusion term and we obtain:
+\begin{equation} \label{FVM}
+  \Delta x \frac{\partial u_i}{\partial t} = \frac{\alpha}{\Delta x} \left( u_{i+1} - 2u_i + u_{i-1} \right).
+\end{equation}
+
+Now we perform the semi discretization with the finite-difference method.
+The time derivative is approximated simply as:
+\begin{equation}
+  \frac{\partial u}{\partial t} \approx \frac{\partial u_i}{\partial t}.
+\end{equation}
+
+The second derivative in space is approximated using the central difference scheme:
+\begin{equation}
+  \frac{\partial^2 u}{\partial x^2} \approx \frac{u_{i+1} - 2u_i + u_{i-1}}{\Delta x^2}.
+\end{equation}
+
+Substituting these approximations into the original equation, we obtain:
+\begin{equation}
+  \frac{\partial u_i}{\partial t} = \alpha \frac{u_{i+1} - 2u_i + u_{i-1}}{\Delta x^2}.
+\end{equation}
+
+In order to compare the finite-volume and finite-difference methods, we divide the equation \eqref{FVM} by $\Delta x$:
+\begin{equation}
+  \frac{\partial u_i}{\partial t} = \alpha \frac{u_{i+1} - 2u_i + u_{i-1}}{\Delta x^2}.
+\end{equation}
+
+This shows that the finite-volume and finite-difference methods yield the same discretized form of the one-dimensional unsteady diffusion equation for constant $\alpha$ and uniform grid spacing.
+
+\subsection{Variable $\alpha (x)$:}
+We start with the one-dimensional unsteady diffusion equation:
+\begin{equation}
+\frac{\partial u}{\partial t} = \frac{\partial}{\partial x} \left( \alpha(x) \frac{\partial u}{\partial x} \right),
+\end{equation}
+where \(\alpha = \alpha(x)\) is a spatially varying diffusion coefficient.
+
+We get the semi-discretization using the finite-volume method as follows.
+First we integrate the equation over a control volume \( [x_{i-1/2}, x_{i+1/2}] \):
+\begin{equation}
+\int_{x_{i-1/2}}^{x_{i+1/2}} \frac{\partial u}{\partial t} \, dx = \int_{x_{i-1/2}}^{x_{i+1/2}} \frac{\partial}{\partial x} \left( \alpha(x) \frac{\partial u}{\partial x} \right) \, dx.
+\end{equation}
+
+The time derivative term is approximated as:
+\begin{equation}
+  \int_{x_{i-1/2}}^{x_{i+1/2}} \frac{\partial u}{\partial t} \, dx \approx \Delta x \frac{\partial u_i}{\partial t}.
+  \end{equation}
+
+For the diffusion term we use the divergence theorem:
+\begin{equation}
+  \int_{x_{i-1/2}}^{x_{i+1/2}} \frac{\partial}{\partial x} \left( \alpha(x) \frac{\partial u}{\partial x} \right) \, dx = \left[ \alpha \frac{\partial u}{\partial x} \right]_{x_{i+1/2}} - \left[ \alpha \frac{\partial u}{\partial x} \right]_{x_{i-1/2}}.
+  \end{equation}
+
+Then we approximate the fluxes using a central difference scheme as described below.
+In particular the flux at \( x_{i+1/2} \) is approximated as:
+\begin{equation}
+\left[ \alpha \frac{\partial u}{\partial x} \right]_{x_{i+1/2}} \approx \alpha_{i+1/2} \frac{u_{i+1} - u_i}{\Delta x},
+\end{equation}
+and at \( x_{i-1/2} \):
+\begin{equation}
+\left[ \alpha \frac{\partial u}{\partial x} \right]_{x_{i-1/2}} \approx \alpha_{i-1/2} \frac{u_i - u_{i-1}}{\Delta x}.
+\end{equation}
+Here, \(\alpha_{i+1/2}\) and \(\alpha_{i-1/2}\) are interpolated as:
+\begin{equation}
+\alpha_{i+1/2} = \frac{\alpha_i + \alpha_{i+1}}{2}, \quad \alpha_{i-1/2} = \frac{\alpha_i + \alpha_{i-1}}{2}.
+\end{equation}
+
+We combine these expressions into the diffusion term and obtain:
+\begin{equation}
+  \int_{x_{i-1/2}}^{x_{i+1/2}} \frac{\partial}{\partial x} \left( \alpha(x) \frac{\partial u}{\partial x} \right) \, dx \approx \frac{\alpha_{i+1/2} (u_{i+1} - u_i) - \alpha_{i-1/2} (u_i - u_{i-1})}{\Delta x}.
+  \end{equation}
+
+Finally, we substitute these approximations into the original equation, we divide by \( \Delta x \) and obtain:
+\begin{equation}
+  \frac{\partial u_i}{\partial t} = \frac{1}{\Delta x^2} \left[ \alpha_{i+1/2} (u_{i+1} - u_i) - \alpha_{i-1/2} (u_i - u_{i-1}) \right].
+\end{equation}
+
+
+Now we perform the semi-discretization with the finite-difference method.
+The second derivative is approximated using central differences:
+\[
+\frac{\partial}{\partial x} \left( \alpha(x) \frac{\partial u}{\partial x} \right) \bigg|_i \approx \frac{\alpha_{i+1/2} \frac{u_{i+1} - u_i}{\Delta x} - \alpha_{i-1/2} \frac{u_i - u_{i-1}}{\Delta x}}{\Delta x}.
+\]
+Simplifying, the semi-discretized FDM equation becomes:
+\begin{equation}
+\frac{\partial u_i}{\partial t} = \frac{1}{\Delta x^2} \left[ \alpha_{i+1/2} (u_{i+1} - u_i) - \alpha_{i-1/2} (u_i - u_{i-1}) \right].
+\end{equation}
+
+Thus, the FVM and FDM equations are equivalent for second-order accuracy.
+
+In order to show how the flux terms in FVM reduce to the central difference approximations used in FDM we can exploit che given identity: \(a - b \equiv \frac{(a - 2b + c)}{2} + \frac{(a - c)}{2}\).
+We first use apply it to to \( \alpha_{i+1/2} (u_{i+1} - u_i) \):
+\[
+u_{i+1} - u_i = \frac{(u_{i+1} - 2u_i + u_{i-1})}{2} + \frac{(u_{i+1} - u_{i-1})}{2}.
+\]
+Then we substitute this expression into the flux term:
+\[
+\alpha_{i+1/2} (u_{i+1} - u_i) = \alpha_{i+1/2} \left[ \frac{(u_{i+1} - 2u_i + u_{i-1})}{2} + \frac{(u_{i+1} - u_{i-1})}{2} \right].
+\]
+
+We repeat the same procedure for \( \alpha_{i-1/2} (u_i - u_{i-1}) \).
+
+Using the suggested equivalence, the FVM and FDM formulations reduce to the same semi-discretized equation for second-order accuracy:
+\[
+\frac{\partial u_i}{\partial t} = \frac{1}{\Delta x^2} \left[ \alpha_{i+1/2} (u_{i+1} - u_i) - \alpha_{i-1/2} (u_i - u_{i-1}) \right].
+\].
+
 
 \begin{thebibliography}{9}
   \bibitem{GitHubRepo}
