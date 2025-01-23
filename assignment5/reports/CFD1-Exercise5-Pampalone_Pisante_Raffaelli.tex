@@ -7,7 +7,7 @@
 \usepackage{float}
 
 % Title, date, and author
-\title{Exercise 5}
+\title{Exercise 3}
 \author{Your Name, Collaborator's Name}
 \date{\today}
 
@@ -44,6 +44,7 @@
 
 \newpage
 \small
+
 \section{Implicit Euler scheme for diffusion equation}
 \subsection{Discretization}
 Recalling the general form of the implicit Euler method:
@@ -421,7 +422,6 @@ A fully coupled sequential solution of the Navier-Stokes equations involves solv
 pressure and velocity fields at each time step. The advantage of this approach is that coupling ensures that the pressure and velocity fields
 are adjusted iteratively to maintain physical consistency, which can improve stability compared to uncoupled methods where only individual 
 variables are solved separately.
-
 \section{Correspondence between finite-volume and finite-difference methods}
 
 \subsection{Constant $\alpha$:}
@@ -556,15 +556,20 @@ Using the suggested equivalence, the FVM and FDM formulations reduce to the same
 \].
 
 
-\begin{thebibliography}{9}
-  \bibitem{GitHubRepo}
-  \textit{CFD Repository},\\
-  Available at: \url{https://github.com/GiuseppePisante/CFD.git}
-  
-  \bibitem{GitHubCopilot}
-  \textit{GitHub Copilot},\\
-  GitHub. Available at: \url{https://github.com/features/copilot}
-  
-\end{thebibliography}
 
-\end{document}
+\begin{thebibliography}{9}
+    \bibitem{GitHubRepo}
+    \textit{CFD Repository},\\
+    Available at: \url{https://github.com/GiuseppePisante/CFD.git}
+    
+    \bibitem{GitHubCopilot}
+    \textit{GitHub Copilot},\\
+    GitHub. Available at: \url{https://github.com/features/copilot}
+    
+    \bibitem{HeatEquation}
+    MIT OpenCourseWare,\\
+    \textit{Heat Equation Notes}, 2006,\\
+    Available at: \url{https://ocw.mit.edu/courses/18-303-linear-partial-differential-equations-fall-2006/d11b374a85c3fde55ec971fe587f8a50_heateqni.pdf},\\
+  \end{thebibliography}
+  
+  \end{document}
