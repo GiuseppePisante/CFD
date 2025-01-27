@@ -9,78 +9,60 @@ def simple_solver(u,v,p,u_star,v_star,u_new,v_new,p_new,pc,d_n,d_e,N,nu,b,h):
     it=0
     itermax=100
     tol = 1e-2
-    a_E = np.zeros((N, N))
-    a_W = np.zeros((N, N))
-    a_N = np.zeros((N, N))
-    a_S = np.zeros((N, N))
-    a_P = np.zeros((N, N))
 
     while ((err > tol) & (it<itermax)):
+
         for i in range(1, N-1):  # Loop over internal cells
             for j in range(1, N-1):
                 # Interpolated face velocities
                 u_E = 0.5*(u[i,j] + u[i,j+1])
                 u_W = 0.5*(u[i,j] + u[i,j-1])
-                v_N = 0.5*(v[i-1,j] + v[i-1,j+1])
-                v_S = 0.5*(v[i,j] + v[i,j+1])
+                v_N = 0.5*(v[i,j+1] + v[i,j])
+                v_S = 0.5*(v[i,j-1] + v[i,j])
 
                 # Coefficients (Convective and Diffusive)
-                a_E[i,j] = -0.5 * u_E * h + nu / h
-                a_W[i,j] = 0.5 * u_W * h + nu / h
-                a_N[i,j] = -0.5 * v_N * h + nu / h
-                a_S[i,j] = 0.5 * v_S * h + nu / h
+                a_C = 0.5 * u_E * h - 0.5 * u_W * h + 0.5 * v_S * h - 0.5 * v_N * h
+                a_N= -0.5 * v_N * h + nu
+                a_S = 0.5 * v_S * h + nu
+                a_E = - 0.5 * u_W * h - nu
+                a_W = 0.5 * u_E * h - nu
                 
-                a_P[i,j] = a_E[i,j] + a_W[i,j] + a_N[i,j] + a_S[i,j]  # Central coefficient
-
-                d_e[i, j] = -h / a_P[i,j]
+                b= h * (p[i,j+1] - p[i,j])
 
                 # Momentum equation (Intermediate u*)
-                u_star_mid = (a_E[i,j] * u[i, j+1] + a_W[i,j] * u[i, j-1] +
-                            a_N[i,j] * u[i-1, j] + a_S[i,j] * u[i+1, j]) / a_P[i,j] + \
-                            d_e[i, j] * (p[i, j+1] - p[i, j]) / h
-
-                # Apply under-relaxation
-                u_star[i, j] = (1 - alpha) * u[i, j] + alpha * u_star_mid
-
-        # Boundary Conditions
-        u_star[0, :] = 2 - u_star[1, :]  # Lid-driven cavity top wall
-        u_star[N-1, :] = -u_star[N-2, :]  # Bottom wall
-        u_star[:, 0] = 0  # Left wall
-        u_star[:, N-1] = 0  # Right wall
-    
-
-
+                u_star[i,j] = (a_E * u[i,j+1] + a_W * u[i,j-1] + a_S * u[i-1,j] + a_N * u[i+1,j] + b) / a_C
 
         for i in range(1, N-1):  # Loop over internal cells
             for j in range(1, N-1):
                 # Interpolated face velocities
-                u_E = 0.5*(u[i,j] + u[i+1,j])
-                u_W = 0.5*(u[i,j-1] + u[i+1,j-1])
-                v_N = 0.5*(v[i-1,j] + v[i,j])
-                v_S = 0.5*(v[i,j] + v[i+1,j])
+                u_E = 0.5*(u[i,j] + u[i,j+1])
+                u_W = 0.5*(u[i,j] + u[i,j-1])
+                v_N = 0.5*(v[i,j+1] + v[i,j])
+                v_S = 0.5*(v[i,j-1] + v[i,j])
 
                 # Coefficients (Convective and Diffusive)
-                a_E[i,j] = -0.5 * u_E * h + nu / h
-                a_W[i,j] = 0.5 * u_W * h + nu / h
-                a_N[i,j] = -0.5 * v_N * h + nu / h
-                a_S[i,j] = 0.5 * v_S * h + nu / h
+                a_C = 0.5 * v_S * h - 0.5 * v_N * h + 0.5 * u_E * h - 0.5 * u_W * h 
+                a_N= -0.5 * v_N * h + nu
+                a_S = 0.5 * v_S * h + nu
+                a_E= 0.5 * u_E * h - nu
+                a_W = -0.5 * u_W * h - nu
+                
+                b = h * (p[i+1,j] - p[i,j])
 
-                a_P[i,j] = a_E[i,j] + a_W[i,j] + a_N[i,j] + a_S[i,j]  # Central coefficient
-                d_n[i, j] = -h / a_P[i,j]
+                # Momentum equation (Intermediate u*)
+                v_star[i,j]= (a_E * v[i,j+1] + a_W * v[i,j-1] + a_S * v[i-1,j] + a_N * v[i+1,j] + b) / a_C
 
-                # Momentum equation (Intermediate v*)
-                v_star_mid = (a_E[i,j] * v[i, j+1] + a_W[i,j] * v[i, j-1] +
-                            a_N[i,j] * v[i-1, j] + a_S[i,j] * v[i+1, j]) / a_P[i,j] + \
-                            d_n[i, j] * (p[i, j] - p[i-1, j]) / h
-
-                # Apply under-relaxation
-                v_star[i, j] = (1 - alpha) * v[i, j] + alpha * v_star_mid
+        # Boundary conditions
+        u_star[0, :] = u_star[1,:]/3
+        u_star[N - 1, :] = 2/3 - u_star[N - 2,:]/3
+        u_star[0 : N -2,0] = 0
+        u_star[1 : N - 2, N] = 0
 
         # Boundary Conditions for v
-        v_star[:, 0] = 0  # Left wall
-        v_star[:, N-1] = 0  # Right wall
-        v_star[0, :] = -v_star[1, :]  # Top wall
-        v_star[N-1, :] = -v_star[N-2, :]  # Bottom wal
+        v_star[1 : N - 1, 0] = v_star[1 : N - 1, 1]/3  # Left wall
+        v_star[1 : N - 1, N - 1] = v_star[1 : N - 1, N - 2]/3  # Right wall
+        v_star[0, :] = 0  # Top wall
+        v_star[N, :] = 0  # Bottom wall
 
         # Correction term (Initialization)
         pc[0:N, 0:N] = 0
@@ -91,8 +73,7 @@ def simple_solver(u,v,p,u_star,v_star,u_new,v_new,p_new,pc,d_n,d_e,N,nu,b,h):
                 b[i, j] = -((u_star[i, j] - u_star[i, j-1]) / h + (v_star[i, j] - v_star[i-1, j]) / h)
  
         # Interior pressure correction
-        print(f"The error is {err}")
-        pc = solve_pressure_correction(pc, b, a_E, a_W, a_N, a_S, a_P, alpha_p, p, d_e, d_n, h, max_iter=100, tol=1e-6)
+        pc = solve_pressure_correction(pc, b, a_E, a_W, a_N, a_S, a_C, alpha_p, p, d_e, d_n, h, max_iter=100, tol=1e-6)
 
         # Pressure field Correction
         p_new[1:N, 1:N] = p[1:N, 1:N] + alpha_p * pc[1:N, 1:N]
@@ -150,11 +131,11 @@ def Solver(N,L,RE):
     p_final = np.zeros([N,N])
 
     u_final[0,:] = 1
-    u = np.zeros([N+1,N])
-    u_star = np.zeros([N+1,N])
+    u = np.zeros([N,N+1])
+    u_star = np.zeros([N,N+1])
     d_e = np.zeros([N+1,N])
-    v = np.zeros([N,N+1])
-    v_star = np.zeros([N,N+1])
+    v = np.zeros([N+1,N])
+    v_star = np.zeros([N+1,N])
     d_n = np.zeros([N,N+1])
     p= np.zeros([N+1,N+1])
     p_star = np.zeros([N+1,N+1])
