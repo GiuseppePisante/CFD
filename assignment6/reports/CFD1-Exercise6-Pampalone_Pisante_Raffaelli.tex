@@ -1,0 +1,210 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{titlesec}
+\usepackage{graphicx}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{float}
+
+% Title, date, and author
+\title{Exercise 6}
+\author{Your Name, Collaborator's Name}
+\date{\today}
+
+\titleformat{\section}
+  {\normalfont\normalsize\bfseries} % Format: font style, size, and weight
+  {\thesection}{1em} % Label format and spacing
+  {}
+  \renewcommand{\thesubsection}{\thesection.\alph{subsection}}
+
+\titleformat{\subsection}
+  {\normalfont\small\bfseries} % Format: font style, size, and weight
+  {\thesubsection}{1em} % Label format and spacing
+  {}
+\titleformat{\subsubsection}
+  {\normalfont\small\bfseries} % Format: font style, size, and weight
+  {\thesubsubsection}{1em} % Label format and spacing
+  {}
+
+\begin{document}
+\begin{titlepage}
+    \centering
+    \vspace*{1in}
+    
+    {\Huge\bfseries Exercise 6\par}
+    \vspace{1.5cm}
+    {\Large \today\par}
+    \vspace{1.5cm}
+    {\Large\itshape Antonio Pampalone 23586519 \\ Giuseppe Pisante 23610012\\ Martina Raffaelli 23616907 \par}
+    
+    \vfill
+    \includegraphics[width=0.3\textwidth]{FAU-Logo.png}\par\vspace{1cm} % Adjust the width as needed
+   
+\end{titlepage}
+
+\newpage
+\small
+
+\section{Finite-difference method on a non-uniform grip}
+
+\subsection{Transformation from from physical space into computational space}
+Using the chain rule, the first derivative of \(\Phi\) with respect to \(x\) is given by:
+
+\[
+\frac{d\Phi}{dx} = \frac{d\Phi}{d\xi} \cdot \frac{d\xi}{dx}
+\]
+Since we assume that \(\xi\) is the computational space where grid points are equally spaced, we express \( d\xi/dx \) in terms of \( x \):
+
+\[
+\frac{d\xi}{dx} = \frac{1}{\frac{dx}{d\xi}}
+\]
+Substituting this into the previous equation:
+
+\[
+\frac{d\Phi}{dx} = \frac{d\Phi}{d\xi} \cdot \frac{1}{\frac{dx}{d\xi}}
+\]
+Thus, we obtain the compact form:
+
+\begin{equation}
+\frac{d\Phi}{dx} = \frac{\frac{d\Phi}{d\xi}}{\frac{dx}{d\xi}}.
+\end{equation}
+The second derivative is defined as:
+
+\[
+\frac{d^2\Phi}{dx^2} = \frac{d}{dx} \left( \frac{d\Phi}{dx} \right).
+\]
+Substituting \(\frac{d\Phi}{dx} = \frac{\frac{d\Phi}{d\xi}}{\frac{dx}{d\xi}}\):
+
+\[
+\frac{d^2\Phi}{dx^2} = \frac{d}{dx} \left( \frac{\frac{d\Phi}{d\xi}}{\frac{dx}{d\xi}} \right).
+\]
+Using the chain rule:
+
+\[
+\frac{d^2\Phi}{dx^2} = \frac{d}{d\xi} \left( \frac{\frac{d\Phi}{d\xi}}{\frac{dx}{d\xi}} \right) \cdot \frac{d\xi}{dx}.
+\]
+Again, substituting \( \frac{d\xi}{dx} = \frac{1}{\frac{dx}{d\xi}} \), we get:
+
+\[
+\frac{d^2\Phi}{dx^2} = \frac{\frac{d}{d\xi} \left( \frac{\frac{d\Phi}{d\xi}}{\frac{dx}{d\xi}} \right)}{\frac{dx}{d\xi}}.
+\]
+Now, applying the quotient rule to differentiate:
+
+\[
+\frac{d}{d\xi} \left( \frac{\frac{d\Phi}{d\xi}}{\frac{dx}{d\xi}} \right) =
+\frac{\frac{d^2\Phi}{d\xi^2} \cdot \frac{dx}{d\xi} - \frac{d\Phi}{d\xi} \cdot \frac{d^2x}{d\xi^2}}{\left( \frac{dx}{d\xi} \right)^2}.
+\]
+Substituting this result:
+
+\[
+\frac{d^2\Phi}{dx^2} = \frac{\frac{\frac{d^2\Phi}{d\xi^2} \cdot \frac{dx}{d\xi} - \frac{d\Phi}{d\xi} \cdot \frac{d^2x}{d\xi^2}}{\left( \frac{dx}{d\xi} \right)^2}}{\frac{dx}{d\xi}}.
+\]
+Multiplying by \( \frac{1}{\frac{dx}{d\xi}} \), we obtain:
+
+\begin{equation}
+\frac{d^2\Phi}{dx^2} = \frac{\frac{d^2\Phi}{d\xi^2}}{\left( \frac{dx}{d\xi} \right)^2} - \frac{\frac{d^2x}{d\xi^2} \cdot \frac{d\Phi}{dx}}{\left( \frac{dx}{d\xi} \right)^2}.
+\end{equation}
+These expressions can be used to transform differential equations from physical space into computational space.
+
+\subsection{Non-uniform grid}
+Non-uniform grids are often used because they allow for adaptive resolution in areas where higher accuracy or detail is needed 
+such as boundary layers, shocks, or vortices without increasing computational cost significantly across the entire domain. 
+By refining the grid only where necessary, non-uniform grids reduce the number of total grid points, saving memory and computational time.
+Furthermore non-uniform grids are better suited for domains with irregular or complex geometries since the grid can better conform to 
+the shape of the domain, improving accuracy in boundary condition enforcement.
+
+\subsection{Central finite-difference approximation on an non-equispaced grid}
+To derive central finite-difference approximations for the first and second derivatives in the computational space \(\xi\) with second-order 
+accuracy, we start from equation (1) and (2). For the first derivative we start computing the central finite-difference approximation for the term:
+
+\[
+\frac{d\Phi}{d\xi} \approx \frac{\Phi_{i+1} - \Phi_{i-1}}{2\Delta \xi},
+\]
+where \(\Delta \xi = 1\). Here \(\frac{dx}{d\xi}\) is computed based on the grid points \(x_i\).
+
+\[
+\frac{dx}{d\xi} \approx \frac{x_{i+1} - x_{i-1}}{2\Delta \xi}.
+\]
+Substituting into the equation (1) we get:
+
+\begin{equation}
+\frac{d\Phi}{dx} \approx \frac{\frac{\Phi_{i+1} - \Phi_{i-1}}{2}}{\frac{x_{i+1} - x_{i-1}}{2}} = \frac{\Phi_{i+1} - \Phi_{i-1}}{x_{i+1} - x_{i-1}}.
+\end{equation}
+Similary, to derive an approximation for the second derivative, we start computing the central finite-difference approximation for the term:
+
+\[
+\frac{d^2\Phi}{d\xi^2} \approx \frac{\Phi_{i+1} - 2\Phi_i + \Phi_{i-1}}{\Delta \xi^2}.
+\]
+where \(\Delta \xi = 1\). Here \(\frac{d^2x}{d\xi^2}\) is computed based on the grid points \(x_i\).
+
+\[
+\frac{d^2x}{d\xi^2} \approx x_{i+1} - 2x_i + x_{i-1}.
+\]
+Substituting into the equation (2) we get:
+
+\begin{equation}
+\frac{d^2\Phi}{dx^2} \approx \frac{\Phi_{i+1} - 2\Phi_i + \Phi_{i-1}}{\left(\frac{x_{i+1} - x_{i-1}}{2}\right)^2} - \frac{\left(x_{i+1} - 2x_i + x_{i-1}\right) \cdot \frac{\Phi_{i+1} - \Phi_{i-1}}{x_{i+1} - x_{i-1}}}{\left(\frac{x_{i+1} - x_{i-1}}{2}\right)^2}.
+\end{equation}
+
+\subsection{Discretized steady one-dimensional advection-diffusion equation}
+Using central finite-difference approximations for the first and second derivatives on a non-uniform grid, we want to discretize 
+the steady one-dimensional advection-diffusion equation. Substituting equation (3) and (4) into the advection-diffusion equation leads to:
+\[
+\frac{\Phi_{i+1} - \Phi_{i-1}}{x_{i+1} - x_{i-1}} = \frac{1}{\text{Pe}} \left[ \frac{\Phi_{i+1} - 2\Phi_i + \Phi_{i-1}}{\left(\frac{x_{i+1} - x_{i-1}}{2}\right)^2} - \frac{\left(x_{i+1} - 2x_i + x_{i-1}\right) \cdot \frac{\Phi_{i+1} - \Phi_{i-1}}{x_{i+1} - x_{i-1}}}{\left(\frac{x_{i+1} - x_{i-1}}{2}\right)^2} \right].
+\]
+Rearranging the above equation, the discretized equation for an interior point \(i\) becomes:
+
+\[
+a_{i-1} \Phi_{i-1} + b_i \Phi_i + c_{i+1} \Phi_{i+1} = 0,
+\]
+where:
+\[
+a_{i-1} = \frac{-1}{\Delta x_i} + \frac{1}{\text{Pe}} \left( \frac{1}{\Delta x_i^2} - \frac{x_{i+1} - 2x_i + x_{i-1}}{\Delta x_i^2} \right),
+\]
+\[
+b_i = \frac{2}{\text{Pe} \cdot \Delta x_i^2},
+\]
+\[
+c_{i+1} = \frac{1}{\Delta x_i} + \frac{1}{\text{Pe}} \left( \frac{1}{\Delta x_i^2} + \frac{x_{i+1} - 2x_i + x_{i-1}}{\Delta x_i^2} \right).
+\]
+Here, \(\Delta x_i = x_{i+1} - x_{i-1}\).
+The discretized system can be expressed in matrix form as:
+\[
+\mathbf{A} \boldsymbol{\Phi} = \mathbf{b},
+\]
+where:
+\begin{itemize}
+    \item \(\mathbf{A}\) is an \(N \times N\) sparse coefficient matrix,
+    \item \(\boldsymbol{\Phi} = [\Phi_1, \Phi_2, \dots, \Phi_N]^T\) is the vector of unknowns,
+    \item \(\mathbf{b}\) is the source term (zero for homogeneous equations).
+\end{itemize}
+For \(N\) grid points, the coefficient matrix \(\mathbf{A}\) is tridiagonal for interior points:
+
+\[
+\mathbf{A} =
+\begin{bmatrix}
+b_1 & c_2 & 0 & \cdots & 0 \\
+a_2 & b_2 & c_3 & \cdots & 0 \\
+0 & a_3 & b_3 & \cdots & 0 \\
+\vdots & \vdots & \vdots & \ddots & c_{N-1} \\
+0 & 0 & 0 & a_{N} & b_{N}
+\end{bmatrix}.
+\]
+
+
+
+
+
+
+
+\begin{thebibliography}{9}
+    \bibitem{GitHubRepo}
+    \textit{CFD Repository},\\
+    Available at: \url{https://github.com/GiuseppePisante/CFD.git}
+    
+    \bibitem{GitHubCopilot}
+    \textit{GitHub Copilot},\\
+    GitHub. Available at: \url{https://github.com/features/copilot}
+  \end{thebibliography}
+  
+  \end{document}
