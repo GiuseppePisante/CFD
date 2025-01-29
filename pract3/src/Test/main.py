@@ -5,8 +5,8 @@ from matplotlib import cm
 
 
 L=1
-N=10
-RE=[1]
+N=20
+RE=[1,10,1000]
 u_list=[]
 v_list=[]
 p_list=[]
@@ -35,7 +35,7 @@ for i in range(len(u_list)):
   vorticity_list.append(vorticity)
 fig, axes = plt.subplots(5, 3, figsize=(12, 15))
 fig.suptitle("Flow Visualization with U and V velocity, Pressure, Streamlines and Vorticity")
-for j in range(1):
+for j in range(3):
         ax = axes[0,j]
         contour = ax.contourf(X, Y, u_list[j],levels=20,alpha=0.5, cmap=cm.viridis)
         ax.set_title(f"U velocity, Re = {RE[j]}")

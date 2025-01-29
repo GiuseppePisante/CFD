@@ -46,6 +46,11 @@ def lid_driven_solver(N,L,RE):
             v_final[i,j] = 0.5*(v[idv] + v[idv + 1])
             p_final[i,j] = 0.25*(p[idv] + p[idv+1] + p[idv + N + 1] + p[idv + N + 2])
 
+    print(
+    "First column of u:", u_final[:, 0],
+    "First column of v:", v_final[:, 0],
+    "Last column of u:", u_final[:, -1],
+    "Last column of v:", v_final[:, -1])
     return u_final,v_final,p_final
 
 
@@ -53,9 +58,9 @@ def lid_driven_solver(N,L,RE):
 def simple_solver(u,v,p,u_star,v_star,u_new,v_new,p_new,pc,d_y,d_x,N,alpha_p,alpha,nu,b,h):
 
     it=0
-    itermax=100
+    itermax=10
 
-    tol = 1e-2
+    tol = 1e-6
 
     while (it<itermax):
         
@@ -95,27 +100,37 @@ def simple_solver(u,v,p,u_star,v_star,u_new,v_new,p_new,pc,d_y,d_x,N,alpha_p,alp
                     d_x[i,j] = - h / A[idu, idu]                
 
         u_star = jacobi(A,b,tol,u_star)
-        u_star = (1-alpha)*u + alpha*u_star
 
+        for i in range( 1,N ):
+            for j in range(1,N - 1):
+                idu= i * N + j
+                u_star[idu] = (1-alpha)*u[idu] + alpha*u_star[idu]
+
+        # x-momentum boundaries
+        for i in range(0, N):
+            u_star[i * N] = 0
+            u_star[i * N + N] = 0
+
+        u_star[0:N] = 2 - u_star[N:N + N]
+        u_star[N * N:N * N + N + 1] = - u_star[N * N - N:N * N]
         
+        # Y-Momentum
         A=np.zeros([N*(N+1),N*(N+1)])
         b=np.zeros(N*(N+1))
-        # Y-Momentum
         for i in range(0,N):
             for j  in range(0 , N + 1):
                 idu= i * N + j
                 idv= i * (N+1) + j
-
                 if j == N:
                     A[idv, idv] = 1
-                    A[idv,idv - 1] = 1
+                    A[idv, idv - 1] = 1
                 elif j == 0:
-                    A[idv,idv] = 1
-                    A[idv,idv + 1] = 1
+                    A[idv, idv] = 1
+                    A[idv, idv + 1] = 1
                 elif i == 0:
-                    A[idv,idv] = 1
+                    A[idv, idv] = 1
                 elif i == N - 1:
-                    A[idv,idv] = 1
+                    A[idv, idv] = 1
                 else:
 
                     u_E = 0.5*(u[idu] + u[idu + N])
@@ -134,81 +149,134 @@ def simple_solver(u,v,p,u_star,v_star,u_new,v_new,p_new,pc,d_y,d_x,N,alpha_p,alp
                     d_y[i,j] = -h / A[idv,idv]
 
         v_star = jacobi(A,b,tol,v_star)
-        v_star = (1-alpha) * v + alpha * v_star
+
+        for i in range( 1,N - 1):
+            for j in range(1,N):
+                idv= i * (N+1) + j
+                v_star[idv] = (1-alpha)*v[idv] + alpha*v_star[idv]
+
+        # y-momentum boundaries
+        for i in range(0, N):
+            v_star[i * (N+1)] = 0
+            v_star[i * (N+1) + N] = 0
+
+        v_star[0:N+1] = 0
+        v_star[N*(N+1):N*(N+1)+N] = 0
+    
+
 
         # Zeroing the corrections to begin with
         pc=np.zeros((N+1)*(N+1))
-        bp=np.zeros((N+1)*(N+1))
-        P=np.zeros(((N+1)*(N+1),(N+1)*(N+1)))
+        tmp=np.zeros((N-1)*(N-1))
+        bp=np.zeros((N-1)*(N-1))
+        P=np.zeros(((N-1)*(N-1),(N-1)*(N-1)))
 
         #Continuity equation a.k.a. pressure correction - Interior
-        for i in range(0, N + 1):
-            for j in range(0, N + 1):
+        for i in range(1, N):
+            for j in range(1, N):
                 idu = i * N + j
-                idp = i * (N+1) + j
+                idp = (i - 1) * (N - 1) + j - 1
+                idv = i * (N + 1) + j
                 
-                if i == N:
-                    P[idp, idp] = 1
-                    P[idp, idp - N - 1]= - 1
-                elif i == 0:
-                    P[idp, idp] = 1
-                    P[idp, idp + N + 1]= - 1
-                elif j == 0:
-                    P[idp, idp] = 1
-                    P[idp, idp + 1]= - 1
-                elif j == N:
-                    P[idp, idp] = 1
-                    P[idp, idp - 1] = - 1
-                else:
-                    a_E = d_x[i,j] * h
-                    a_W = d_x[i,j-1] * h
-                    a_N = d_y[i-1,j] * h
-                    a_S = d_y[i,j]*h
-                    a_P = -(a_E + a_W + a_N + a_S)
+                a_E = d_x[i,j] * h
+                a_W = d_x[i,j-1] * h
+                a_N = d_y[i-1,j] * h
+                a_S = d_y[i,j]*h
+                a_P = -(a_E + a_W + a_N + a_S)
 
+                if i == 1 and j == 1:
+                    a_N = 0
+                    a_W = 0
+                    P[idp, idp + 1] = a_E
+                    P[idp, idp + N - 1] = a_S
+                elif i == 1 and j == N - 1:
+                    a_N = 0
+                    a_E = 0
+                    P[idp, idp - 1] = a_W
+                    P[idp, idp + N - 1] = a_S
+                elif i == N - 1 and j == 1:
+                    a_S = 0
+                    a_W = 0
+                    P[idp, idp + 1] = a_E
+                    P[idp, idp - N + 1] = a_N
+                elif i == N - 1 and j == N - 1:
+                    a_S = 0
+                    a_E = 0
+                    P[idp, idp - 1] = a_W
+                    P[idp, idp - N + 1] = a_N
+                elif i == 1:
+                    a_N = 0
+                elif i == N - 1:
+                    a_S = 0
                     P[idp, idp + 1] = a_E
                     P[idp, idp - 1] = a_W
-                    P[idp, idp - N - 1] = a_N
-                    P[idp, idp + N + 1] = a_S
-                    P[idp, idp] = a_P
-                    bp[idp] = -(u_star[idu] - u_star[idu-1]) * h + (v_star[idp] - v_star[idp - N - 1]) * h
+                    P[idp, idp - N + 1] = a_N
+                elif j == 1:
+                    a_W = 0
+                    P[idp, idp + 1] = a_E
+                    P[idp, idp - N + 1] = a_N
+                    P[idp, idp + N - 1] = a_S
+                elif j == N - 1:
+                    a_E = 0
+                    P[idp, idp - 1] = a_W
+                    P[idp, idp - N + 1] = a_N
+                    P[idp, idp + N - 1] = a_S
+                else:
+                    P[idp, idp + 1] = a_E
+                    P[idp, idp - 1] = a_W
+                    P[idp, idp - N + 1] = a_N
+                    P[idp, idp + N - 1] = a_S
 
+        
+                print(idp)
+                P[idp, idp] = a_P
+                bp[idp] = -(u_star[idu] - u_star[idu-1]) * h + (v_star[idv] - v_star[idv - N - 1]) * h
 
-        pc = jacobi(P, bp, tol, pc)        
+        tmp = jacobi(P, bp, tol, tmp)
         #Correcting the pressure field
-        p_new = p + alpha_p*pc
+        for i in range( 1,N):
+            for j in range( 1,N) :
+                idp = i * (N+1) + j
+                idt = (i - 1) * (N - 1) + j - 1
+                p_new[idp] = p[idp] + alpha_p*tmp[idt]
+
+        for i in range(0, N + 1):
+            p_new[i * (N+1)] = p_new[i * (N+1) + 1]
+            p_new[i * (N+1) + N] = p_new[i * (N+1) + N - 1]
+
+        p_new[0:N+1] = p_new[N+1:2*N+2]
+        p_new[N*(N+1):N*(N+1)+N] = p_new[N*(N+1)-N - 1:N*(N+1)-1]
+
+        pc=p_new.copy()
         
         # Correcting the velocities
-        for i in range(0, N + 1):
-            for j in range( 0 , N):
+        for i in range(1, N):
+            for j in range( 1 , N - 1):
                 idu = i * N + j
                 idp = i * (N+1) + j
-                if i == 0:	
-                    u_new[idu] = 2 - u_new[idu + N]
-                elif i == N:
-                    u_new[idu] = -u_new[idu - N]
-                elif j == 0:
-                    u_new[idu] = 0
-                elif j == N - 1:
-                    u_new[idu] = 0
-                else:
-                    u_new[idu] = u_star[idu] + d_x[i,j]*(pc[idp+1] - pc[idp])
+                u_new[idu] = u_star[idu] + d_x[i,j]*(pc[idp+1] - pc[idp])
 
-        for i in range(0,N):
-            for j in range(0,N + 1):
+        for i in range(0, N):
+            u_new[i * N] = 0
+            u_new[i * N + N] = 0
+
+        u_new[0:N] = 2 - u_new[N:N + N]
+        u_new[N * N:N * N + N + 1] = - u_new[N * N - N:N * N]
+
+        for i in range(1,N - 1):
+            for j in range(1,N):
                 idp = i * (N+1) + j
-                if j == 0:
-                    v_new[idp] = -v_new[idp + 1]
-                elif j == N:
-                    v_new[idp] = -v_new[idp - 1]
-                elif i == 0:
-                    v_new[idp] = 0
-                elif i == N - 1:
-                    v_new[idp] = 0
-                else:
-                    v_new[idp] = v_star[idp] + d_y[i,j]*(pc[idp] - pc[idp + N + 1])
+                v_new[idp] = v_star[idp] + d_y[i,j]*(pc[idp] - pc[idp + N + 1])
 
+    
+        for i in range(0, N):
+            v_new[i * (N+1)] = - v_new[i * (N+1)+ 1] 
+            v_new[i * (N+1) + N] = - v_new[i * (N+1) + N - 1]
 
+        v_new[0:N+1] = 0
+        v_new[N*(N+1):N*(N+1)+N] = 0
+
+        
         # Continuity residual as error measure
         # Residual computation
         err_u = np.abs(u_new - u).max() 
@@ -230,17 +298,17 @@ def jacobi(A, b, tol=1e-6, x=None, itermax=1000):
     
     # Controllo che A sia quadrata e compatibile con b
     n = len(A)
-    if A.shape[0] != A.shape[1] or len(b) != n:
-        raise ValueError("La matrice A deve essere quadrata e compatibile con il vettore b.")
+    # if A.shape[0] != A.shape[1] or len(b) != n:
+    #     raise ValueError("La matrice A deve essere quadrata e compatibile con il vettore b.")
 
     # Controllo che la diagonale non contenga zeri
     D = np.diag(A)
-    if np.any(D == 0):
-        raise ValueError("La matrice A ha elementi nulli sulla diagonale, impossibile applicare Jacobi.")
+    # if np.any(D == 0):
+    #     raise ValueError("La matrice A ha elementi nulli sulla diagonale, impossibile applicare Jacobi.")
 
     # Controllo della convergenza (criterio di dominanza diagonale)
-    if not np.all(2 * np.abs(D) >= np.sum(np.abs(A), axis=1)):
-        print("Avviso: la matrice A potrebbe non soddisfare il criterio di dominanza diagonale. Il metodo potrebbe non convergere.")
+    # if not np.all(2 * np.abs(D) >= np.sum(np.abs(A), axis=1)):
+    #     print("Avviso: la matrice A potrebbe non soddisfare il criterio di dominanza diagonale. Il metodo potrebbe non convergere.")
 
     # Inizializzazione della soluzione
     if x is None:
@@ -257,6 +325,6 @@ def jacobi(A, b, tol=1e-6, x=None, itermax=1000):
         x = x_new
         it += 1
 
-    print(f"Jacobi convergenza in {it} iterazioni con errore {err:.2e}")
+    # print(f"Jacobi convergenza in {it} iterazioni con errore {err:.2e}")
     return x
 
