@@ -7,7 +7,7 @@ def lid_driven_solver(N,L,RE):
 
     # Under-relaxation factors
     alpha = 0.01
-    alpha_p = 0.8
+    alpha_p = 0.001
 
     u_final = np.zeros([N,N])
     v_final = np.zeros([N,N])
@@ -46,11 +46,6 @@ def lid_driven_solver(N,L,RE):
             v_final[i,j] = 0.5*(v[idv] + v[idv + 1])
             p_final[i,j] = 0.25*(p[idv] + p[idv+1] + p[idv + N + 1] + p[idv + N + 2])
 
-    print(
-    "First column of u:", u_final[:, 0],
-    "First column of v:", v_final[:, 0],
-    "Last column of u:", u_final[:, -1],
-    "Last column of v:", v_final[:, -1])
     return u_final,v_final,p_final
 
 
@@ -61,8 +56,11 @@ def simple_solver(u,v,p,u_star,v_star,u_new,v_new,p_new,pc,d_y,d_x,N,alpha_p,alp
     itermax=10
 
     tol = 1e-6
+    err_u = 1
+    err_v = 1
+    err_p = 1
 
-    while (it<itermax):
+    while it<itermax and (err_u > tol or err_v > tol or err_p > tol):
         
         A=np.zeros([N*(N+1),N*(N+1)])
         b=np.zeros(N*(N+1))
@@ -124,15 +122,16 @@ def simple_solver(u,v,p,u_star,v_star,u_new,v_new,p_new,pc,d_y,d_x,N,alpha_p,alp
                 if j == N:
                     A[idv, idv] = 1
                     A[idv, idv - 1] = 1
+
                 elif j == 0:
                     A[idv, idv] = 1
                     A[idv, idv + 1] = 1
+
                 elif i == 0:
                     A[idv, idv] = 1
                 elif i == N - 1:
                     A[idv, idv] = 1
                 else:
-
                     u_E = 0.5*(u[idu] + u[idu + N])
                     u_W = 0.5*(u[idu - 1] + u[idu + N - 1])
                     v_N = 0.5*(v[idv - N - 1] + v[idv])
@@ -182,7 +181,6 @@ def simple_solver(u,v,p,u_star,v_star,u_new,v_new,p_new,pc,d_y,d_x,N,alpha_p,alp
                 a_W = d_x[i,j-1] * h
                 a_N = d_y[i-1,j] * h
                 a_S = d_y[i,j]*h
-                a_P = -(a_E + a_W + a_N + a_S)
 
                 if i == 1 and j == 1:
                     a_N = 0
@@ -227,9 +225,7 @@ def simple_solver(u,v,p,u_star,v_star,u_new,v_new,p_new,pc,d_y,d_x,N,alpha_p,alp
                     P[idp, idp - N + 1] = a_N
                     P[idp, idp + N - 1] = a_S
 
-        
-                print(idp)
-                P[idp, idp] = a_P
+                P[idp, idp] = -(a_E + a_W + a_N + a_S) 
                 bp[idp] = -(u_star[idu] - u_star[idu-1]) * h + (v_star[idv] - v_star[idv - N - 1]) * h
 
         tmp = jacobi(P, bp, tol, tmp)
@@ -240,39 +236,37 @@ def simple_solver(u,v,p,u_star,v_star,u_new,v_new,p_new,pc,d_y,d_x,N,alpha_p,alp
                 idt = (i - 1) * (N - 1) + j - 1
                 p_new[idp] = p[idp] + alpha_p*tmp[idt]
 
+
         for i in range(0, N + 1):
             p_new[i * (N+1)] = p_new[i * (N+1) + 1]
             p_new[i * (N+1) + N] = p_new[i * (N+1) + N - 1]
-
         p_new[0:N+1] = p_new[N+1:2*N+2]
         p_new[N*(N+1):N*(N+1)+N] = p_new[N*(N+1)-N - 1:N*(N+1)-1]
-
-        pc=p_new.copy()
         
         # Correcting the velocities
         for i in range(1, N):
             for j in range( 1 , N - 1):
                 idu = i * N + j
                 idp = i * (N+1) + j
-                u_new[idu] = u_star[idu] + d_x[i,j]*(pc[idp+1] - pc[idp])
+                idt = (i - 1) * (N - 1) + j - 1
+                u_new[idu] = u_star[idu] + d_x[i,j]*(tmp[idt+1] - tmp[idt])
 
         for i in range(0, N):
             u_new[i * N] = 0
             u_new[i * N + N] = 0
-
         u_new[0:N] = 2 - u_new[N:N + N]
         u_new[N * N:N * N + N + 1] = - u_new[N * N - N:N * N]
 
         for i in range(1,N - 1):
             for j in range(1,N):
                 idp = i * (N+1) + j
-                v_new[idp] = v_star[idp] + d_y[i,j]*(pc[idp] - pc[idp + N + 1])
+                idt = (i - 1) * (N - 1) + j - 1
+                v_new[idp] = v_star[idp] + d_y[i,j]*(tmp[idt] - tmp[idt + N - 1])
 
     
         for i in range(0, N):
             v_new[i * (N+1)] = - v_new[i * (N+1)+ 1] 
             v_new[i * (N+1) + N] = - v_new[i * (N+1) + N - 1]
-
         v_new[0:N+1] = 0
         v_new[N*(N+1):N*(N+1)+N] = 0
 
@@ -288,27 +282,28 @@ def simple_solver(u,v,p,u_star,v_star,u_new,v_new,p_new,pc,d_y,d_x,N,alpha_p,alp
         p = p_new.copy()
         it = it + 1
 
+    print(f"Converged in {it} iterations with error {err_u:.2e} {err_v:.2e} {err_p:.2e}")
     return u,v,p
 
 
 import numpy as np
 
-def jacobi(A, b, tol=1e-6, x=None, itermax=1000):
+def jacobi(A, b, tol=1e-6, x=None, itermax=2000):
     """Risoluzione del sistema lineare Ax = b con il metodo di Jacobi."""
     
     # Controllo che A sia quadrata e compatibile con b
     n = len(A)
-    # if A.shape[0] != A.shape[1] or len(b) != n:
-    #     raise ValueError("La matrice A deve essere quadrata e compatibile con il vettore b.")
+    if A.shape[0] != A.shape[1] or len(b) != n:
+        raise ValueError("La matrice A deve essere quadrata e compatibile con il vettore b.")
 
     # Controllo che la diagonale non contenga zeri
     D = np.diag(A)
-    # if np.any(D == 0):
-    #     raise ValueError("La matrice A ha elementi nulli sulla diagonale, impossibile applicare Jacobi.")
+    if np.any(D == 0):
+        raise ValueError("La matrice A ha elementi nulli sulla diagonale, impossibile applicare Jacobi.")
 
     # Controllo della convergenza (criterio di dominanza diagonale)
-    # if not np.all(2 * np.abs(D) >= np.sum(np.abs(A), axis=1)):
-    #     print("Avviso: la matrice A potrebbe non soddisfare il criterio di dominanza diagonale. Il metodo potrebbe non convergere.")
+    if not np.all(2 * np.abs(D) >= np.sum(np.abs(A), axis=1)):
+        print("Avviso: la matrice A potrebbe non soddisfare il criterio di dominanza diagonale. Il metodo potrebbe non convergere.")
 
     # Inizializzazione della soluzione
     if x is None:
@@ -325,6 +320,6 @@ def jacobi(A, b, tol=1e-6, x=None, itermax=1000):
         x = x_new
         it += 1
 
-    # print(f"Jacobi convergenza in {it} iterazioni con errore {err:.2e}")
+    print(f"Jacobi convergenza in {it} iterazioni con errore {err:.2e}")
     return x
 
