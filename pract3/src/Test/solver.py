@@ -1,12 +1,11 @@
 import numpy as np
 
-def lid_driven_solver(N,L,RE):
+def solver(N,L,RE):
 
     h = L/(N-1)
     nu = 1/RE
 
     # Under-relaxation factors
-    alpha = 0.01
     alpha_p = 0.001
 
     u_final = np.zeros([N,N])
@@ -36,7 +35,7 @@ def lid_driven_solver(N,L,RE):
     u[0:N]=2
     u_new[0:N]=2
 
-    u,v,p=simple_solver(u,v,p,u_star,v_star,u_new,v_new,p_new,pc,d_y,d_x,N,alpha_p,alpha,nu,b,h)
+    u,v,p=SimpleSolver(u,v,p,u_star,v_star,u_new,v_new,p_new,pc,d_y,d_x,N,alpha_p,nu,b,h, RE)
 
     for i in range(N):
         for j in range(N):
@@ -50,10 +49,18 @@ def lid_driven_solver(N,L,RE):
 
 
 
-def simple_solver(u,v,p,u_star,v_star,u_new,v_new,p_new,pc,d_y,d_x,N,alpha_p,alpha,nu,b,h):
+def SimpleSolver(u,v,p,u_star,v_star,u_new,v_new,p_new,pc,d_y,d_x,N,alpha_p,nu,b,h, Re):
 
     it=0
-    itermax=10
+    itermax=100
+
+    if(Re==1):
+        dt=5
+    elif(Re==10):
+        dt=10
+    elif(Re==1000):
+        dt=30
+        itermax=0
 
     tol = 1e-6
     err_u = 1
@@ -91,18 +98,14 @@ def simple_solver(u,v,p,u_star,v_star,u_new,v_new,p_new,pc,d_y,d_x,N,alpha_p,alp
                     A[idu,idu - N] =  0.5 * v_N * h - nu
                     A[idu ,idu + N] = -0.5 * v_S * h - nu
 
-                    A[idu, idu] = 0.5*u_E*h - 0.5*u_W*h + 0.5*v_N*h - 0.5*v_S*h + 4*nu
+                    A[idu, idu] = 1/dt + 0.5*u_E*h - 0.5*u_W*h + 0.5*v_N*h - 0.5*v_S*h + 4*nu
 
                     b[idu] = - h * (p[idu + 1] - p[idu])
+                    b[idu] += (1 / dt) * u[idu]
 
                     d_x[i,j] = - h / A[idu, idu]                
 
         u_star = jacobi(A,b,tol,u_star)
-
-        for i in range( 1,N ):
-            for j in range(1,N - 1):
-                idu= i * N + j
-                u_star[idu] = (1-alpha)*u[idu] + alpha*u_star[idu]
 
         # x-momentum boundaries
         for i in range(0, N):
@@ -142,17 +145,13 @@ def simple_solver(u,v,p,u_star,v_star,u_new,v_new,p_new,pc,d_y,d_x,N,alpha_p,alp
                     A[idv,idv - N - 1] = 0.5 * v_N * h - nu
                     A[idv,idv + N + 1] = - 0.5 * v_S * h - nu
 
-                    A[idv,idv] = 0.5 * u_E * h - 0.5 * u_W * h + 0.5 * v_N * h - 0.5 * v_S * h + 4 * nu
+                    A[idv,idv] = 1/ dt + 0.5 * u_E * h - 0.5 * u_W * h + 0.5 * v_N * h - 0.5 * v_S * h + 4 * nu
                     b[idv] = - h * (p[idv] - p[idv + N + 1])
+                    b[idv] += (1 / dt) * v[idv] 
                     
                     d_y[i,j] = -h / A[idv,idv]
 
         v_star = jacobi(A,b,tol,v_star)
-
-        for i in range( 1,N - 1):
-            for j in range(1,N):
-                idv= i * (N+1) + j
-                v_star[idv] = (1-alpha)*v[idv] + alpha*v_star[idv]
 
         # y-momentum boundaries
         for i in range(0, N):
