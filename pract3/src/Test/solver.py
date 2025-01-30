@@ -3,7 +3,7 @@ import numpy as np
 def solver(N,L,RE):
 
     h = L/(N-1)
-    nu = 1/RE
+    mu = 1/RE
 
     # Under-relaxation factors
     alpha_p = 0.001
@@ -30,12 +30,13 @@ def solver(N,L,RE):
 
     p_star = np.zeros((N+1)*(N+1))
     p_star[N*N+2*N]=1
-    pc = np.zeros((N+1)*(N+1))
+
+    
 
     u[0:N]=2
     u_new[0:N]=2
 
-    u,v,p=SimpleSolver(u,v,p,u_star,v_star,u_new,v_new,p_new,pc,d_y,d_x,N,alpha_p,nu,b,h, RE)
+    u,v,p=SimpleSolver(u,v,p,u_star,v_star,u_new,v_new,p_new,d_y,d_x,N,alpha_p,mu,b,h, RE)
 
     for i in range(N):
         for j in range(N):
@@ -49,26 +50,22 @@ def solver(N,L,RE):
 
 
 
-def SimpleSolver(u,v,p,u_star,v_star,u_new,v_new,p_new,pc,d_y,d_x,N,alpha_p,nu,b,h, Re):
+def SimpleSolver(u,v,p,u_star,v_star,u_new,v_new,p_new,d_y,d_x,N,alpha_p,mu,b,h, Re):
 
     it=0
-    itermax=100
+    itermax=0
+    mu*=50
 
-    if(Re==1):
-        dt=5
-    elif(Re==10):
-        dt=10
-    elif(Re==1000):
-        dt=30
-        itermax=0
+    dt=5
 
-    tol = 1e-6
+    tol = 1e-3
     err_u = 1
     err_v = 1
     err_p = 1
+    
 
     while it<itermax and (err_u > tol or err_v > tol or err_p > tol):
-        
+        print("Iteration of the Simple algorithm:",it, "con errori:", err_u, err_v, err_p)
         A=np.zeros([N*(N+1),N*(N+1)])
         b=np.zeros(N*(N+1))
         for i in range(0, N + 1):
@@ -93,17 +90,17 @@ def SimpleSolver(u,v,p,u_star,v_star,u_new,v_new,p_new,pc,d_y,d_x,N,alpha_p,nu,b
                     v_N = 0.5*(v[idv - N - 1] + v[idv - N])
                     v_S = 0.5*(v[idv] + v[idv + 1])
 
-                    A[idu,idu + 1] =  0.5 * u_E * h - nu
-                    A[idu,idu - 1] = -0.5 * u_W * h - nu
-                    A[idu,idu - N] =  0.5 * v_N * h - nu
-                    A[idu ,idu + N] = -0.5 * v_S * h - nu
+                    A[idu,idu + 1] =  0.5 * u_E * h - mu
+                    A[idu,idu - 1] = -0.5 * u_W * h - mu
+                    A[idu,idu - N] =  0.5 * v_N * h - mu
+                    A[idu ,idu + N] = -0.5 * v_S * h - mu
 
-                    A[idu, idu] = 1/dt + 0.5*u_E*h - 0.5*u_W*h + 0.5*v_N*h - 0.5*v_S*h + 4*nu
+                    A[idu, idu] = 1/dt + 0.5*u_E*h - 0.5*u_W*h + 0.5*v_N*h - 0.5*v_S*h + 4*mu
 
                     b[idu] = - h * (p[idu + 1] - p[idu])
                     b[idu] += (1 / dt) * u[idu]
 
-                    d_x[i,j] = - h / A[idu, idu]                
+                    d_x[i,j] = - 1 / (h*h*(A[idu, idu] + 1/(h*h*dt)))                
 
         u_star = jacobi(A,b,tol,u_star)
 
@@ -140,16 +137,16 @@ def SimpleSolver(u,v,p,u_star,v_star,u_new,v_new,p_new,pc,d_y,d_x,N,alpha_p,nu,b
                     v_N = 0.5*(v[idv - N - 1] + v[idv])
                     v_S = 0.5*(v[idv] + v[idv + N + 1])
 
-                    A[idv,idv + 1] = 0.5 * u_E * h - nu
-                    A[idv,idv - 1] = -0.5 * u_W * h - nu
-                    A[idv,idv - N - 1] = 0.5 * v_N * h - nu
-                    A[idv,idv + N + 1] = - 0.5 * v_S * h - nu
+                    A[idv,idv + 1] = 0.5 * u_E * h - mu
+                    A[idv,idv - 1] = -0.5 * u_W * h - mu
+                    A[idv,idv - N - 1] = 0.5 * v_N * h - mu
+                    A[idv,idv + N + 1] = - 0.5 * v_S * h - mu
 
-                    A[idv,idv] = 1/ dt + 0.5 * u_E * h - 0.5 * u_W * h + 0.5 * v_N * h - 0.5 * v_S * h + 4 * nu
+                    A[idv,idv] = 1/ dt + 0.5 * u_E * h - 0.5 * u_W * h + 0.5 * v_N * h - 0.5 * v_S * h + 4 * mu
                     b[idv] = - h * (p[idv] - p[idv + N + 1])
                     b[idv] += (1 / dt) * v[idv] 
                     
-                    d_y[i,j] = -h / A[idv,idv]
+                    d_y[i,j] = -1 / (h*h*(A[idv,idv]+ 1/(h*h*dt)))
 
         v_star = jacobi(A,b,tol,v_star)
 
@@ -164,7 +161,6 @@ def SimpleSolver(u,v,p,u_star,v_star,u_new,v_new,p_new,pc,d_y,d_x,N,alpha_p,nu,b
 
 
         # Zeroing the corrections to begin with
-        pc=np.zeros((N+1)*(N+1))
         tmp=np.zeros((N-1)*(N-1))
         bp=np.zeros((N-1)*(N-1))
         P=np.zeros(((N-1)*(N-1),(N-1)*(N-1)))
@@ -176,10 +172,10 @@ def SimpleSolver(u,v,p,u_star,v_star,u_new,v_new,p_new,pc,d_y,d_x,N,alpha_p,nu,b
                 idp = (i - 1) * (N - 1) + j - 1
                 idv = i * (N + 1) + j
                 
-                a_E = d_x[i,j] * h
+                a_E = d_x[i,j] * h 
                 a_W = d_x[i,j-1] * h
-                a_N = d_y[i-1,j] * h
-                a_S = d_y[i,j]*h
+                a_N = d_y[i-1,j] * h 
+                a_S = d_y[i,j] * h
 
                 if i == 1 and j == 1:
                     a_N = 0
@@ -203,6 +199,9 @@ def SimpleSolver(u,v,p,u_star,v_star,u_new,v_new,p_new,pc,d_y,d_x,N,alpha_p,nu,b
                     P[idp, idp - N + 1] = a_N
                 elif i == 1:
                     a_N = 0
+                    P[idp, idp + 1] = a_E
+                    P[idp, idp - 1] = a_W
+                    P[idp, idp + N - 1] = a_S
                 elif i == N - 1:
                     a_S = 0
                     P[idp, idp + 1] = a_E
@@ -288,21 +287,11 @@ def SimpleSolver(u,v,p,u_star,v_star,u_new,v_new,p_new,pc,d_y,d_x,N,alpha_p,nu,b
 import numpy as np
 
 def jacobi(A, b, tol=1e-6, x=None, itermax=2000):
-    """Risoluzione del sistema lineare Ax = b con il metodo di Jacobi."""
     
     # Controllo che A sia quadrata e compatibile con b
     n = len(A)
-    if A.shape[0] != A.shape[1] or len(b) != n:
-        raise ValueError("La matrice A deve essere quadrata e compatibile con il vettore b.")
-
     # Controllo che la diagonale non contenga zeri
     D = np.diag(A)
-    if np.any(D == 0):
-        raise ValueError("La matrice A ha elementi nulli sulla diagonale, impossibile applicare Jacobi.")
-
-    # Controllo della convergenza (criterio di dominanza diagonale)
-    if not np.all(2 * np.abs(D) >= np.sum(np.abs(A), axis=1)):
-        print("Avviso: la matrice A potrebbe non soddisfare il criterio di dominanza diagonale. Il metodo potrebbe non convergere.")
 
     # Inizializzazione della soluzione
     if x is None:
@@ -319,6 +308,6 @@ def jacobi(A, b, tol=1e-6, x=None, itermax=2000):
         x = x_new
         it += 1
 
-    print(f"Jacobi convergenza in {it} iterazioni con errore {err:.2e}")
+    print(f"    Jacobi convergenza in {it} iterazioni con errore {err:.2e}")
     return x
 
