@@ -51,7 +51,7 @@ To draw a sketch of the finite-volume discretization domain, it is important to 
 The sketch is reported below:
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=0.5\textwidth]{discretization.jpg}
+  \includegraphics[width=0.5\textwidth]{staggered_grid.jpg}
   \caption{Finite-volume discretization of the domain}
 \end{figure}
 The yellow line highlights the wall nodes, on which we are going to impose the following boundary conditions:
@@ -68,159 +68,136 @@ In particular we can specify the boundary conditions for the pressure on the sin
     \item $\frac{\partial p}{\partial y} = 0$ on top and bottom walls.
 \end{itemize}
 
+It is important to notice that to set properly the boundary conditions, we need to use interpolation since for some boundary conditions we don't have the variable we need to impose the condition on (for example the $v$ velocity on the top wall is not available, while it is on the left and right walls, where we are going to set it directly).
+
 
 \section*{\Large Task 3.1:}
-To derive the finite-volume formulation of the problem, we first focus ont he x- momentum equation and perform the following steps, then we will do the same for the y-momentum equation. 
-The starting point is the x-momentum equation:
-\begin{equation}
-    \frac{\partial u^2}{\partial x} + \frac{\partial uv}{\partial y} + \frac{\partial p}{\partial x} -\frac{1}{Re} (\frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial y^2}) = 0
-\end{equation}
-We integrate over the control volume and we obtain:
-\begin{equation}
-    \int_{V} \frac{\partial}{\partial x} (u^2 - \frac{1}{Re} \frac{\partial u}{\partial x}) dV + \int_{V} \frac{\partial}{\partial y} (uv - \frac{1}{Re} \frac{\partial u}{\partial y}) + \int_{V} \frac{\partial p}{\partial x} dV = 0
-\end{equation}
-For simplicity we focus on the three integrals separately.
 
-\subsubsection*{Discretization of the first convection-diffusion term}
-We first apply the divergence theorem to the first term, in order to transform the volume integral into a surface integral, and then we split the integral over the whole surface into two contributions, one for the right surface and one for the left surface of the control volume:
-\begin{equation} \label{discr_1}
-  \int_{V} \frac{\partial}{\partial x} (u^2 - \frac{1}{Re} \frac{\partial u}{\partial x}) dV = \int_{S} (u^2 - \frac{1}{Re} \frac{\partial u}{\partial x}) \mathbf{n} dS = \int_{S_{i + \frac{1}{2}}} (u^2 - \frac{1}{Re} \frac{\partial u}{\partial x}) \mathbf{n} dS + \int_{S_{i - \frac{1}{2}}} (u^2 - \frac{1}{Re} \frac{\partial u}{\partial x}) \mathbf{n} dS
-\end{equation}
+Since we are going to implement the SIMPLE method, we included in the formulation of the momentum equations the partial derivatives of the velocities in time. This was done because including the time derivative provides a more robust and stable approach to solving the problem. Additionally, it introduces a natural damping effect that facilitates the iterative process by preventing excessive corrections at each step, thereby avoiding divergence or slow convergence.
+The starting point for deriving the finite-volume formulation of the x- and y-momentum equations are the following equations:
+\begin{align}
+  \frac{\partial u}{\partial t} + \frac{\partial u^2}{\partial x} + \frac{\partial uv}{\partial y} &= -\frac{\partial p}{\partial x} + \frac{1}{Re} \left( \frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial y^2} \right) \\
+  \frac{\partial v}{\partial t} + \frac{\partial uv}{\partial x} + \frac{\partial v^2}{\partial y} &= -\frac{\partial p}{\partial y} + \frac{1}{Re} \left( \frac{\partial^2 v}{\partial x^2} + \frac{\partial^2 v}{\partial y^2} \right).
+\end{align}
 
-Since the integrals are computed over the left and right surfaces of the control volume, we need to compute the velocities $u_{i + \frac{1}{2},j}$ and $u_{i - \frac{1}{2},j}$, which are not known since we store the velocity values at the faces of the control volumes. We can approximate these values by linear interpolation, as follows:
-\begin{equation}
-\begin{aligned}
-  u_{i + \frac{1}{2},j} &= u_{i, j} + \frac{u_{i+1,j} - u_{i,j}}{\Delta x} \frac{\Delta x}{2} = 0.5 (u_{i,j} + u_{i+1,j})\\
-  u_{i - \frac{1}{2},j} &= u_{i-1, j} + \frac{u_{i,j} - u_{i-1,j}}{\Delta x} \frac{\Delta x}{2} = 0.5 (u_{i-1,j} + u_{i,j})
-\end{aligned}
-\end{equation}
+We first focus on the x-momentum equation and then we perform an analogous procedure for y-momentum equation.
+To discretize the x-momentum equation, we start by integrating it over the control volume and rearranging the terms as follows:
+\begin{equation*}
+  \int_{V}\frac{\partial u}{\partial t} + \int_{V} \frac{\partial}{\partial x} (u^2 - \frac{1}{Re} \frac{\partial u}{\partial x}) dV + \int_{V} \frac{\partial}{\partial y} (uv - \frac{1}{Re} \frac{\partial u}{\partial y}) = - \int_{V} \frac{\partial p}{\partial x} dV .
+\end{equation*}
+Notice that for simplicity and clearness we will consider the terms with $*$ apex as the values at time step $n+1$ and the terms without $*$ as the values at time step $n$.
 
-Then we compute the quadratic values as follows:
-\begin{equation}
-\begin{aligned}
-  (u_{i + \frac{1}{2},j})^2 &=  0.25 (u_{i,j} + u_{i+1,j})^2\\
-  (u_{i - \frac{1}{2},j})^2 &=  0.25 (u_{i-1,j} + u_{i,j})^2
-\end{aligned}
+Now we focus on one term at a time.
+
+\subsubsection*{Discretization of the time component}
+The integral of the transient term over the control volume is approximated by considering the average value of $\frac{\partial u}{\partial t}$ within the volume, then we approximate the derivative using a forward finite difference scheme.
+The steps are reported below:
+\begin{equation} \label{time_discretization}
+  \int_V \frac{\partial u}{\partial t} \,dV = \frac{\overline{\partial u}}{\partial t} \Delta V \approx \frac{\partial u}{\partial t} \Delta V = \frac{u_{i,j}^{*} - u_{i,j}}{\Delta t} \Delta V = \frac{u_{i,j}^{*} - u_{i,j}}{\Delta t} \Delta x \Delta y
 \end{equation}
 
-Now we can substitute the values of the velocities in \eqref{discr_1}:
-\begin{flalign}
-  & \int_{S_{i + \frac{1}{2}}} \left(u^2 - \frac{1}{Re} \frac{\partial u}{\partial x}\right) \mathbf{n} dS + \int_{S_{i - \frac{1}{2}}} \left(u^2 - \frac{1}{Re} \frac{\partial u}{\partial x}\right) \mathbf{n} dS = \notag \\
-  & \left(0.25 (u_{i,j} + u_{i+1,j})^2 - \frac{1}{Re} \left(\frac{u_{i+1,j} - u_{i,j}}{\Delta x}\right)\right) \Delta y - \left(0.25 (u_{i-1,j} + u_{i,j})^2 - \frac{1}{Re} \left(\frac{u_{i,j} - u_{i-1,j}}{\Delta x}\right)\right) \Delta y
-  \end{flalign}
-where the minus sign in front of the second term is due to the fact that the normal vector is pointing in the opposite direction with respect to the first term.
-
-As last step we need to perform linearization since we have quadratic terms in the expression. To perform the linearization we use the formulation $ u^2 = u u \approx u^* u$ where $u^*$ is a previously computed value of the velocity (e.g. the value at the previous iteration of the initial guess). It is important to notice that $u^*$ is not the value of the velocity at the preious time step since we are in a time independent formulation.
-This leads us to the following expression:
-\begin{equation}
-  \begin{aligned}
-  0.25 (u_{i,j} + u_{i+1,j})^2 \approx 0.25 (u^*_{i,j} + u^*_{i+1,j}) (u_{i,j} + u_{i+1,j}) &= 0.25 (u^*_{i,j} u_{i,j} + u^*_{i+1,j} u_{i+1,j} + u^*_{i,j} u_{i+1,j} + u^*_{i+1,j} u_{i,j}) \\
-  0.25 (u_{i-1,j} + u_{i,j})^2 \approx 0.25 (u^*_{i-1,j} + u^*_{i,j}) (u_{i-1,j} + u_{i,j}) &= 0.25 (u^*_{i-1,j} u_{i-1,j} + u^*_{i,j} u_{i,j} + u^*_{i-1,j} u_{i,j} + u^*_{i,j} u_{i-1,j})
-  \end{aligned}
-\end{equation}
-The linearization of quadratic terms in this derivation reflects the iterative approach adopted in the SIMPLE algorithm, where coefficients such as $a^u_j$ are updated iteratively to address non-linearities.
-
-Including the linearization in the discretization we obtain:
-\begin{flalign}
-  & \int_{V} \frac{\partial}{\partial x} (u^2 - \frac{1}{Re} \frac{\partial u}{\partial x}) dV \approx \notag \\
-  & \left(0.25 (u^*_{i,j} u_{i,j} + u^*_{i+1,j} u_{i+1,j} + u^*_{i,j} u_{i+1,j} + u^*_{i+1,j} u_{i,j}) - \frac{1}{Re} \frac{u_{i+1,j} - u_{i,j}}{\Delta x}\right) \Delta y \notag \\
-  & - \left(0.25 (u^*_{i-1,j} u_{i-1,j} + u^*_{i,j} u_{i,j} + u^*_{i-1,j} u_{i,j} + u^*_{i,j} u_{i-1,j}) - \frac{1}{Re} \frac{u_{i,j} - u_{i-1,j}}{\Delta x}\right) \Delta y
-\end{flalign}
-
-\subsubsection*{Discretization of the second convection-diffusion term}
-For the second term we proceed in the same way as before and we obtain:
-\begin{flalign} \label{discr_2}
-  & \int_{V} \frac{\partial}{\partial y} (uv - \frac{1}{Re} \frac{\partial u}{\partial y}) dV = \int_{S} (uv - \frac{1}{Re} \frac{\partial u}{\partial y}) \mathbf{n} dS = \int_{S_{j + \frac{1}{2}}} (uv - \frac{1}{Re} \frac{\partial u}{\partial y}) \mathbf{n} dS + \int_{S_{j - \frac{1}{2}}} (uv - \frac{1}{Re} \frac{\partial u}{\partial y}) \mathbf{n} dS = \notag \\
-  & \left(0.25 (u_{i,j} + u_{i,j+1}) (v_{i,j} + v_{i+1,j}) - \frac{1}{Re} \frac{u_{i,j+1} - u_{i,j}}{\Delta y}\right) \Delta x - \left(0.25 (u_{i,j-1} + u_{i,j}) (v_{i,j-1} + v_{i+1,j-1}) - \frac{1}{Re} \frac{u_{i,j} - u_{i,j-1}}{\Delta y}\right) \Delta x
-\end{flalign}
-It is important to notice that now $S_{j + \frac{1}{2}}$ and $S_{j - \frac{1}{2}}$ are the surfaces on the top and bottom of the control volume. 
-
-At this point we need to perform the linearization due to the product between the velocities, but this time we can not use the same formulation as before since the term is not a quadratic term. We can use the following formulation: $ uv \approx u^* v + u v^* - u^* v^*$.
-This allows us to transform the $uv$ terms as follows
-\begin{equation}
-\begin{aligned}
-  (u_{i,j} + u_{i,j+1}) (v_{i,j} + v_{i+1,j}) &\approx (u^*_{i,j} + u^*_{i,j+1}) (v_{i,j} + v_{i+1,j}) +(u_{i,j} + u_{i,j+1}) (v^*_{i,j} + v^*_{i+1,j}) - (u^*_{i,j} + u^*_{i,j+1}) (v^*_{i,j} + v^*_{i+1,j}) \\
-  & = u^*_{i,j}v_{i,j} + u^*_{i,j}v_{i+1,j} + u^*_{i,j+1}v_{i,j} + u^*_{i,j+1}v_{i+1,j} \\
-  & + u_{i,j}v^*_{i,j} + u_{i,j+1}v^*_{i,j} + u_{i,j}v^*_{i+1,j} + u_{i,j+1}v^*_{i+1,j} \\
-  & - (u^*_{i,j} + u^*_{i,j+1}) (v^*_{i,j} + v^*_{i+1,j}) \\
-  (u_{i,j-1} + u_{i,j}) (v_{i,j-1} + v_{i+1,j-1}) &\approx (u^*_{i,j-1} + u^*_{i,j}) (v_{i,j-1} + v_{i+1,j-1}) + (u_{i,j-1} + u_{i,j}) (v^*_{i,j-1} + v^*_{i+1,j-1})\\
-  &- (u^*_{i,j-1} + u^*_{i,j}) (v^*_{i,j-1} + v^*_{i+1,j-1}) \\
-  & = u^*_{i,j-1}v_{i,j-1} + u^*_{i,j-1}v_{i+1,j-1} + u^*_{i,j}v_{i,j-1} + u^*_{i,j}v_{i+1,j-1} \\
-  & + u_{i,j-1}v^*_{i,j-1} + u_{i,j}v^*_{i,j-1} + u_{i,j-1}v^*_{i+1,j-1} + u_{i,j}v^*_{i+1,j-1} \\
-  & - (u^*_{i,j-1} + u^*_{i,j}) (v^*_{i,j-1} + v^*_{i+1,j-1})
-\end{aligned}
-\end{equation}
-
-Substituting the linearized terms in the discretization \eqref{discr_2} we obtain:
-\begin{equation}
-  \begin{aligned}
-  \int_{V} \frac{\partial}{\partial y} (uv - \frac{1}{Re} \frac{\partial u}{\partial y}) dV = & (0.25 (u^*_{i,j}v_{i,j} + u^*_{i,j}v_{i+1,j} + u^*_{i,j+1}v_{i,j} + u^*_{i,j+1}v_{i+1,j} \\
-  & + u_{i,j}v^*_{i,j} + u_{i,j+1}v^*_{i,j} + u_{i,j}v^*_{i+1,j} + u_{i,j+1}v^*_{i+1,j} \\
-  & - (u^*_{i,j} + u^*_{i,j+1}) (v^*_{i,j} + v^*_{i+1,j})) - \frac{1}{Re} \frac{u_{i,j+1} - u_{i,j}}{\Delta y}) \Delta x \\
-  & - (0.25 (u^*_{i,j-1}v_{i,j-1} + u^*_{i,j-1}v_{i+1,j-1} + u^*_{i,j}v_{i,j-1} + u^*_{i,j}v_{i+1,j-1} \\
-  & + u_{i,j-1}v^*_{i,j-1} + u_{i,j}v^*_{i,j-1} + u_{i,j-1}v^*_{i+1,j-1} + u_{i,j}v^*_{i+1,j-1} \\
-  & - (u^*_{i,j-1} + u^*_{i,j}) (v^*_{i,j-1} + v^*_{i+1,j-1})) - \frac{1}{Re} \frac{u_{i,j} - u_{i,j-1}}{\Delta y}) \Delta x
-  \end{aligned}
-\end{equation}
-
-
-\subsubsection*{Discretization of the pressure term}
+\subsubsection*{Discretization of the pressure component}
 Since we don't know the pressure distribution inside the control volumes, we need to perform an approxiamtion taking into account that we only know the pressure values at the cell centers.
-\begin{equation}
+\begin{equation} \label{pressure_discretization}
 \begin{aligned}
   \int_{V} \frac{\partial p}{\partial x} dV &= \overline{\frac{\partial p}{\partial x}} \Delta V 
   \approx \frac{\partial p}{\partial x} \Delta V 
-  = \frac{p_{i+1,j} - p_{i,j}}{\Delta x} \Delta x \Delta y 
-  = \Delta y (p_{i+1,j} - p_{i,j})
+  = \frac{p_{e}^{*} - p_{w}^{*}}{\Delta x} \Delta x \Delta y 
+  = \Delta y (p_{e}^{*} - p_{w}^{*})
 \end{aligned}
 \end{equation}
-First we assume that the pressure gradient is constant inside the control volume, then we approximate $\frac{\partial p}{\partial x}$ as the difference between the pressure at the cell center on the right and the pressure at the cell center on the cell we are considering. We multiply this difference by the volume of the control volume to obtain the integral.
+First we assume that the pressure gradient is constant inside the control volume, then we approximate $\frac{\partial p}{\partial x}$ as the difference between the pressure at east side and on the west side. We multiply this difference by the volume of the control volume to obtain the integral.
 
-
-\subsubsection*{Complete discretization of the momentum equations}
-Now we assemble the complete discretization by combining the three terms:
-\begin{equation}
-  \begin{aligned}
-    & (0.25 (u^*_{i,j} u_{i,j} + u^*_{i+1,j} u_{i+1,j} + u^*_{i,j} u_{i+1,j} + u^*_{i+1,j} u_{i,j}) - \frac{1}{Re} \frac{u_{i+1,j} - u_{i,j}}{\Delta x}) \Delta y  \\
-    & - (0.25 (u^*_{i-1,j} u_{i-1,j} + u^*_{i,j} u_{i,j} + u^*_{i-1,j} u_{i,j} + u^*_{i,j} u_{i-1,j}) - \frac{1}{Re} \frac{u_{i,j} - u_{i-1,j}}{\Delta x}) \Delta y \\
-    & + (0.25 (u^*_{i,j}v_{i,j} + u^*_{i,j}v_{i+1,j} + u^*_{i,j+1}v_{i,j} + u^*_{i,j+1}v_{i+1,j} \\
-    & + u_{i,j}v^*_{i,j} + u_{i,j+1}v^*_{i,j} + u_{i,j}v^*_{i+1,j} + u_{i,j+1}v^*_{i+1,j} \\
-    & - (u^*_{i,j} + u^*_{i,j+1}) (v^*_{i,j} + v^*_{i+1,j})) - \frac{1}{Re} \frac{u_{i,j+1} - u_{i,j}}{\Delta y}) \Delta x \\
-    & - (0.25 (u^*_{i,j-1}v_{i,j-1} + u^*_{i,j-1}v_{i+1,j-1} + u^*_{i,j}v_{i,j-1} + u^*_{i,j}v_{i+1,j-1} \\
-    & + u_{i,j-1}v^*_{i,j-1} + u_{i,j}v^*_{i,j-1} + u_{i,j-1}v^*_{i+1,j-1} + u_{i,j}v^*_{i+1,j-1} \\
-    & - (u^*_{i,j-1} + u^*_{i,j}) (v^*_{i,j-1} + v^*_{i+1,j-1})) - \frac{1}{Re} \frac{u_{i,j} - u_{i,j-1}}{\Delta y}) \Delta x \\
-    & + \Delta y (p_{i+1,j} - p_{i,j}) = 0
-  \end{aligned}
+\subsection*{discretization of the first convection-diffusion term}
+We first apply the divergence theorem to the first term, in order to transform the volume integral into a surface integral, and then we split the integral over the whole surface into two contributions, one for the east surface and one for the west surface of the control volume:
+\begin{equation} \label{discr_1}
+  \int_{V} \frac{\partial}{\partial x} (u^2 - \frac{1}{Re} \frac{\partial u}{\partial x}) dV = \int_{S} (u^2 - \frac{1}{Re} \frac{\partial u}{\partial x}) \mathbf{n} dS = \int_{S_{e}} (u^2 - \frac{1}{Re} \frac{\partial u}{\partial x}) \mathbf{n} dS + \int_{S_{w}} (u^2 - \frac{1}{Re} \frac{\partial u}{\partial x}) \mathbf{n} dS
 \end{equation}
 
-The finite-volume formulation of the $x$-momentum equation consists in a balancing of the forces acting on a control volume.
-Convective terms, which are in the form $u*u$, represent momentum transport due to fluid motion and are evaluated at control volume vertical faces using linear interpolation and linearization.
-Diffusion terms, which are the ones like $-\frac{1}{Re} \frac{u_{i+1,j} - u_{i,j}}{\Delta x}$, account for viscous effects, with velocity gradients calculated at the horizontal faces.
-Cross-convection terms, which consist in the multiplication between $v$ and $u$, capture the interaction between $x$- and $y$- velocity components, while the pressure gradient term drives flow and is determined using interpolated cell-center values.
+This leads to:
+\begin{equation*}
+  u_e^* u_e^* \Delta y - u_w^* u_w^* \Delta y - \frac{1}{Re} \left( \frac{u_e^* - u_c^*}{\Delta x} - \frac{u_c^* - u_w^*}{\Delta x}\right) \Delta y
+\end{equation*}
+Where $u_c^*$ is the velocity at the center of the staggered control volume used for solving the x-momentum equation.
 
-The discretization of the y-momentum equation can be obtained following an analogous procedure, where $x$ and $y$, and $u$ and $v$ are swapped in the equations, and in the end we obtain the following expression:
+Now we perform linearization since we have quadratic terms in our formulation. In particular we are linearizing the quadratic terms in this way: $u_e^* u_e^* \approx u_e u_e^*$ and the same for west, north and south terms so that the only unknowns are the ones with the $*$ apex.
+\begin{equation*}
+  u_e u_e^* \Delta y - u_w u_w^* \Delta y - \frac{1}{Re} \left( \frac{u_e^* - u_c^*}{\Delta x} - \frac{u_c^* - u_w^*}{\Delta x}\right) \Delta y.
+\end{equation*}
+
+Then we perform interpolation in order to compute the $u^*$ values at east, west, north and south positions:
+\begin{equation*}
+  u_e^* = \frac{u_{i,j+1}^* + u_{i,j}^*}{2}, \quad u_w^* = \frac{u_{i,j}^* + u_{i,j-1}^*}{2}, \quad u_n^* = \frac{u_{i+1,j}^* + u_{i,j}^*}{2}, \quad u_s^* = \frac{u_{i,j}^* + u_{i-1,j}^*}{2}.
+\end{equation*}
+Notice that analogous approximations hold for $u_e$, $u_w$, $u_n$ and $u_s$, but for simplicity we are not expliciting them since they are known.
+
+We substitute these interpolated values in the equation, we simplify $\Delta x$ and $\Delta y$ since we are considering the grid to be equi-spaced in x and y, and we obtain:
 \begin{equation}
-  \begin{aligned}
-    & (0.25 (v^*_{i,j} v_{i,j} + v^*_{i,j+1} v_{i,j+1} + v^*_{i,j} v_{i,j+1} + v^*_{i,j+1} v_{i,j}) - \frac{1}{Re} \frac{v_{i,j+1} - v_{i,j}}{\Delta y}) \Delta x  \\
-    & - (0.25 (v^*_{i,j-1} v_{i,j-1} + v^*_{i,j} v_{i,j} + v^*_{i,j-1} v_{i,j} + v^*_{i,j} v_{i,j-1}) - \frac{1}{Re} \frac{v_{i,j} - v_{i,j-1}}{\Delta y}) \Delta x \\
-    & + (0.25 (v^*_{i,j}u_{i,j} + v^*_{i,j}u_{i+1,j} + v^*_{i+1,j}u_{i,j} + v^*_{i+1,j}u_{i+1,j} \\
-    & + v_{i,j}u^*_{i,j} + v_{i,j}u^*_{i+1,j} + v_{i+1,j}u^*_{i,j} + v_{i+1,j}u^*_{i+1,j} \\
-    & - (v^*_{i,j} + v^*_{i+1,j}) (u^*_{i,j} + u^*_{i+1,j})) - \frac{1}{Re} \frac{v_{i+1,j} - v_{i,j}}{\Delta x}) \Delta y \\
-    & - (0.25 (v^*_{i-1,j}u_{i-1,j} + v^*_{i-1,j}u_{i,j} + v^*_{i,j}u_{i-1,j} + v^*_{i,j}u_{i,j} \\
-    & + v_{i-1,j}u^*_{i-1,j} + v_{i-1,j}u^*_{i,j} + v_{i,j}u^*_{i-1,j} + v_{i,j}u^*_{i,j} \\
-    & - (v^*_{i-1,j} + v^*_{i,j}) (u^*_{i-1,j} + u^*_{i,j})) - \frac{1}{Re} \frac{v_{i,j} - v_{i-1,j}}{\Delta x}) \Delta y \\
-    & + \Delta x (p_{i,j+1} - p_{i,j}) = 0
-  \end{aligned}
+  u_e \frac{u_{i,j+1}^* + u_{i,j}^*}{2} \Delta y - u_w \frac{u_{i,j}^* + u_{i,j-1}^*}{2} \Delta y - \frac{1}{Re} \left( \frac{u_{i,j+1}^* + u_{i,j}^*}{2} - u_{i,j}^* - u_{i,j}^* - \frac{u_{i,j-1}^* + u_{i,j}^*}{2}\right).
 \end{equation}
 
-In the picture reported below we can see which are the reference control volumes for each of the three equations, moreover we can see
-that the center of each control volume is the point where we store the variable ($u$, $v$ and $p$) we are computing in this specific control volume with the corresponding equation.
+\subsection*{Discretization of the first convection-diffusion term}
+For the second term we proceed in the same way as before and we obtain:
+\begin{equation*}
+   \int_{V} \frac{\partial}{\partial y} (uv - \frac{1}{Re} \frac{\partial u}{\partial y}) dV = \int_{S} (uv - \frac{1}{Re} \frac{\partial u}{\partial y}) \mathbf{n} dS = \int_{S_{e}} (uv - \frac{1}{Re} \frac{\partial u}{\partial y}) \mathbf{n} dS + \int_{S_w} (uv - \frac{1}{Re} \frac{\partial u}{\partial y}) \mathbf{n} dS.
+\end{equation*}
 
+This leads to:
+\begin{equation*}
+  u_n^* v_n^* \Delta y - u_s^* v_s^* \Delta y - \frac{1}{Re} \left( \frac{u_n^* - u_c^*}{\Delta y} - \frac{u_c^* - u_s^*}{\Delta y}\right) \Delta x.
+\end{equation*}
+
+At this point we still need to linearize the terms that include a multiplication between a $u$ term and a $v$ term. We perform the linearization by approximating $v^*$ as $v$ since here we are solving the x-momentum equation and we are interested in the $u$ velocity (for the y-momentum equation we are treating these two terms in the opposite way).
+Then we perform interpolation, simplification between $\Delta x$ and $\Delta y$ and we get:
+\begin{equation}
+  v_n \frac{u_{i+1,j}^* + u_{i,j}^*}{2} \Delta y - v_s \frac{u_{i,j}^* + u_{i-1,j}^*}{2} \Delta y - \frac{1}{Re} \left( \frac{u_{i+1,j}^* - u_{i,j}^*}{2} - u_{i,j}^* - u_{i,j}^* - \frac{u_{i,j}^* - u_{i-1,j}^*}{2}\right).
+\end{equation}
+
+\subsection*{Final discretized x-momentum equation}
+As the last step we sum up all the terms we computed before and we collect the terms with the same unknowns:
+\begin{gather*}
+    u_{i,j}^* \left(\frac{u_e \Delta y}{2} - \frac{u_w \Delta y}{2} + \frac{2}{Re} + \frac{v_e \Delta y}{2} - \frac{v_w \Delta y}{2} + \frac{\Delta x \Delta y}{dt} \right) \\
+    + u_{i+1,j}^* \left(- \frac{1}{2 Re} + \frac{v_n \Delta y}{2} \right) \\
+    + u_{i-1,j}^* \left(- \frac{1}{2 Re} - \frac{v_s \Delta y}{2} \right) \\
+    + u_{i,j+1}^* \left(- \frac{u_e \Delta y}{2} - \frac{1}{2 Re} \right) \\
+    + u_{i,j-1}^* \left(- \frac{u_w \Delta y}{2} - \frac{1}{2 Re} \right) \\
+    = u_{i,j} \frac{ \Delta x \Delta y}{dt} + \Delta y (p_{e}^* - p_{w}^*)
+\end{gather*}
+This equation is the discretized x-momentum equation for the staggered grid.
+
+\subsection*{Discretization of the y-momentum equation}
+We perform the same procedure for the y-momentum equation and we get:
+\begin{gather*}
+    v_{i,j}^* \left(\frac{v_n \Delta x}{2} - \frac{v_s \Delta x}{2} + \frac{2}{Re} + \frac{u_n \Delta x}{2} - \frac{u_s \Delta x}{2} + \frac{\Delta x \Delta y}{dt} \right) \\
+    + v_{i+1,j}^* \left(\frac{v_n \Delta x}{2} - \frac{1}{2 Re} \right) \\
+    + v_{i-1,j}^* \left(- \frac{v_s \Delta x}{2} - \frac{1}{2 Re} \right) \\
+    + v_{i,j+1}^* \left(- \frac{1}{2 Re} + \frac{u_e \Delta x}{2} \right) \\
+    + v_{i,j-1}^* \left(- \frac{1}{2 Re} - \frac{u_w \Delta x}{2} \right) \\
+    = v_{i,j} \frac{ \Delta x \Delta y}{dt} + \Delta x (p_{n}^* - p_{s}^*)
+\end{gather*}
+Notice that to explicit the values $v_n$, $v_s$, $v_w$ and $v_e$ we need to perform the following interpolations:
+\begin{equation*}
+  v_n^* = \frac{v_{i+1,j}^* + v_{i,j}^*}{2}, \quad v_s = \frac{v_{i,j}^* + v_{i-1,j}^*}{2}, \quad v_e = \frac{v_{i,j+1}^* + v_{i,j}^*}{2}, \quad v_w = \frac{v_{i,j}^* + v_{i,j-1}^*}{2}.
+\end{equation*}
+
+From the picture reported below we can see where we are going to solve the three equations.
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=0.5\textwidth]{controlvolumes.jpg}
-  \caption{Control volumes}
+  \includegraphics[width=0.5\textwidth]{equations_grid.jpg}
+  \caption{Different equations for the staggered grid}
+  \label{equations_grid}
 \end{figure}
+For the x-momentum equation we are going to use as reference cell the pink one where $u$ velocity is stored in the center.
+For this equation we need to compute $v_n$ and $v_s$ by interpolating the values of $v$ at the edges of the reference cell:
+\begin{equation*}
+  v_n = \frac{v_{i+1,j} + v_{i,j}}{2}, \quad v_s = \frac{v_{i,j} + v_{i-1,j}}{2}.
+\end{equation*}
+
+For the y-momentum equation we take as reference cell the orange one, where $v$ velocity is stored in the center and we need to compute the values of $u_e$ and $u_w$ by interpolating the values of $u$ at the edges of the reference cell:
+\begin{equation*}
+  u_e = \frac{u_{i,j+1} + u_{i,j}}{2}, \quad u_w = \frac{u_{i,j} + u_{i,j-1}}{2}.
+\end{equation*}
+  
 
 \newpage
 \section*{\Large Task 3.2:}
@@ -232,21 +209,20 @@ We also set relaxation parameters ($\alpha_p$ and $\alpha_u$) to control the con
 In this step we solve the momentum equations to compute the intermediate velocities $u^*$ and $v^*$.
 In particular, for the x-momentum equation we have the following formula to solve implicitly:
 \begin{equation}
-  a_{P}u_{P}=\sum_{nb}a_{nb}u_{nb}+b_{u}-\frac{\partial p^{*}}{\partial x}
+  a_{c}u_{c}^*=\sum_{nb}a_{nb}u_{nb}^*+b_{u}-\frac{\partial p^{*}}{\partial x}
 \end{equation}
-where $a_{P}$, $a_{nb}$ and $b_{u}$ are the coefficients that derive from the discretization equation and $\frac{\partial p^{*}}{\partial x}$ is the pressure gradient
-at the cell faces which can be approximated as $\frac{\partial p^{*}}{\partial x}=\frac{p_{E}^{*}-p_{P}^{*}}{\Delta x}$.
+where $a_{c}$, $a_{nb}$ and $b_{u}$ are the coefficients that derive from the discretization equation.
+This equation is solved considering the pink reference cell of the picture \ref{equations_grid}.
 
-For y-momentum equation we have the analogue formula:
+For y-momentum equation we have the analogue formula (which is going to be solved considering the orange reference cell):
 \begin{equation}
-  a_{P}v_{P}=\sum_{nb}a_{nb}v_{nb}+b_{u}-\frac{\partial p^{*}}{\partial y}
+  a_{c}v_{c}^*=\sum_{nb}a_{nb}v_{nb}^*+b_{u}-\frac{\partial p^{*}}{\partial y}.
 \end{equation}
-where  the pressure gradient can be approximated as $\frac{\partial p^{*}}{\partial y}=\frac{p_{N}^{*}-p_{P}^{*}}{\Delta y}$.
 
 We solve these equations for all the cells in order to obtain the predicted velocities $u^*$ and $v^*$.
 
 \subsubsection*{3) Correction step}
-This step is necessary to ensure that the continuity equation is satisfied. 
+This step is necessary to ensure that the continuity equation is satisfied, so we are solving it in the blue reference cells. 
 We start by deriving the pressure correction equation from the continuity equation:
 \begin{equation}
   \frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} = 0
@@ -275,7 +251,7 @@ Then we assemble the  resulting terms into a discretized Poisson equation for $p
 \end{equation} 
 where $p'_P$ is the pressure correction at the cell center, $p'_{nb}$ are the pressure corrections at the neighboring cells (east, west, north, south), $a_P$ and $a_{nb}$ are the coefficients that derive from the discretization equation, and the source term is $b_p = \rho \left( \frac{u_E^* - u_W^*}{\Delta x} + \frac{v_N^* - v_S^*}{\Delta y} \right)$. 
 
-This equation forms a system of linear equations that is solved using numerical methods (e.g., iterative solvers like Gauss-Seidel).
+This equation forms a system of linear equations that is solved using numerical methods (e.g., iterative solvers like Jacobi).
 
 
 \subsubsection*{4) Update pressure and velocity fields}
@@ -296,11 +272,19 @@ where the approximations for the partial derivatives of the pressure are: $\frac
 At the end we evaluate convergence criteria for both velocity and pressure fields. We can use the following criteria:
 
 \begin{itemize}
-  \item Velocity: $||u^{\nu+1} - u^*|| \leq \text{tolerance}$.
+  \item Velocity u: $||u^{\nu+1} - u^*|| \leq \text{tolerance}$.
+  \item Velocity v: $||v^{\nu+1} - v^*|| \leq \text{tolerance}$.
   \item Pressure: $||p^{\nu+1} - p^*|| \leq \text{tolerance}$.
 \end{itemize}
 
-If not converged, set $u^* = u^{\nu+1}$ and $p^* = p^{\nu+1}$ and repeat the process from step 2.
+If not converged, set $u^* = u^{\nu+1}$, $v* = v{\nu+1}$ and $p^* = p^{\nu+1}$ and repeat the process from step 2.
+
+The method can be summarized in the following flow-chart:
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.5\textwidth]{graph.jpg}
+  \caption{Flowchart of the method}
+\end{figure}
 
 \section*{\Large Task 3.3:}
 \section*{\Large Task 3.4:}
