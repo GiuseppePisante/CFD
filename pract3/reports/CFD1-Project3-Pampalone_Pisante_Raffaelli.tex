@@ -32,7 +32,7 @@
     \centering
     \vspace*{1in}
     
-    {\Huge\bfseries Project 2\par}
+    {\Huge\bfseries Project 3\par}
     \vspace{1.5cm}
     {\Large \today\par}
     \vspace{1.5cm}
@@ -201,6 +201,7 @@ For the y-momentum equation we take as reference cell the orange one, where $v$ 
 
 \newpage
 \section*{\Large Task 3.2:}
+Our knowledge on the SIMPLE method came from the course slides and was deepend by the book \cite{Book} at page 597.
 \subsubsection*{1) Initialization}
 We set an initial guess for velocities ($u^*$ and $p^*$) and pressure ($p^*$) fields and we ensure that the values are consistent with the boundary conditions.
 We also set relaxation parameters ($\alpha_p$ and $\alpha_u$) to control the convergence of the solution.
@@ -287,12 +288,120 @@ The method can be summarized in the following flow-chart:
 \end{figure}
 
 \section*{\Large Task 3.3:}
+The code is structured in two files, visible at the github repository \cite{GitHubRepo}. In the solver.py file the are 3 functions: solver, SimpleSolver and Jacobi solver. 
+In particular, solver applies the simplesolver until convergence, whose tolerance is compared to the increment of the solutions of u, v and p of the previous iteration.
+The SimpleSolver applies the simple iterattions and uses jacobi to solve the 3 systems in a sequrntial manner, as explained previously. The vectores of the system are unrolled in a colMajor fashion to allow to create such systems.
+Finally, the tolerance for the whole study was set to 1e-4.
 \section*{\Large Task 3.4:}
-\section*{\Large Task 3.5:}
-\section*{\Large Task 3.6:}
-\section*{\Large Task 3.7:}
+The velocities and pressure fields, the vorticity and the streamlines of the flow for a grid with 100 control volumes is reported below for the 3 Reynolds number required.
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.7\textwidth]{Task4.png}
+  \caption{Velocities and pressure fields, vorticity and streamlines for different Reynolds numbers}
+\end{figure}
 
+From such plots we can see that by increasing the Reynolds number the vortex center moves towards the right of the domain. In addition, The U-velocity field demonstrates predominant horizontal kinematics adjacent to the moving lid, 
+characterized by progressively intensifying velocity gradients with increasing Reynolds number. The V-velocity field reveals a more intricate flow mechanism near lateral boundaries, with increasingly complex recirculatory patterns 
+emerging at elevated $Re$. Pressure distributions maintain uniform symmetry at low Reynolds numbers, while higher $Re$ manifests more pronounced gradients concentrated in corner regions.
+The vorticity field accentuates the growing dynamical complexity, exhibiting concentrated rotational intensities proximal to boundaries and exhibiting sharp gradient characteristics at $Re = 1000$.
+
+\section*{\Large Task 3.5:}
+From the following plots we can see some problems in the convergence of the y-momentum, which is unexpected since the discretization follows the same principles and the jacobi solver works the same way.
+\begin{figure}[h!]
+  \centering
+  \begin{minipage}{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{Residual Re 1.png}
+    \caption{Re = 1}
+  \end{minipage}
+  \begin{minipage}{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{Residual Re 10.png}
+    \caption{Re = 100}
+  \end{minipage}
+  \begin{minipage}{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{Residual Re 1000.png}
+    \caption{Re = 1000}
+  \end{minipage}
+  \caption{Residuals for different Reynolds numbers}
+\end{figure}
+
+What is clear from the 3 pictures, looking only at the x-momentum, is that the residuals are decreasing, which is a good sign of convergence. This is more evident for bigger Reynolds numbers, which is coherent from what we expected in terms of stability.
+In addition, it is possible to see that with a higher Reynolds number, the number of simple iterations is clearly lower.
+\section*{\Large Task 3.6:}
+The locations where chosen in order to try to show in the most complete way the gradient of the velocities and pressure. In particular, this was found in the center of the vortex, which as previously mentioned, was slightly de-centered towards the right part of the domain.
+\begin{figure}[h!]
+  \centering
+  \begin{minipage}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{horizontal_plane.png}
+    \caption{Horizontal projection}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{vertical_plane.png}
+    \caption{Vertical projection}
+  \end{minipage}
+\end{figure}
+It is clear that there is a slight difference in the solution of the 3 different domains. In particular, taking N=200 as the baseline, N=50 is the one further from it.
+All the 3 options show that the minimum of u is in the vortex, as expected and the boundary conditions are also met. The same is for v and P, where the neumann conditions are not fully visible since in the code, in order to plot in the same domain, an interpolation was made to reduce the dimension of the pressure grid.
+It is important to note that in some cases the plots look slightly different from one discretization to another, probably due to the stopping criteria used, which was based, as previously mentioned, on the error convergence and on a max iteration, to prevent the simulation to take too much time. This could be the reason why the pressure for Re=1000 has such a strange pattern with N=200.
+\section*{\Large Task 3.7:}
+Below are shown the error with the different Reynolds number.
+\begin{figure}[h!]
+  \centering
+  \begin{minipage}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{udiff1.png}
+    \caption{Error for Reynolds = 1 on (u)}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{pdiff1.png}
+    \caption{Error for Reynolds = 1 on (p)}
+  \end{minipage}
+\end{figure}
+\begin{figure}[h!]
+  \centering
+  \begin{minipage}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{udiff100.png}
+    \caption{Error for Reynolds = 100 on (u)}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{pdiff100.png}
+    \caption{Error for Reynolds = 100 on (p)}
+  \end{minipage}
+\end{figure}
+\begin{figure}[h!]
+  \centering
+  \begin{minipage}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{udiff1000.png}
+    \caption{Error for Reynolds = 1000 on (u)}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{pdiff1000.png}
+    \caption{Error for Reynolds = 1000 on (p)}
+  \end{minipage}
+\end{figure}
+
+From the plots, it looks like the error is mostly relevant where the gradient is higher. In particular, this is very visible in the pressure field. 
+In addition, the error is higher for lower Reynolds numbers, which is coherent with what we expected in terms of stability.
+
+\newpage
 \begin{thebibliography}{9}
+    \bibitem{Book}
+    \textit{The FVM in CFD},\\
+    F.Moukalled, L.Mangani, M.Darwish. Springer, 2016.
+
     \bibitem{GitHubRepo}
     \textit{CFD Repository},\\
     Available at: \url{https://github.com/GiuseppePisante/CFD.git}

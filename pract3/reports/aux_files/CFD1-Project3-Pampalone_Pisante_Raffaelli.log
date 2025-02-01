@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2024.10.20)  31 JAN 2025 14:40
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2024.11.22)  1 FEB 2025 13:33
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -444,47 +444,118 @@ Package pdftex.def Info: equations_grid.jpg  used on input line 186.
 (pdftex.def)             Requested size: 234.8775pt x 134.21385pt.
  [4 <./equations_grid.jpg>]
 [5]
-<graph.jpg, id=64, 1003.75pt x 1107.13625pt>
+<graph.jpg, id=66, 1003.75pt x 1107.13625pt>
 File: graph.jpg Graphic file (type jpg)
 <use graph.jpg>
-Package pdftex.def Info: graph.jpg  used on input line 285.
+Package pdftex.def Info: graph.jpg  used on input line 286.
 (pdftex.def)             Requested size: 234.8775pt x 259.06207pt.
- [6 <./graph.jpg>] [7]
-(aux_files/CFD1-Project3-Pampalone_Pisante_Raffaelli.aux)
+<Task4.png, id=68, 1128.01425pt x 640.19176pt>
+File: Task4.png Graphic file (type png)
+<use Task4.png>
+Package pdftex.def Info: Task4.png  used on input line 299.
+(pdftex.def)             Requested size: 328.82707pt x 186.61794pt.
+ [6 <./graph.jpg>]
+<Residual Re 1.png, id=79, 546.843pt x 335.45325pt>
+File: Residual Re 1.png Graphic file (type png)
+<use Residual Re 1.png>
+Package pdftex.def Info: Residual Re 1.png  used on input line 314.
+(pdftex.def)             Requested size: 150.32504pt x 92.21664pt.
+<Residual Re 10.png, id=80, 554.07pt x 341.47575pt>
+File: Residual Re 10.png Graphic file (type png)
+<use Residual Re 10.png>
+Package pdftex.def Info: Residual Re 10.png  used on input line 319.
+(pdftex.def)             Requested size: 150.32504pt x 92.64256pt.
+<Residual Re 1000.png, id=81, 582.37575pt x 343.88475pt>
+File: Residual Re 1000.png Graphic file (type png)
+<use Residual Re 1000.png>
+Package pdftex.def Info: Residual Re 1000.png  used on input line 324.
+(pdftex.def)             Requested size: 150.32504pt x 88.76251pt.
+<horizontal_plane.png, id=82, 867.24pt x 867.24pt>
+File: horizontal_plane.png Graphic file (type png)
+<use horizontal_plane.png>
+Package pdftex.def Info: horizontal_plane.png  used on input line 338.
+(pdftex.def)             Requested size: 230.18253pt x 230.1748pt.
+<vertical_plane.png, id=83, 867.24pt x 867.24pt>
+File: vertical_plane.png Graphic file (type png)
+<use vertical_plane.png>
+Package pdftex.def Info: vertical_plane.png  used on input line 344.
+(pdftex.def)             Requested size: 230.18253pt x 230.1748pt.
+ [7 <./Task4.png> <./Residual Re 1.png> <./Residual Re 10.png> <./Residual Re 1
+000.png>]
+<udiff1.png, id=97, 708.84825pt x 348.1005pt>
+File: udiff1.png Graphic file (type png)
+<use udiff1.png>
+Package pdftex.def Info: udiff1.png  used on input line 357.
+(pdftex.def)             Requested size: 230.18253pt x 113.0357pt.
+<pdiff1.png, id=98, 712.46175pt x 352.9185pt>
+File: pdiff1.png Graphic file (type png)
+<use pdiff1.png>
+Package pdftex.def Info: pdiff1.png  used on input line 363.
+(pdftex.def)             Requested size: 230.18253pt x 114.01863pt.
+<udiff100.png, id=99, 714.87074pt x 345.08925pt>
+File: udiff100.png Graphic file (type png)
+<use udiff100.png>
+Package pdftex.def Info: udiff100.png  used on input line 371.
+(pdftex.def)             Requested size: 230.18253pt x 111.11534pt.
+<pdiff100.png, id=100, 710.655pt x 350.5095pt>
+File: pdiff100.png Graphic file (type png)
+<use pdiff100.png>
+Package pdftex.def Info: pdiff100.png  used on input line 377.
+(pdftex.def)             Requested size: 230.18253pt x 113.52916pt.
+<udiff1000.png, id=101, 712.46175pt x 353.52075pt>
+File: udiff1000.png Graphic file (type png)
+<use udiff1000.png>
+Package pdftex.def Info: udiff1000.png  used on input line 385.
+(pdftex.def)             Requested size: 230.18253pt x 114.2132pt.
+<pdiff1000.png, id=102, 708.84825pt x 346.29375pt>
+File: pdiff1000.png Graphic file (type png)
+<use pdiff1000.png>
+Package pdftex.def Info: pdiff1000.png  used on input line 391.
+(pdftex.def)             Requested size: 230.18253pt x 112.44902pt.
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+[8 <./horizontal_plane.png> <./Vertical_plane.png> <./udiff1.png> <./pdiff1.png
+>] [9 <./udiff100.png> <./pdiff100.png> <./udiff1000.png> <./pdiff1000.png>]
+[10] (aux_files/CFD1-Project3-Pampalone_Pisante_Raffaelli.aux)
 Package rerunfilecheck Info: File `CFD1-Project3-Pampalone_Pisante_Raffaelli.ou
 t' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 10329 strings out of 480247
- 159141 string characters out of 5896150
- 469318 words of memory out of 5000000
- 28105 multiletter control sequences out of 15000+600000
- 476650 words of font info for 55 fonts, out of 8000000 for 9000
+ 10438 strings out of 480247
+ 160947 string characters out of 5896150
+ 469346 words of memory out of 5000000
+ 28184 multiletter control sequences out of 15000+600000
+ 478014 words of font info for 61 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 60i,9n,63p,965b,446s stack positions out of 5000i,500n,10000p,200000b,80000s
- </home/marti/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/tcrm0900.600
-pk></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></u
-sr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/sha
-re/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/share/texl
-ive/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmex9.pfb></usr/share/texliv
-e/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/share/texlive/texmf
--dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-dist/f
-onts/type1/public/amsfonts/cm/cmmi9.pfb></usr/share/texlive/texmf-dist/fonts/ty
-pe1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/pub
-lic/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/ams
-fonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm
-/cmr9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5.p
-fb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></us
-r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/share
-/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/share/texli
-ve/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb></usr/share/texlive/texm
-f-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb>
-Output written on aux_files/CFD1-Project3-Pampalone_Pisante_Raffaelli.pdf (8 pa
-ges, 650616 bytes).
+ 60i,9n,63p,965b,366s stack positions out of 5000i,500n,10000p,200000b,80000s
+ </home/giuseppepisante/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/tc
+rm0900.600pk></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx
+10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb
+></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/
+share/texlive/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmex9.pfb></usr/sh
+are/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/share/tex
+live/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/te
+xmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/share/texlive/texmf-dis
+t/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts
+/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/
+public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
+msfonts/cm/cmr9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
+cm/cmsy5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy
+6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb><
+/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/s
+hare/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb></usr/share/te
+xlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb>
+Output written on aux_files/CFD1-Project3-Pampalone_Pisante_Raffaelli.pdf (11 p
+ages, 1978221 bytes).
 PDF statistics:
- 167 PDF objects out of 1000 (max. 8388607)
- 115 compressed objects within 2 object streams
- 29 named destinations out of 1000 (max. 500000)
- 21 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 225 PDF objects out of 1000 (max. 8388607)
+ 146 compressed objects within 2 object streams
+ 46 named destinations out of 1000 (max. 500000)
+ 81 words of extra memory for PDF output out of 10000 (max. 10000000)
 
