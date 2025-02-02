@@ -4,7 +4,7 @@ import solver
 
 Nx = 21
 Ny = 21
-time = 0.05
+time = 0.00005
 dt = 0.00001
 Re = 0.1
 
