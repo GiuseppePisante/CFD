@@ -2,8 +2,8 @@ This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloade
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**CFD1-Exercise6-Pampalone_Pisante_Raffaelli.tex
-(./CFD1-Exercise6-Pampalone_Pisante_Raffaelli.tex
+**nuovo.tex
+(./nuovo.tex
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
 (/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
@@ -297,8 +297,21 @@ File: l3backend-pdftex.def 2024-01-04 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count289
 \l__pdf_internal_box=\box56
 )
-(aux_files/CFD1-Exercise6-Pampalone_Pisante_Raffaelli.aux)
-\openout1 = `CFD1-Exercise6-Pampalone_Pisante_Raffaelli.aux'.
+(aux_files/nuovo.aux
+
+LaTeX Warning: Label `fig:32' multiply defined.
+
+
+LaTeX Warning: Label `fig:64' multiply defined.
+
+
+LaTeX Warning: Label `fig:128' multiply defined.
+
+
+LaTeX Warning: Label `fig:comparison' multiply defined.
+
+)
+\openout1 = `nuovo.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 29.
 LaTeX Font Info:    ... okay on input line 29.
@@ -318,8 +331,7 @@ LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 29.
 LaTeX Font Info:    ... okay on input line 29.
 LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 29.
 LaTeX Font Info:    ... okay on input line 29.
-
-(/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+ (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count290
 \scratchdimen=\dimen169
@@ -329,4 +341,184 @@ LaTeX Font Info:    ... okay on input line 29.
 \everyMPshowfont=\toks27
 \MPscratchCnt=\count293
 \MPscratchDim=\dimen170
-\MPnumerator=\co
+\MPnumerator=\count294
+\makeMPintoPDFobject=\count295
+\everyMPtoPDFconversion=\toks28
+) (/usr/share/texlive/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
+Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+85.
+
+(/usr/share/texlive/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+))
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+*geometry* verbose mode - [ preamble ] result:
+* driver: pdftex
+* paper: <default>
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: 
+* h-part:(L,W,R)=(72.26999pt, 469.75502pt, 72.26999pt)
+* v-part:(T,H,B)=(72.26999pt, 650.43001pt, 72.26999pt)
+* \paperwidth=614.295pt
+* \paperheight=794.96999pt
+* \textwidth=469.75502pt
+* \textheight=650.43001pt
+* \oddsidemargin=0.0pt
+* \evensidemargin=0.0pt
+* \topmargin=-37.0pt
+* \headheight=12.0pt
+* \headsep=25.0pt
+* \topskip=10.0pt
+* \footskip=30.0pt
+* \marginparwidth=65.0pt
+* \marginparsep=11.0pt
+* \columnsep=10.0pt
+* \skip\footins=9.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+Package hyperref Info: Link coloring OFF on input line 29.
+(aux_files/nuovo.out) (aux_files/nuovo.out)
+\@outlinefile=\write3
+\openout3 = `nuovo.out'.
+
+<FAU-Logo.png, id=80, 1927.2pt x 1084.05pt>
+File: FAU-Logo.png Graphic file (type png)
+<use FAU-Logo.png>
+Package pdftex.def Info: FAU-Logo.png  used on input line 41.
+(pdftex.def)             Requested size: 140.92793pt x 79.26566pt.
+ [1
+
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./FAU-Logo.png>]
+pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
+been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.115 
+       [1] [2]
+<FDM_32.png, id=116, 578.16pt x 361.35pt>
+File: FDM_32.png Graphic file (type png)
+<use FDM_32.png>
+Package pdftex.def Info: FDM_32.png  used on input line 209.
+(pdftex.def)             Requested size: 150.32504pt x 93.94878pt.
+<FDM_64.png, id=118, 462.528pt x 346.896pt>
+File: FDM_64.png Graphic file (type png)
+<use FDM_64.png>
+Package pdftex.def Info: FDM_64.png  used on input line 214.
+(pdftex.def)             Requested size: 150.32504pt x 112.74515pt.
+<FDM_128.png, id=119, 462.528pt x 346.896pt>
+File: FDM_128.png Graphic file (type png)
+<use FDM_128.png>
+Package pdftex.def Info: FDM_128.png  used on input line 219.
+(pdftex.def)             Requested size: 150.32504pt x 112.74515pt.
+ [3
+pdfTeX warning (ext4): destination with the same identifier (name{figure.1}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.244         \item $
+                     N = 128$:\quad $0.02278$ <./FDM_32.png> <./FDM_64.png> <./
+FDM_128.png>]
+<FDM_Error.png, id=131, 578.16pt x 361.35pt>
+File: FDM_Error.png Graphic file (type png)
+<use FDM_Error.png>
+Package pdftex.def Info: FDM_Error.png  used on input line 269.
+(pdftex.def)             Requested size: 234.8775pt x 146.79808pt.
+ [4
+pdfTeX warning (ext4): destination with the same identifier (name{figure.2}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.302 ...nite-volume method on a non-uniform grip}
+                                                   <./FDM_Error.png>] [5]
+<FVM_32.png, id=147, 462.528pt x 346.896pt>
+File: FVM_32.png Graphic file (type png)
+<use FVM_32.png>
+Package pdftex.def Info: FVM_32.png  used on input line 449.
+(pdftex.def)             Requested size: 150.32504pt x 112.74515pt.
+<FVM_64.png, id=148, 462.528pt x 346.896pt>
+File: FVM_64.png Graphic file (type png)
+<use FVM_64.png>
+Package pdftex.def Info: FVM_64.png  used on input line 454.
+(pdftex.def)             Requested size: 150.32504pt x 112.74515pt.
+<FVM_128.png, id=149, 462.528pt x 346.896pt>
+File: FVM_128.png Graphic file (type png)
+<use FVM_128.png>
+Package pdftex.def Info: FVM_128.png  used on input line 459.
+(pdftex.def)             Requested size: 150.32504pt x 112.74515pt.
+
+[6
+pdfTeX warning (ext4): destination with the same identifier (name{figure.3}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.470 \subsection{Difference between FDM and FVM}
+                                                  <./FVM_32.png> <./FVM_64.png>
+ <./FVM_128.png>]
+<FVM_Error.png, id=160, 578.16pt x 361.35pt>
+File: FVM_Error.png Graphic file (type png)
+<use FVM_Error.png>
+Package pdftex.def Info: FVM_Error.png  used on input line 511.
+(pdftex.def)             Requested size: 234.8775pt x 146.79808pt.
+ [7
+pdfTeX warning (ext4): destination with the same identifier (name{figure.4}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.524   \begin{equation}
+                         <./FVM_Error.png>] [8] (aux_files/nuovo.aux)
+ ***********
+LaTeX2e <2023-11-01> patch level 1
+L3 programming layer <2024-01-22>
+ ***********
+
+
+LaTeX Warning: There were multiply-defined labels.
+
+Package rerunfilecheck Info: File `nuovo.out' has not changed.
+(rerunfilecheck)             Checksum: 60DCEF91EE4B91FF00330D4BF6768EF4;4984.
+ ) 
+Here is how much of TeX's memory you used:
+ 10023 strings out of 476182
+ 152707 string characters out of 5795594
+ 1943975 words of memory out of 5000000
+ 31864 multiletter control sequences out of 15000+600000
+ 566278 words of font info for 64 fonts, out of 8000000 for 9000
+ 14 hyphenation exceptions out of 8191
+ 75i,9n,79p,532b,573s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ </home/antoniopampalone02/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec
+/tcrm0900.600pk></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
+mbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.
+pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></u
+sr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmex7.pfb></usr
+/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmex9.pfb></usr/s
+hare/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/share/te
+xlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/t
+exmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/share/texlive/texmf-di
+st/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/font
+s/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1
+/public/amsfonts/cm/cmr5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/
+amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
+/cm/cmr9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy
+5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb><
+/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/sh
+are/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/share/te
+xlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb></usr/share/texlive/t
+exmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb>
+Output written on aux_files/nuovo.pdf (9 pages, 472458 bytes).
+PDF statistics:
+ 279 PDF objects out of 1000 (max. 8388607)
+ 208 compressed objects within 3 object streams
+ 47 named destinations out of 1000 (max. 500000)
+ 198 words of extra memory for PDF output out of 10000 (max. 10000000)
+

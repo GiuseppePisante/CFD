@@ -196,10 +196,11 @@ a_2 & b_2 & c_3 & \cdots & 0 \\
 \subsection{Implementation}
 
 The implementation of Task 6.1 can be found in the GitHub repository at the following link: \url{https://github.com/GiuseppePisante/CFD.git}. 
-The code is located in the \texttt{exercise6} folder. The figure illustrates the numerical solution of the advection-diffusion equation 
-using the finite difference method for different grid resolutions and using a non-uniform discretization. 
+The code is located in the \texttt{exercise6} folder. 
 
 \subsection{Numerical vs Analytical Solution}
+The figure illustrates the numerical solution of the advection-diffusion equation using the finite difference method for different 
+grid resolutions and using a non-uniform discretization and compares it with the analytical solution. 
 
 \begin{figure}[h!]
   \centering
@@ -439,9 +440,9 @@ b_{N-1}
 \subsection{Implementation}
 The implementation of Task 6.2 can be found in the GitHub repository at the following link: \url{https://github.com/GiuseppePisante/CFD.git}. 
 The code is located in the \texttt{exercise6} folder. The figure illustrates the numerical solution of the advection-diffusion equation using 
-the finite volume method for different grid resolutions and using a non-uniform discretization. 
+the finite volume method for different grid resolutions and using a non-uniform discretization and compares it with the analytical solution. 
 
-\begin{figure}[h!]
+\begin{figure}[H]
   \centering
   \begin{minipage}{0.32\textwidth}
       \centering
@@ -464,10 +465,83 @@ the finite volume method for different grid resolutions and using a non-uniform 
 
 \subsection{Difference between FDM and FVM}
 
+Using the FVM, we obtain a better approximation than with the FDM, except in the case of 128 faces, where the solution does not match our expectations. 
 
+\subsection{Difference between FDM and FVM}
 
+The numerical results obtained using the Finite Volume Method (FVM) are compared with the analytical solution to assess accuracy. The computed L1 and L2 errors exhibit a clear trend of decreasing as the grid is refined from $N = 32$ to $N = 64$. However, at $N = 128$, the errors unexpectedly increase, suggesting an anomaly in the solution. The computed errors for different grid resolutions are as follows:
 
+\begin{itemize}
+    \item \textbf{L1 Errors:}
+    \begin{itemize}
+        \item $N = 32$: \quad $0.01846$
+        \item $N = 64$: \quad $0.00054$
+        \item $N = 128$:\quad $0.01407$
+    \end{itemize}
+    
+    \item \textbf{L2 Errors:}
+    \begin{itemize}
+        \item $N = 32$: \quad $0.03743$
+        \item $N = 64$: \quad $0.00101$
+        \item $N = 128$:\quad $0.03248$
+    \end{itemize}
+\end{itemize}
+The order of accuracy is computed as follows:
 
+\begin{itemize}
+    \item \textbf{Estimated Order of Accuracy (L1):}
+    \begin{itemize}
+        \item From $N = 32$ to $N = 64$: \quad $5.097$
+        \item From $N = 64$ to $N = 128$:\quad $-4.706$
+    \end{itemize}
+    
+    \item \textbf{Estimated Order of Accuracy (L2):}
+    \begin{itemize}
+        \item From $N = 32$ to $N = 64$: \quad $5.211$
+        \item From $N = 64$ to $N = 128$:\quad $-5.007$
+    \end{itemize}
+\end{itemize}
+When increasing to $N = 128$, both errors rise significantly instead of continuing to decrease, 
+resulting in negative values for the estimated order of accuracy. This suggests that at $N = 128$, the numerical solution deviates
+unexpectedly from the expected convergence trend. Potential causes for this anomaly could include discretization errors or numerical 
+instabilities specific to the chosen scheme. Further investigation is needed to determine the exact reason behind this behavior.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{FVM_Error.png}
+    \caption{L1 and L2 norms}
+  \end{figure}
+
+  \subsection{Verification of Conservation}
+
+  The finite-volume method is based on the integral form of the conservation law:
+  
+  \begin{equation}
+  \frac{d}{dt} \int_{V} u \, dV + \int_{\partial V} F \cdot dA = 0,
+  \end{equation}
+  Applying the divergence theorem:
+  
+  \begin{equation}
+  \frac{d}{dt} \int_{V} u \, dV + \int_{\text{boundaries}} F \cdot dA = 0.
+  \end{equation}
+  For a one-dimensional problem with control volume \( [x_{i-1/2}, x_{i+1/2}] \):
+  
+  \begin{equation}
+  \frac{d}{dt} \int_{x_{i-1/2}}^{x_{i+1/2}} u \, dx + \left[F_{i+1/2} - F_{i-1/2} \right] = 0.
+  \end{equation}
+  This equation shows that the change in the volume integral is determined by the net flux difference at the boundaries.
+  To verify that the difference in flux beetween the two boundaries is zero we observe that for a steady-state solution \( \left( \frac{d}{dt} \int u dx = 0 \right) \), we obtain:
+  
+  \begin{equation}
+  F_{i+1/2} - F_{i-1/2} = 0.
+  \end{equation}
+  This ensures that the numerical scheme neither creates nor destroys the conserved quantity, confirming that the finite-volume method is conservative.
+  A consistent integration scheme ensures a correct representation of the conservation law. A common choice is the midpoint rule where the integral is approximated as:
+  
+  \begin{equation}
+  \int_{x_{i-1/2}}^{x_{i+1/2}} u \, dx \approx \Delta x \cdot u_i.
+  \end{equation}
+  If the fluxes are consistently computed at the interfaces, the method guarantees conservation.
 
 \begin{thebibliography}{9}
     \bibitem{GitHubRepo}
